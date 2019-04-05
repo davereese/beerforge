@@ -1,23 +1,24 @@
-import React, { Component } from 'react';
-import { Switch, Route } from "react-router-dom";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
-import styles from './App.module.scss';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import Dashboard from './views/Dashborad/Dashboard';
+import Fade from './components/Fade/Fade';
 
-class App extends Component {
+class App extends React.Component {
   render() {
     return (
-      <div className={styles.app}>
+      <Fade>
         <Header/>
-        <main className={styles.app__main}>
-          <Switch>
-            {/* <Route path="/" exact component={Dashboard} />
-            <Route component={NoMatch} /> */}
-          </Switch>
-        </main>
+          <main>
+            <Switch>
+              <Route path="/" exact component={Dashboard}/>
+              {/* <Route component={NoMatch} /> */}
+            </Switch>
+          </main>
         <Footer/>
-      </div>
+      </Fade>
     );
   }
 }

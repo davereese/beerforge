@@ -1,7 +1,0 @@
-@import './styles/variables';
-
-.app {
-  &__main {
-    min-height: calc(100vh - #{$header-height + $footer-height});
-  }
-}
