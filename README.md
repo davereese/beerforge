@@ -4,7 +4,11 @@ A modern, web-based homebrew toolkit and brew log.
 ---
 
 ## Specs
-React SPA bootstrapped with `create-react-app` that includes Sass modules and Typescript.
+React SPA bootstrapped with `create-react-app` that includes:
+- Sass modules
+- Typescript
+- React Router
+
 ___
 
 ## Available Scripts
