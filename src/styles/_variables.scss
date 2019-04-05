@@ -6,7 +6,6 @@ $white: #ffffff;
 
 // color
 $tar: #2e2318;
-$mud: #2e2318;
 $brown: #58382a;
 $caramel: #ab5c00;
 $coral: #e9662c;
@@ -18,10 +17,17 @@ $forsythia: #ffdb4a;
 $cream: #fff7da;
 $seafoam: #16a05e;
 
-
 // Color assignments
 $site-bg: $black;
 $header-bg: $dark-gray;
+$footer-bg: $black;
+
+$text-light: $white;
+$text-dark: $tar;
 
 // FONTS
 $base-font-size: 14px;
+
+// LAYOUT
+$header-height: 55px;
+$footer-height: 40px;

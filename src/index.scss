@@ -1,9 +1,11 @@
 @import './styles/variables';
+@import './styles/type';
 
 body {
   margin: 0;
   padding: 0;
   background-color: $site-bg;
+  font-family: $montserrat;
   font-size: $base-font-size;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
