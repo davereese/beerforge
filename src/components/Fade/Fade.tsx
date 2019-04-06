@@ -13,20 +13,29 @@ class Fade extends React.Component<RouteComponentProps, ComponentState> {
     }
   }
 
+  componentDidMount() {
+    const location: string = this.props.location.pathname.replace('/', '');
+    this.setClasses(location, '');
+  }
+
   componentDidUpdate(prevProps: RouteComponentProps) {
     if (this.props.location.pathname !== prevProps.location.pathname) {
-      const location = this.props.location.pathname.replace('/', '');
-      const oldLocation = prevProps.location.pathname.replace('/', '');
-      this.setState({
-        background: location !== '' ? location : 'default',
-        oldBackground: oldLocation !== '' ? `old-${oldLocation}` : 'old-default',
-        transitioned: true,
-      }, () => {
-        setTimeout(() => {
-          this.setState({transitioned: false});
-        }, 100);
-      });
+      const location: string = this.props.location.pathname.replace('/', '');
+      const oldLocation: string = prevProps.location.pathname.replace('/', '');
+      this.setClasses(location, oldLocation);
     }
+  }
+
+  setClasses(location: string, oldLocation: string): void {
+    this.setState({
+      background: location !== '' ? location : 'default',
+      oldBackground: oldLocation !== '' ? `old-${oldLocation}` : 'old-default',
+      transitioned: true,
+    }, () => {
+      setTimeout(() => {
+        this.setState({transitioned: false});
+      }, 100);
+    });
   }
 
   render() {
