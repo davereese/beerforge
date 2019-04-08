@@ -1,0 +1,36 @@
+@import '../../../styles/variables';
+@import '../../../styles/utilities';
+
+.user {
+  display: grid;
+  grid-template-columns: 80px auto;
+  grid-template-rows: auto;
+  grid-template-areas: 'avatar info';
+  grid-gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .avatarContainer {
+    grid-area: avatar;
+    height: 80px;
+  }
+
+  .infoContainer {
+    grid-area: info;
+
+    &__header {
+      color: $text-light;
+      margin-bottom: 5px;
+    }
+
+    &__stats {
+      margin: 0;
+      color: $label-color;
+      font-size: px-to-rem(11px);
+
+      span {
+        margin-right: 10px;
+      }
+    }
+  }
+}
