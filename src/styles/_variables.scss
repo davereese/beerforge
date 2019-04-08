@@ -32,8 +32,17 @@ $text-light: $white;
 $text-dark: $tar;
 $label-color: $gold;
 
+$button-default-bg: $tar;
+$button-default-text: $canary;
+$button-yellow: $canary;
+$button-shadow: $brown;
+
 // FONTS
 $base-font-size: 14px;
+$weight-light: 300;
+$weight-regular: 400;
+$weight-medium: 500;
+$weight-semibold: 600;
 
 // LAYOUT
 $header-height: 55px;

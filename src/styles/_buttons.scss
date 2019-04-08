@@ -1,0 +1,37 @@
+@import './variables';
+@import './utilities';
+
+.button {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 12px 15px;
+  height: 42px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba($button-shadow, 0.3);
+  background-color: $button-default-bg;
+  color: $button-default-text;
+  font-weight: $weight-semibold;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color 0.5s;
+
+  // COLORS
+  &--yellow {
+    box-shadow: 0 10px 30px rgba($black, 0.15);
+    background-color: $button-yellow;
+    color: $text-dark;
+
+    &:hover,
+    &:focus {
+      background-color: darken(desaturate(adjust-hue($button-yellow, -5%), 5%), 5%);
+    }
+  }
+
+  &--large {
+    padding: 15px 40px;
+    height: 52px;
+    font-weight: $weight-medium;
+    font-style: italic;
+    font-size: px-to-rem(16px);
+  }
+}
