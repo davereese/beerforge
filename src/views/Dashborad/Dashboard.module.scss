@@ -5,12 +5,23 @@
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: 1fr;
-  grid-column-gap: 20px;
-  grid-template-areas: 'leftColumn' 'rightColumn';
+  grid-gap: 20px;
+  grid-template-areas:
+    'topRow topRow'
+    'leftColumn rightColumn';
 
   @include for-tablet-landscape-up () {
-    grid-template-areas: 'leftColumn rightColumn';
+    grid-template-areas:
+      'topRow topRow'
+      'leftColumn rightColumn';
     grid-template-columns: 0.5fr 0.5fr;
+  }
+
+  .topRow {
+    grid-area: topRow;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .leftColumn {
