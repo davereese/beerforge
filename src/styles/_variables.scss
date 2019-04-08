@@ -25,6 +25,8 @@ $default-bg-1: $brown;
 $default-bg-2: $black;
 $brew-bg-1: $canary;
 $brew-bg-2: $embers;
+$default-card-bg: $coral;
+$brew-card-bg: $forsythia;
 
 $text-light: $white;
 $text-dark: $tar;
@@ -35,3 +37,10 @@ $base-font-size: 14px;
 // LAYOUT
 $header-height: 55px;
 $footer-height: 40px;
+
+// BREAKPOINTS
+$phone-max: 599px;
+$tablet-portrait: 600px;
+$tablet-landscape: 900px;
+$desktop: 1200px;
+$big-desktop: 1800px;

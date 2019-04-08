@@ -1,3 +1,23 @@
 @import '../../styles/variables';
+@import '../../styles/utilities';
 
-.dashboard {}
+.dashboard {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr;
+  grid-column-gap: 20px;
+  grid-template-areas: 'leftColumn' 'rightColumn';
+
+  @include for-tablet-landscape-up () {
+    grid-template-areas: 'leftColumn rightColumn';
+    grid-template-columns: 0.5fr 0.5fr;
+  }
+
+  .leftColumn {
+    grid-area: leftColumn;
+  }
+
+  .rightColumn {
+    grid-area: rightColumn;
+  }
+}

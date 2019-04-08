@@ -1,0 +1,16 @@
+@import '../../styles/variables';
+
+.card {
+  margin-bottom: 20px;
+  width: 100%;
+  min-height: 40px;
+
+  &.dashboard {
+    background-color: rgba($default-card-bg, 0.15);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  &.brew {
+    background-color: rgba($brew-card-bg, 0.5);
+  }
+}
