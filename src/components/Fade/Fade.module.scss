@@ -2,7 +2,12 @@
 
 .fade {
   main {
+    margin: 0 auto;
+    padding: 50px 0;
+    width: calc(100% - 40px);
+    max-width: 1400px;
     min-height: calc(100vh - #{$header-height + $footer-height});
+    box-sizing: border-box;
   }
 
   &::before,
@@ -23,7 +28,7 @@
   &::after {
     z-index: -1;
     opacity: 0;
-    transition: opacity 0.8s;
+    transition: opacity 1s cubic-bezier(.23,0,.21,.99);
   }
 
   &.transitioned::after {
