@@ -1,0 +1,27 @@
+@import './variables';
+@import './utilities';
+
+label {
+  font-size: px-to-rem(11px);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"] {
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 5px 0 10px;
+  padding: 0 15px;
+  min-width: 250px;
+  height: 42px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  font-size: px-to-rem(14px);
+
+  &.dark {
+    background-color: rgba($input-bg-dark, 0.3);
+    color: $text-light;
+  }
+}

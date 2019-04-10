@@ -14,7 +14,7 @@
   &::after {
     content: '';
     display: block;
-    position: absolute;
+    position: fixed;
     top: 0;
     width: 100%;
     height: 100%;
@@ -37,8 +37,15 @@
   }
 
   &.default::before,
-  &.old-default::after {
+  &.old-default::after,
+  &.dashboard::before,
+  &.old-dashboard::after {
     background-image: linear-gradient(125.4deg, $default-bg-1 0%, $default-bg-2 118.45%);
+  }
+
+  &.login::before,
+  &.old-login::after {
+    background-image: linear-gradient(125.4deg, darken($default-bg-1, 8%) 0%, $default-bg-2 85%);
   }
 
   &.brew::before,

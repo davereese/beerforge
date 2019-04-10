@@ -7,4 +7,21 @@
   padding: 0 20px;
   height: $header-height;
   background-color: $header-bg;
+
+  .logoLink {
+    line-height: 0;
+  }
+
+  .loginLink {
+    color: $link;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: $weight-medium;
+    transition: color 0.5s;
+
+    &:hover,
+    &:focus {
+      color: $link-hover;
+    }
+  }
 }

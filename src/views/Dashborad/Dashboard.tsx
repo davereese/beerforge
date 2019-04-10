@@ -18,9 +18,13 @@ class Dashboard extends React.Component<any, any> {
     }
   }
 
+  componentDidMount() {
+    document.title = "BeerForge | Dashboard";
+  }
+
   render() {
     return (
-      <div className={styles.dashboard}>
+      <section className={styles.dashboard}>
         <div className={styles.topRow}>
           <UserInfo user={this.state.user} />
           <Link
@@ -35,7 +39,7 @@ class Dashboard extends React.Component<any, any> {
           <Card>Activity</Card>
           <Card>Calculators</Card>
         </div>
-      </div>
+      </section>
     );
   }
 }

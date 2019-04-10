@@ -6,11 +6,16 @@
   box-sizing: border-box;
   padding: 12px 15px;
   height: 42px;
+  border: none;
   border-radius: 4px;
   box-shadow: 0 2px 10px rgba($button-shadow, 0.3);
   background-color: $button-default-bg;
+  cursor: pointer;
+  outline: none;
   color: $button-default-text;
   font-weight: $weight-semibold;
+  font-size: px-to-rem(13px);
+  letter-spacing: 0.03em;
   text-decoration: none;
   text-transform: uppercase;
   transition: background-color 0.5s;
@@ -24,6 +29,18 @@
     &:hover,
     &:focus {
       background-color: darken(desaturate(adjust-hue($button-yellow, -5%), 5%), 5%);
+    }
+  }
+
+  &--no-button {
+    background: transparent;
+    box-shadow: none;
+    color: $link;
+    transition: color 0.5s;
+
+    &:hover,
+    &:focus {
+      color: $link-hover;
     }
   }
 

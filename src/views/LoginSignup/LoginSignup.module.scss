@@ -1,0 +1,24 @@
+@import '../../styles/variables';
+
+.loginSignup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - #{$header-height + $footer-height + 100px});
+
+  &__header {
+    margin-bottom: 20px;
+    color: $text-light;
+    text-align: center;
+  }
+
+  &__label {
+    color: $label-color;
+  }
+
+  &__buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 23px;
+  }
+}

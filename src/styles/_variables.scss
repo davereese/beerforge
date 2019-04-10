@@ -25,17 +25,23 @@ $default-bg-1: $brown;
 $default-bg-2: $black;
 $brew-bg-1: $canary;
 $brew-bg-2: $embers;
-$default-card-bg: $coral;
-$brew-card-bg: $forsythia;
 
 $text-light: $white;
 $text-dark: $tar;
 $label-color: $gold;
 
+$link: $coral;
+$link-hover: $canary;
+
 $button-default-bg: $tar;
 $button-default-text: $canary;
 $button-yellow: $canary;
 $button-shadow: $brown;
+
+$input-bg-dark: $coral;
+
+$default-card-bg: $coral;
+$brew-card-bg: $forsythia;
 
 // FONTS
 $base-font-size: 14px;

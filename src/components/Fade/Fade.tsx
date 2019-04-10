@@ -51,4 +51,5 @@ class Fade extends React.Component<RouteComponentProps, ComponentState> {
     );
   }
 }
+
 export default withRouter(Fade);

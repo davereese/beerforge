@@ -1,6 +1,7 @@
 @import './styles/variables';
 @import './styles/type';
 @import './styles/buttons';
+@import './styles/forms';
 
 body {
   margin: 0;
@@ -12,6 +13,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-div {
+div,
+section {
   box-sizing: border-box;
 }
