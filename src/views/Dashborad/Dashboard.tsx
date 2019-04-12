@@ -5,8 +5,12 @@ import styles from './Dashboard.module.scss';
 import Card from '../../components/Card/Card';
 import UserInfo from './UserInfo/UserInfo';
 
-class Dashboard extends React.Component<any, any> {
-  constructor(props: any) {
+interface Props {
+  user: Object;
+}
+
+class Dashboard extends React.Component<Props, any> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       user: {

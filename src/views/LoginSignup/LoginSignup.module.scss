@@ -20,5 +20,124 @@
     display: flex;
     justify-content: center;
     margin-top: 23px;
+
+    input {
+      margin-right: 10px;
+    }
+  }
+
+  .container {
+    position: relative;
+    perspective: 400px;
+    width: 300px;
+    height: 475px;
+  }
+
+  .signUp,
+  .logIn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 25px;
+    transform-style: preserve-3d;
+    background-image: linear-gradient(125.4deg, transparent 30%, rgba($coral, 0.5) 50%, transparent 70%);
+    background-size: 275%;
+    background-repeat: no-repeat;
+    background-position-x: 300px;
+  }
+
+  .logIn {
+    top: 80px;
+  }
+
+  .signUp {
+    opacity: 0;
+    transform: rotateY(-180deg);
+    pointer-events: none;
+  }
+
+  .front {
+    .logIn {
+      animation: flipFront 1.4s, flashFront 1.4s;
+      animation-fill-mode: forwards;
+      display: block;
+      pointer-events: auto;
+    }
+
+    .signUp {
+      animation: flipBack 1.4s, flashBack 1.4s;
+      animation-fill-mode: forwards;
+      pointer-events: none;
+    }
+  }
+
+  .back {
+    .signUp {
+      animation: flipFront 1.4s, flashFront 1.4s;
+      animation-fill-mode: forwards;
+      display: block;
+      pointer-events: auto;
+    }
+
+    .logIn {
+      animation: flipBack 1.4s, flashBack 1.4s;
+      animation-fill-mode: forwards;
+      pointer-events: none;
+    }
+  }
+}
+
+@keyframes flipFront {
+  0% {
+    transform: rotateY(180deg);
+    opacity: 0;
+  }
+  29% {
+    opacity: 0;
+  }
+  29.5% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes flipBack {
+  0% {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+  29% {
+    opacity: 1;
+  }
+  29.5% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: rotateY(-180deg);
+  }
+}
+
+@keyframes flashBack {
+  0% {
+    background-position-x: 300px;
+  }
+  100% {
+    background-position-x: -1800px;
+  }
+}
+
+@keyframes flashFront {
+  0% {
+    background-position-x: -2200px;
+  }
+  20% {
+    background-position-x: -2200px;
+  }
+  100% {
+    background-position-x: 500px;
   }
 }

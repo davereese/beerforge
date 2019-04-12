@@ -7,20 +7,50 @@ import Fade from './components/Fade/Fade';
 import Dashboard from './views/Dashborad/Dashboard';
 import LoginSignup from './views/LoginSignup/LoginSignup';
 
-class App extends React.Component {
+// Check for logged in user
+// @ts-ignore-line
+const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+class App extends React.Component<any, any> {
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      currentUser: currentUser,
+    }
+  }
+
   render() {
+    const handleLogIn = (response: any) => {
+      this.setState({currentUser: response});
+      localStorage.setItem('currentUser', JSON.stringify(response));
+    }
+
+    const handleLogOut = () => {
+      this.setState({currentUser: null});
+      localStorage.removeItem('currentUser');
+    }
+
     return (
       <Fade>
-        <Header/>
-          <main>
-            <Switch>
-              <Route path="/" exact component={Dashboard} />
-              <Route path="/dashboard" exact component={Dashboard} />
-              <Route path="/login" exact component={LoginSignup} />
-              {/* <Route component={NoMatch} /> */}
-            </Switch>
-          </main>
-        <Footer/>
+        <Header user={this.state.currentUser} onLogout={handleLogOut} />
+        <main>
+          <Switch>
+            <Route path="/" exact component={Dashboard} />
+            <Route path="/dashboard" exact render={props => (
+              <Dashboard user={this.state.currentUser} />
+            )} />
+            <Route path="/login" exact render={props => (
+              <LoginSignup
+                onLoginSuccess={handleLogIn}
+                onSignupSuccess={handleLogIn}
+                history={props.history}
+              />
+            )} />
+            {/* <Route component={NoMatch} /> */}
+          </Switch>
+        </main>
+        <Footer />
       </Fade>
     );
   }

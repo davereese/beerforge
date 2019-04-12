@@ -2,7 +2,13 @@
 @import './utilities';
 
 label {
+  position: relative;
   font-size: px-to-rem(11px);
+  transition: color 0.3s;
+}
+
+.error {
+  color: $error-color;
 }
 
 input[type="text"],
@@ -19,6 +25,10 @@ input[type="email"] {
   border-radius: 4px;
   outline: none;
   font-size: px-to-rem(14px);
+
+  &.error {
+    border: 1px solid $error-color;
+  }
 
   &.dark {
     background-color: rgba($input-bg-dark, 0.3);
