@@ -32,6 +32,10 @@ class LoginSignup extends React.Component<any, any> {
     }
   }
 
+  flipStyles = (direction: string) => (event: any) => {
+    this.setState({flip: styles[direction]})
+  }
+
   render() {
     const handleChange = (e: any): void => {
       const type = e.target.name;
@@ -118,7 +122,7 @@ class LoginSignup extends React.Component<any, any> {
                 <button
                   type="button"
                   className="button button--no-button"
-                  onClick={() => {this.setState({flip: styles.back})}}
+                  onClick={this.flipStyles('back')}
                 >
                 Sign Up
                 </button>
@@ -196,7 +200,7 @@ class LoginSignup extends React.Component<any, any> {
                 <button
                   type="button"
                   className="button button--no-button"
-                  onClick={() => {this.setState({flip: styles.front})}}
+                  onClick={this.flipStyles('front')}
                 >
                 Log In
                 </button>

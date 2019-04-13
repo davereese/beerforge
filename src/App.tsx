@@ -36,9 +36,9 @@ class App extends React.Component<any, any> {
         <Header user={this.state.currentUser} onLogout={handleLogOut} />
         <main>
           <Switch>
-            <Route path="/" exact component={Dashboard} />
+            {/* <Route path="/" exact component={Home} /> */}
             <Route path="/dashboard" exact render={props => (
-              <Dashboard user={this.state.currentUser} />
+              <Dashboard {...props} user={this.state.currentUser} />
             )} />
             <Route path="/login" exact render={props => (
               <LoginSignup

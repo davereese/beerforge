@@ -1,4 +1,6 @@
 @import '../../styles/variables/';
+@import '../../styles/utilities';
+
 
 .header {
   display: flex;
@@ -18,6 +20,7 @@
     text-transform: uppercase;
     font-weight: $weight-medium;
     transition: color 0.5s;
+    font-size: px-to-rem(14px);
 
     &:hover,
     &:focus {

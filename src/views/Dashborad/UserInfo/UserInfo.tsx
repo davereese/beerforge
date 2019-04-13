@@ -5,8 +5,9 @@ import Avatar from '../../../components/Avatar/Avatar';
 
 interface Props {
   user: {
-    firstName: string;
-    lastName: string;
+    username: string;
+    firstname: string;
+    lastname: string;
     beers: number;
     badges: number;
     avatar?: string;
@@ -16,16 +17,19 @@ interface Props {
 function UserInfo({
   user
 }: Props) {
+  
   return(
     <div className={styles.user}>
       <div className={styles.avatarContainer}>
         <Avatar currentUser={true} />
       </div>
       <div className={styles.infoContainer}>
-        <h1 className={styles.infoContainer__header}>{user.firstName} {user.lastName}</h1>
+        <h1 className={styles.infoContainer__header}>
+          {user.username ? user.username : `${user.firstname} ${user.lastname}`}
+        </h1>
         <p className={styles.infoContainer__stats}>
-          Beers Brewed: <span>{user.beers}</span> 
-          Badges Earned: <span>{user.badges}</span>
+          Beers Brewed: <span>{user.beers ? user.beers : 0}</span> 
+          Badges Earned: <span>{user.badges ? user.badges : 0}</span>
         </p>
       </div>
     </div>

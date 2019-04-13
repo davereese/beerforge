@@ -8,16 +8,17 @@ import Avatar from '../Avatar/Avatar';
 
 interface Props extends RouteComponentProps {
   user?: any;
-  onLogout: Function;
+  onLogout: () => void;
 }
 
 function Header({
   user,
   onLogout
 }: Props) {
+
   return(
     <header className={styles.header}>
-      <Link to="/" className={styles.logoLink}>
+      <Link to={!user ? "/" : "/dashboard"} className={styles.logoLink}>
         <img src={logoImage} alt="BeerForge - Modern homebrewing" />
       </Link>
       {
@@ -26,10 +27,15 @@ function Header({
           : null
       }
       {
-        user ?
+        location.pathname !== '/dashboard' && user ?
           <div title={user.username} className={styles.header__user}>
             <Avatar currentUser={true} />
           </div>
+          : null
+      }
+      {
+        location.pathname === '/dashboard' && user ?
+          <Link to="/" className={styles.loginLink} onClick={onLogout}>Log Out</Link>
           : null
       }
     </header>
