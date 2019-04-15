@@ -24,6 +24,7 @@ class Dashboard extends React.Component<Props, any> {
 
     // TEMP STATE
     this.state = {
+      brewLogPage: 1,
       brewLog: [
         {id: 11, num: 37, name: 'Düsseldorf Altbier', date: '2019-04-12 22:59:27.595', srm: 10},
         {id: 10, num: 36, name: 'BeerForge IPA', date: '2019-04-06 22:59:27.595', srm: 7},
@@ -48,10 +49,20 @@ class Dashboard extends React.Component<Props, any> {
     console.log({brewId});
   }
 
+  togglePage = (page: number) => (event: any) => {
+    this.setState({brewLogPage: page});
+  }
+
   render() {
-    const brewLogItems = this.state.brewLog.map((brew: any) => {
+    const brewLogItems = this.state.brewLog.map((brew: any, index: number) => {
       return (
-        <ListItem key={brew.id} customClass={styles.brewLog__item} clicked={this.handleBrewClick(brew.id)}>
+        <ListItem
+          key={brew.id}
+          customClass={styles.brewLog__item}
+          data={index < 10 ? 'page1' : 'page2'}
+          clicked={this.handleBrewClick(brew.id)}
+          label="Click to see brew details"
+        >
           {brew.name} <span><FormattedDate>{brew.date}</FormattedDate></span>
         </ListItem>
       );
@@ -69,9 +80,25 @@ class Dashboard extends React.Component<Props, any> {
         <div className={styles.leftColumn}>
           <Card>
             <h2 className={styles.dashboard__label}>Brew Log</h2>
-            <List>
+            <List customClass={`${styles.brewLog} ${styles['page' + this.state.brewLogPage]}`}>
               {brewLogItems}
             </List>
+            <div className={styles.brewLog__footer}>
+              {brewLogItems.length > 10 ?
+                <div>
+                  <button
+                    className={`button button--page ${this.state.brewLogPage === 1 ? 'on' : ''}`}
+                    onClick={this.togglePage(1)}
+                  >1</button>
+                  <button
+                    className={`button button--page ${this.state.brewLogPage === 2 ? 'on' : ''}`}
+                    onClick={this.togglePage(2)}
+                  >2</button>
+                </div>
+                : null
+              }
+              <Link to="/all-brews">All Brews</Link>
+            </div>
           </Card>
         </div>
         <div className={styles.rightColumn}>

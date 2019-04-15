@@ -37,7 +37,8 @@
   }
 
   &__label {
-    padding: 15px 15px 0;
+    margin: 0;
+    padding: 15px 15px;
     font-size: px-to-rem(11px);
     font-weight: $weight-semibold;
     color: $error-color;
@@ -56,6 +57,28 @@
   }
 
   .brewLog {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 530px;
+    overflow: hidden;
+
+    li {
+      transition: margin-left 0.3s;
+    }
+
+    &.page1 {
+      li[data-custom=page1] {
+        margin-left: 0;
+      }
+    }
+
+    &.page2 {
+      li[data-custom=page1] {
+        margin-left: -100%;
+      }
+    }
+
     &__item {
       display: flex;
       justify-content: space-between;
@@ -69,6 +92,26 @@
         font-size: px-to-rem(10px);
         line-height: 0;
         letter-spacing: 0.03em;
+      }
+    }
+
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 15px;
+
+      a {
+        color: $dashboard-link;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-weight: $weight-medium;
+        transition: color 0.3s;
+    
+        &:hover,
+        &:focus {
+          color: $dashboard-link-hover;
+        }
       }
     }
   }

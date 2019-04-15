@@ -51,4 +51,29 @@
     font-style: italic;
     font-size: px-to-rem(16px);
   }
+
+  &--page {
+    margin-right: 5px;
+    padding: 5px;
+    width: 28px;
+    height: auto;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background-color: transparent;
+    text-align: center;
+    transition: color 0.3s, border-color 0.3s;
+
+    &:hover {
+      color: $button-link-hover;
+    }
+
+    &.on {
+      border-color: $button-yellow;
+      cursor: default;
+
+      &:hover {
+        border-color: $button-link-hover;
+      }
+    }
+  }
 }
