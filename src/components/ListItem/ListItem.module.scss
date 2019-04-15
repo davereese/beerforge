@@ -1,0 +1,28 @@
+@import '../../styles/variables';
+
+.listItem {
+  box-sizing: border-box;
+  padding: 17px 15px;
+  width: 100%;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  transition: background-color 0.3s;
+
+  &:hover,
+  &:focus {
+    outline: none;
+  }
+
+  &.dashboard {
+    border-color: $dashboard-border;
+
+    &:hover,
+    &:focus {
+      background-color: rgba($default-card-bg, 0.15);
+    }
+  }
+
+  &.brew {
+    
+  }
+}

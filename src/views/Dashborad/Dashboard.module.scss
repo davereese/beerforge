@@ -31,4 +31,45 @@
   .rightColumn {
     grid-area: rightColumn;
   }
+
+  .flex {
+    display: flex;
+  }
+
+  &__label {
+    padding: 15px 15px 0;
+    font-size: px-to-rem(11px);
+    font-weight: $weight-semibold;
+    color: $error-color;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__header {
+    padding: 0 15px;
+    font-size: px-to-rem(16px);
+    color: $dashboard-header;
+    font-weight: $weight-medium;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .brewLog {
+    &__item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      color: $text-light;
+
+      span {
+        padding-top: 3px;
+        color: $label-color;
+        font-size: px-to-rem(10px);
+        line-height: 0;
+        letter-spacing: 0.03em;
+      }
+    }
+  }
 }

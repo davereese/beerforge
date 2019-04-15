@@ -32,44 +32,44 @@ class LoginSignup extends React.Component<any, any> {
     }
   }
 
+  handleChange = (e: any): void => {
+    const type = e.target.name;
+    this.setState({[type]: e.target.value}, () => {
+      // Password matching validation for sign up
+      if (
+        (type === 'password1' || type === 'password2') &&
+        this.state.password2 !== '' &&
+        this.state.password1 !== this.state.password2
+      ) {
+        this.setState({error: 'noMatch'});
+      } else {
+        this.setState({error: null});
+      }
+    });
+  }
+
+  handleLogIn = (e: any): void => {
+    e.preventDefault();
+    this.logInOrSignUpUser('http://localhost:4000/api/login', {
+      username: this.state.username,
+      password: this.state.password
+    });
+  }
+
+  handleSignUp = (e: any): void => {
+    e.preventDefault();
+    this.logInOrSignUpUser('http://localhost:4000/api/users', {
+      username: this.state.newUsername,
+      password: this.state.password1,
+      email: this.state.email,
+    });
+  }
+
   flipStyles = (direction: string) => (event: any) => {
     this.setState({flip: styles[direction]})
   }
 
   render() {
-    const handleChange = (e: any): void => {
-      const type = e.target.name;
-      this.setState({[type]: e.target.value}, () => {
-        // Password matching validation for sign up
-        if (
-          (type === 'password1' || type === 'password2') &&
-          this.state.password2 !== '' &&
-          this.state.password1 !== this.state.password2
-        ) {
-          this.setState({error: 'noMatch'});
-        } else {
-          this.setState({error: null});
-        }
-      });
-    }
-
-    const handleLogIn = (e: any): void => {
-      e.preventDefault();
-      this.logInOrSignUpUser('http://localhost:4000/api/login', {
-        username: this.state.username,
-        password: this.state.password
-      });
-    }
-
-    const handleSignUp = (e: any): void => {
-      e.preventDefault();
-      this.logInOrSignUpUser('http://localhost:4000/api/users', {
-        username: this.state.newUsername,
-        password: this.state.password1,
-        email: this.state.email,
-      });
-    }
-
     return (
       <section className={styles.loginSignup}>
         <div className={`${styles.container} ${this.state.flip}`}>
@@ -89,7 +89,7 @@ class LoginSignup extends React.Component<any, any> {
                 </p>
                 : null
             }
-            <form onSubmit={handleLogIn}>
+            <form onSubmit={this.handleLogIn}>
               <label className={styles.loginSignup__label}>
                 Username<br />
                 <input
@@ -97,7 +97,7 @@ class LoginSignup extends React.Component<any, any> {
                   name="username"
                   className={`dark ${this.state.error === 404 ? 'error' : ''}`}
                   value={this.state.username}
-                  onChange={handleChange}
+                  onChange={this.handleChange}
                   required
                   autoComplete="off"
                 />
@@ -109,7 +109,7 @@ class LoginSignup extends React.Component<any, any> {
                   name="password"
                   className={`dark ${this.state.error === 401 ? 'error' : ''}`}
                   value={this.state.password}
-                  onChange={handleChange}
+                  onChange={this.handleChange}
                   required
                 />
               </label>
@@ -139,7 +139,7 @@ class LoginSignup extends React.Component<any, any> {
                 </p>
                 : null
             }
-            <form onSubmit={handleSignUp}>
+            <form onSubmit={this.handleSignUp}>
               <label className={styles.loginSignup__label}>
                 Email<br />
                 <input
@@ -149,7 +149,7 @@ class LoginSignup extends React.Component<any, any> {
                   required
                   autoComplete="off"
                   value={this.state.email}
-                  onChange={handleChange}
+                  onChange={this.handleChange}
                 />
               </label><br />
               <label className={styles.loginSignup__label}>
@@ -161,7 +161,7 @@ class LoginSignup extends React.Component<any, any> {
                   required
                   autoComplete="off"
                   value={this.state.newUsername}
-                  onChange={handleChange}
+                  onChange={this.handleChange}
                 />
               </label><br />
               <label className={styles.loginSignup__label}>
@@ -171,7 +171,7 @@ class LoginSignup extends React.Component<any, any> {
                   name="password1"
                   required
                   value={this.state.password1}
-                  onChange={handleChange}
+                  onChange={this.handleChange}
                   className={`dark ${this.state.error === 'noMatch' ? 'error' : ''}`}
                 />
               </label><br />
@@ -182,7 +182,7 @@ class LoginSignup extends React.Component<any, any> {
                   name="password2"
                   required
                   value={this.state.password2}
-                  onChange={handleChange}
+                  onChange={this.handleChange}
                   className={`dark ${this.state.error === 'noMatch' ? 'error' : ''}`}
                 />
               </label><br />
