@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, RouteComponentProps, Redirect } from 'react-router-dom';
 
 import styles from './Dashboard.module.scss';
+import calcImage from '../../resources/images/calculators.svg';
 import Card from '../../components/Card/Card';
 import UserInfo from './UserInfo/UserInfo';
 import List from '../../components/List/List';
@@ -106,7 +107,10 @@ class Dashboard extends React.Component<Props, any> {
             <h2 className={styles.dashboard__label}>Weekly Activity</h2>
           </Card>
           <Card customClass={styles.flex}>
-            <h2 className={styles.dashboard__header}>Calculators</h2>
+            <Link to="/calculators" className={styles.cardLink}>
+              <h2 className={styles.dashboard__header}>Calculators</h2>
+              <img src={calcImage} alt="calculators" />
+            </Link>
           </Card>
         </div>
       </section>

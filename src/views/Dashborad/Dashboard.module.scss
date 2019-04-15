@@ -56,6 +56,19 @@
     letter-spacing: 0.03em;
   }
 
+  .cardLink {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 15px 15px 0;
+    width: 100%;
+    text-decoration: none;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: rgba($default-card-bg, 0.15);
+    }
+  }
+
   .brewLog {
     display: flex;
     flex-direction: column;
