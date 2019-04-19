@@ -13,8 +13,8 @@ import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 interface Props extends RouteComponentProps {
   user: {
     username: string;
-    firstname: string;
-    lastname: string;
+    first_name: string;
+    last_name: string;
     beers: number;
     badges: number;
   };

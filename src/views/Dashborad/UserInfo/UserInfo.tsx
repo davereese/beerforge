@@ -6,8 +6,8 @@ import Avatar from '../../../components/Avatar/Avatar';
 interface Props {
   user: {
     username: string;
-    firstname: string;
-    lastname: string;
+    first_name: string;
+    last_name: string;
     beers: number;
     badges: number;
     avatar?: string;
@@ -25,7 +25,7 @@ function UserInfo({
       </div>
       <div className={styles.infoContainer}>
         <h1 className={styles.infoContainer__header}>
-          {user.username ? user.username : `${user.firstname} ${user.lastname}`}
+          {user.username ? user.username : `${user.first_name} ${user.last_name}`}
         </h1>
         <p className={styles.infoContainer__stats}>
           Beers Brewed: <span>{user.beers ? user.beers : 0}</span> 
