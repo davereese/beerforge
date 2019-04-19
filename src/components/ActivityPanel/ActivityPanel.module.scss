@@ -1,0 +1,35 @@
+@import '../../styles/variables';
+@import '../../styles/utilities';
+
+
+.ActivityPanel {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0 15px 15px;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0 5px;
+    width: 144px;
+    height: 234px;
+
+    @include for-tablet-landscape-up {
+      width: 234px;
+      height: 144px;
+    }
+
+    @include for-desktop-up {
+      width: 468px;
+      height: 72px;
+    }
+  }
+
+  .year {
+    padding-bottom: 1px;
+    color: $label-color;
+    font-size: px-to-rem(10px);
+  }
+}

@@ -1,0 +1,12 @@
+@import '../../../styles/variables';
+
+.Activity {
+  margin: 3px;
+  width: 12px;
+  height: 12px;
+  background-color: rgba($default-card-bg, 0.25);
+
+  &.active {
+    background-color: $canary;
+  }
+}

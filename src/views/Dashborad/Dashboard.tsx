@@ -8,6 +8,7 @@ import UserInfo from './UserInfo/UserInfo';
 import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
+import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 
 interface Props extends RouteComponentProps {
   user: {
@@ -34,7 +35,7 @@ class Dashboard extends React.Component<Props, any> {
         {id: 7, num: 33, name: 'Gluen Free Pale Ale', date: '2019-02-21 22:59:27.595', srm: 3},
         {id: 6, num: 32, name: 'Hazy Little Thing', date: '2019-01-01 22:59:27.595', srm: 7},
         {id: 5, num: 31, name: 'Saison DuPont', date: '2018-12-11 22:59:27.595', srm: 2},
-        {id: 4, num: 30, name: '90 Shilling', date: '2018-10-09 22:59:27.595', srm: 9},
+        {id: 4, num: 30, name: '90 Shilling', date: '2018-10-09 22:59:27.595', srm: 16},
         {id: 3, num: 29, name: 'Sea Quench', date: '2018-09-14 22:59:27.595', srm: 3},
         {id: 2, num: 28, name: 'Goze', date: '2018-07-20 22:59:27.595', srm: 3},
         {id: 1, num: 27, name: 'Pale Ale', date: '2018-04-06 22:59:27.595', srm: 5},
@@ -105,6 +106,7 @@ class Dashboard extends React.Component<Props, any> {
         <div className={styles.rightColumn}>
           <Card>
             <h2 className={styles.dashboard__label}>Weekly Activity</h2>
+            <ActivityPanel brews={this.state.brewLog} />
           </Card>
           <Card customClass={styles.flex}>
             <Link to="/calculators" className={styles.cardLink}>
