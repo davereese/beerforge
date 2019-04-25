@@ -30,7 +30,7 @@ function ActivityPanel({
       let names: Array<string> = [];
       const weekDate = dateOfWeeksAgo(today, i);
       brews.forEach((brew: any) => {
-        const weeksAgo = weeksBetween(new Date(brew.date), today);
+        const weeksAgo = weeksBetween(new Date(brew.date_brewed), today);
         if (weeksAgo === i) {
           color = brew.srm;
           names.push(brew.name);

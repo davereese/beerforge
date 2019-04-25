@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, RouteComponentProps, Redirect } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
+import axios from 'axios';
 
 import styles from './Dashboard.module.scss';
 import calcImage from '../../resources/images/calculators.svg';
@@ -27,24 +28,28 @@ class Dashboard extends React.Component<Props, any> {
     // TEMP STATE
     this.state = {
       brewLogPage: 1,
-      brewLog: [
-        {id: 11, num: 37, name: 'Düsseldorf Altbier', date: '2019-04-12 22:59:27.595', srm: 10},
-        {id: 10, num: 36, name: 'BeerForge IPA', date: '2019-04-06 22:59:27.595', srm: 7},
-        {id: 9, num: 35, name: 'Protection Spells', date: '2019-04-01 22:59:27.595', srm: 11},
-        {id: 8, num: 34, name: 'Mango Pale Ale', date: '2019-03-10 22:59:27.595', srm: 6},
-        {id: 7, num: 33, name: 'Gluen Free Pale Ale', date: '2019-02-21 22:59:27.595', srm: 3},
-        {id: 6, num: 32, name: 'Hazy Little Thing', date: '2019-01-01 22:59:27.595', srm: 7},
-        {id: 5, num: 31, name: 'Saison DuPont', date: '2018-12-11 22:59:27.595', srm: 2},
-        {id: 4, num: 30, name: '90 Shilling', date: '2018-10-09 22:59:27.595', srm: 16},
-        {id: 3, num: 29, name: 'Sea Quench', date: '2018-09-14 22:59:27.595', srm: 3},
-        {id: 2, num: 28, name: 'Goze', date: '2018-07-20 22:59:27.595', srm: 3},
-        {id: 1, num: 27, name: 'Pale Ale', date: '2018-04-06 22:59:27.595', srm: 5},
-      ]
+      brewLog: []
+    }
+  }
+
+  async listUserBrews() {
+    try {
+      // @ts-ignore-line
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const authHeaders = {'authorization': currentUser ? currentUser.token : null};
+      await axios.get('http://localhost:4000/api/brews', {
+        headers: authHeaders,
+      }).then(result => {
+        this.setState({brewLog: result.data});
+      });
+    } catch (error) {
+      this.setState({error: error.response.status});
     }
   }
 
   componentDidMount() {
     document.title = "BeerForge | Dashboard";
+    this.listUserBrews();
   }
 
   handleBrewClick = (brewId: number) => (event: any) => {
@@ -56,24 +61,34 @@ class Dashboard extends React.Component<Props, any> {
   }
 
   render() {
-    const brewLogItems = this.state.brewLog.map((brew: any, index: number) => {
-      return (
-        <ListItem
-          key={brew.id}
-          customClass={styles.brewLog__item}
-          data={index < 10 ? 'page1' : 'page2'}
-          clicked={this.handleBrewClick(brew.id)}
-          label="Click to see brew details"
-        >
-          {brew.name} <span><FormattedDate>{brew.date}</FormattedDate></span>
-        </ListItem>
-      );
-    });
+    const brewLogItems = this.state.brewLog.length > 0
+      ? this.state.brewLog.map((brew: any, index: number) => {
+        if (index <= 19) {
+          return (
+            <ListItem
+              key={brew.id}
+              customClass={styles.brewLog__item}
+              data={index < 10 ? 'page1' : 'page2'}
+              clicked={this.handleBrewClick(brew.id)}
+              label="Click to see brew details"
+            >
+              {brew.name} <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
+            </ListItem>
+          );
+        }
+      })
+      : <li className={styles.noBrews}>
+          <Link
+            to="brew"
+            className="button"
+          >Get Brewing!</Link>
+        </li>
+    ;
 
     return (
       <section className={styles.dashboard}>
         <div className={styles.topRow}>
-          <UserInfo user={this.props.user} />
+          <UserInfo user={this.props.user} brews={this.state.brewLog} />
           <Link
             to="brew"
             className="button button--large button--yellow"
@@ -86,19 +101,19 @@ class Dashboard extends React.Component<Props, any> {
               {brewLogItems}
             </List>
             <div className={styles.brewLog__footer}>
-              {brewLogItems.length > 10 ?
                 <div>
                   <button
                     className={`button button--page ${this.state.brewLogPage === 1 ? 'on' : ''}`}
                     onClick={this.togglePage(1)}
                   >1</button>
-                  <button
-                    className={`button button--page ${this.state.brewLogPage === 2 ? 'on' : ''}`}
-                    onClick={this.togglePage(2)}
-                  >2</button>
+                  {brewLogItems.length > 10 ?
+                    <button
+                      className={`button button--page ${this.state.brewLogPage === 2 ? 'on' : ''}`}
+                      onClick={this.togglePage(2)}
+                    >2</button>
+                    : null
+                  }
                 </div>
-                : null
-              }
               <Link to="/all-brews">All Brews</Link>
             </div>
           </Card>
