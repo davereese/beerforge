@@ -23,6 +23,14 @@
   }
 
   &.brew {
-    
+    border-color: rgba($stat-border, 0.5);
+
+    &:last-child {
+      border: none;
+    }
+
+    &:hover {
+      background-color: rgba($brew-list-hover, 0.4);
+    }
   }
 }

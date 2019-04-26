@@ -1,0 +1,169 @@
+@import '../../styles/variables';
+@import '../../styles/utilities';
+
+.brew {
+  display: grid;
+  padding-bottom: 50px;
+  margin: 0 auto;
+  width: 800px;
+
+  .new {
+    border-top: 5px solid $brew-card-bg;
+  }
+
+  .settings {
+    color: $text-dark;
+    font-weight: $weight-medium;
+    font-size: px-to-rem(12px);
+
+    &:hover {
+      color: $link-hover;
+    }
+  }
+
+  &__pageHeading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 15px;
+  }
+
+  &__numbers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+  }
+
+  &__numbersList {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+
+    li {
+      margin: 12px 0;
+      font-weight: $weight-semibold;
+    }
+  }
+
+  &__stats {
+    display: flex;
+    margin: 20px 0;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 12px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 1px solid rgba($stat-border, 0.5);
+    background-color: rgba($stat-background, 0.4);
+    text-align: center;
+
+    .value {
+      min-height: 35px;
+      font-size: px-to-rem(24px);
+      font-weight: $weight-light;
+    }
+
+    .label {
+      font-weight: $weight-semibold;
+    }
+
+    .srmSwatch {
+      display: inline-block;
+      margin-right: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid $stat-background;
+      transform: translateY(-3px);
+    }
+  }
+
+  &__header {
+    display: flex;
+
+    h2,
+    span {
+      display: block;
+      box-sizing: border-box;
+      padding: 15px;
+      margin: 0;
+      width: 33.3%;
+      font-weight: $weight-medium;
+      font-size: px-to-rem(15px);
+      text-transform: uppercase;
+    }
+
+    span {
+      text-align: center;
+      text-transform: none;
+      color: $brew-callout;
+    }
+  }
+
+  &__ingredients {
+    li {
+      display: grid;
+      grid-template-columns: 16% 42% 14% 14% auto;
+    }
+  }
+
+  &__section {
+    position: relative;
+    border-bottom: 1px solid rgba($stat-border, 0.5);
+
+    .section__values {
+      display: grid;
+      grid-template-columns: 30% 20% 20% 30%;
+      padding: 15px 15px 25px;
+    }
+
+    .section__stats {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      left: 69%;
+      transform: translateY(-50px);
+
+      .brew__stat {
+        width: 78px;
+        height: 78px;
+        margin: 0;
+
+        .value {
+          margin-top: 4px;
+          min-height: 25px;
+          font-size: px-to-rem(17px);
+          font-weight: $weight-regular;
+        }
+      }
+
+      .arrow {
+        margin: 5px;
+        width: 24px;
+        height: 14px;
+        background-image: url('../../resources/images/arrow.svg');
+      }
+    }
+  }
+
+  &__notes {
+    margin: 0 15px 35px;
+    line-height: 1.6;
+
+    p {
+      margin-top: 0;
+    }
+  }
+
+  .saveButton {
+    width: 300px;
+    margin: 0 auto;
+  }
+}

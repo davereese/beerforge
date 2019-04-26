@@ -25,7 +25,6 @@ class Dashboard extends React.Component<Props, any> {
   constructor(props: Props) {
     super(props);
 
-    // TEMP STATE
     this.state = {
       brewLogPage: 1,
       brewLog: []

@@ -6,6 +6,7 @@ import Footer from './components/Footer/Footer';
 import Fade from './components/Fade/Fade';
 import Dashboard from './views/Dashborad/Dashboard';
 import LoginSignup from './views/LoginSignup/LoginSignup';
+import Brew from './views/Brew/Brew';
 
 // Check for logged in user
 // @ts-ignore-line
@@ -47,6 +48,7 @@ class App extends React.Component<any, any> {
                 history={props.history}
               />
             )} />
+            <Route path="/brew" component={Brew} />
             {/* <Route component={NoMatch} /> */}
           </Switch>
         </main>

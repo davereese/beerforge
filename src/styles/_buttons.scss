@@ -20,6 +20,11 @@
   text-transform: uppercase;
   transition: background-color 0.5s;
 
+  &:hover,
+  &:focus {
+    background-color: darken(desaturate(adjust-hue($button-default-bg, -5%), 5%), 5%);
+  }
+
   // COLORS
   &--yellow {
     box-shadow: 0 10px 30px rgba($black, 0.15);
@@ -41,6 +46,24 @@
     &:hover,
     &:focus {
       color: $link-hover;
+      background: transparent;
+    }
+  }
+
+  &--link {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    color: $link;
+    transition: color 0.5s;
+
+    &:hover,
+    &:focus {
+      color: $link-hover;
+      background: transparent;
     }
   }
 
