@@ -3,9 +3,48 @@
 
 .brew {
   display: grid;
+  grid-template-columns: 66.7% calc(33.3% - 20px);
+  grid-template-areas: 'main aside';
+  grid-column-gap: 20px;
   padding-bottom: 50px;
   margin: 0 auto;
-  width: 800px;
+  width: 100%;
+  max-width: 1200px;
+  transform: translateX(16.65%);
+  transition: transform 0.5s;
+  perspective: 1000px;
+
+  .mainContent {
+    grid-area: main;
+    max-width: 800px;
+  }
+
+  .sideBar {
+    box-sizing: border-box;
+    grid-area: aside;
+    padding-top: 54px;
+    max-width: 380px;
+    opacity: 0;
+    transform-style: preserve-3d;
+    transform: translate3d(60px, 50px, 350px) rotate3d(0, 1, 0, -110deg);
+    transition: opacity 0.5s, transform 0.5s ease-in;
+    // transition-delay: 0.05s;
+  }
+
+  &.open {
+    transform: translateX(0);
+    transition: transform 0.7s;
+
+    .sideBar {
+      opacity: 1;
+      transform: rotate3d(0, 1, 0, 0deg);
+      transition: opacity 0.7s, transform 0.7s ease;
+    }
+  }
+
+  .formsContainer {
+    padding: 15px;
+  }
 
   .new {
     border-top: 5px solid $brew-card-bg;
@@ -124,6 +163,10 @@
       padding: 15px 15px 25px;
     }
 
+    .withStats {
+      min-height: 60px;
+    }
+
     .section__stats {
       display: flex;
       align-items: center;
@@ -154,7 +197,8 @@
   }
 
   &__notes {
-    margin: 0 15px 35px;
+    margin: 0 15px;
+    padding-bottom: 35px;
     line-height: 1.6;
 
     p {
@@ -163,7 +207,9 @@
   }
 
   .saveButton {
+    position: relative;
     width: 300px;
-    margin: 0 auto;
+    left: 50%;
+    margin-left: -150px;
   }
 }
