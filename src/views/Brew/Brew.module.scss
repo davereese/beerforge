@@ -26,19 +26,18 @@
     max-width: 380px;
     opacity: 0;
     transform-style: preserve-3d;
-    transform: translate3d(60px, 50px, 350px) rotate3d(0, 1, 0, -110deg);
-    transition: opacity 0.5s, transform 0.5s ease-in;
-    // transition-delay: 0.05s;
+    transform: rotate3d(0, 1, 0, -115deg) rotateZ(5deg) rotateX(-0.6deg);
+    transform-origin: bottom center 100px;
+    transition: opacity 0.5s, transform 0.5s cubic-bezier(.53,.01,.4,.99);
   }
 
   &.open {
     transform: translateX(0);
-    transition: transform 0.7s;
 
     .sideBar {
       opacity: 1;
-      transform: rotate3d(0, 1, 0, 0deg);
-      transition: opacity 0.7s, transform 0.7s ease;
+      transform: rotate3d(0, 1, 0, 0deg) rotateZ(0deg);
+      transition: opacity 0.5s, transform 0.5s cubic-bezier(.19,.19,.04,.99);
     }
   }
 
