@@ -14,6 +14,7 @@
   outline: none;
   color: $button-default-text;
   font-weight: $weight-semibold;
+  font-family: $montserrat;
   font-size: px-to-rem(13px);
   letter-spacing: 0.03em;
   text-decoration: none;
@@ -96,6 +97,44 @@
 
       &:hover {
         border-color: $button-link-hover;
+      }
+    }
+  }
+
+  &--icon {
+    position: relative;
+    padding: 0;
+    width: 27px;
+    height: 27px;
+
+    span {
+      visibility: hidden;
+    }
+
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 27px;
+      height: 27px;
+    }
+
+    &.plus {
+      &::before {
+        content: '+';
+        color: $button-yellow;
+        font-size: px-to-rem(31px);
+        line-height: 0.8;
+        font-weight: $weight-light;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      &.plus {
+        &::before {
+          color: $white;
+        }
       }
     }
   }

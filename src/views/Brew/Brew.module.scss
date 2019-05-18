@@ -43,6 +43,15 @@
 
   .formsContainer {
     padding: 15px;
+    position: relative;
+
+    .sideBarClose {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: darken($brew-callout, 9%);
+      font-size: px-to-rem(12px);
+    }
   }
 
   .new {
@@ -81,6 +90,21 @@
     li {
       margin: 12px 0;
       font-weight: $weight-semibold;
+    }
+  }
+
+  .edit {
+    svg {
+      width: 15px;
+      height: 15px;
+      margin-left: 8px;
+      fill: $brew-callout;
+    }
+
+    &:hover {
+      svg {
+        fill: darken($brew-callout, 9%);
+      }
     }
   }
 
@@ -125,6 +149,7 @@
 
   &__header {
     display: flex;
+    position: relative;
 
     h2,
     span {
@@ -205,9 +230,16 @@
     }
   }
 
+  .editButton {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+  }
+
   .saveButton {
     position: relative;
-    width: 300px;
+    padding: 0 20px;
+    width: 280px;
     left: 50%;
     margin-left: -150px;
   }
