@@ -14,11 +14,13 @@ label {
 input[type="text"],
 input[type="number"],
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+select {
   display: inline-block;
   box-sizing: border-box;
   margin: 5px 0 10px;
   padding: 0 15px;
+  width: 100%;
   min-width: 250px;
   height: 42px;
   border: none;
@@ -34,4 +36,8 @@ input[type="email"] {
     background-color: rgba($input-bg-dark, 0.3);
     color: $text-light;
   }
+}
+
+select {
+  appearance: none;
 }

@@ -1,5 +1,6 @@
 @import '../../styles/variables';
 @import '../../styles/utilities';
+@import '../../styles/type';
 
 .brew {
   display: grid;
@@ -52,6 +53,21 @@
       color: darken($brew-callout, 9%);
       font-size: px-to-rem(12px);
     }
+
+    &__footer {
+      display: flex;
+      margin-top: 15px;
+      font-size: px-to-rem(11px);
+
+      button {
+        margin-right: 10px;
+      }
+
+      button:last-child {
+        margin-left: auto;
+        margin-right: 0;
+      }
+    }
   }
 
   .new {
@@ -72,7 +88,30 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 15px;
+    margin-bottom: 7px;
+
+    h1 {
+      button {
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      &:hover,
+      &:focus {
+        button {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .nameInput {
+    border: 0;
+    background: transparent;
+    outline: none;
+    padding: 0;
+    @extend h1;
+    font-family: $montserrat;
   }
 
   &__numbers {
@@ -90,6 +129,17 @@
     li {
       margin: 12px 0;
       font-weight: $weight-semibold;
+
+      button.edit {
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      &:hover {
+        button.edit {
+          opacity: 1;
+        }
+      }
     }
   }
 
@@ -174,6 +224,20 @@
     li {
       display: grid;
       grid-template-columns: 16% 42% 14% 14% auto;
+    }
+  }
+
+  &__editingSection,
+  &__section {
+    button.editButton {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    &:hover {
+      button.editButton {
+        opacity: 1;
+      }
     }
   }
 

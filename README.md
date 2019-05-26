@@ -11,6 +11,12 @@ React SPA bootstrapped with `create-react-app` that includes:
 
 ___
 
+## System Requirements
+
+- node 11.6.0
+
+___
+
 ## Available Scripts
 
 - `npm start` (Open [http://localhost:3000](http://localhost:3000) to view it in the browser.)
