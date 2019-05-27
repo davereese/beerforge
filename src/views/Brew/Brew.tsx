@@ -9,8 +9,12 @@ import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
 import { pen } from '../../resources/javascript/penSvg.js';
 import FormSelector from './FormSelector/FormSelector';
+import { brew } from '../../Store/BrewProvider';
 
-interface Props extends RouteComponentProps {}
+interface Props extends RouteComponentProps {
+  brew: brew;
+  updateBrew: Function;
+}
 
 class Brew extends React.Component<Props, any> {
   private brewContainer = React.createRef<HTMLDivElement>();
@@ -22,9 +26,6 @@ class Brew extends React.Component<Props, any> {
       sideBarOpen: false,
       editingName: false,
       topSpacing: 0,
-      brew: {
-        name: '',
-      },
       form: '',
     }
   }
@@ -84,7 +85,7 @@ class Brew extends React.Component<Props, any> {
             <h1>
               {!this.state.editingName
                 ? <>
-                    {this.state.brew.name === '' ? 'New Brew' : this.state.brew.name}
+                    {this.props.brew.name === '' ? 'New Brew' : this.props.brew.name}
                     <button
                       className={`button button--link ${styles.edit}`}
                       onClick={() =>
@@ -96,9 +97,9 @@ class Brew extends React.Component<Props, any> {
                   </>
                 : <input
                     className={styles.nameInput}
-                    value={this.state.brew.name}
+                    value={this.props.brew.name}
                     ref={this.nameInput}
-                    onChange={(e) => this.setState({brew: {name: e.currentTarget.value}})}
+                    onChange={(e) => this.props.updateBrew({name: e.currentTarget.value})}
                     onBlur={() => this.setState({editingName: false})}
                   />
               }
@@ -108,6 +109,7 @@ class Brew extends React.Component<Props, any> {
               onClick={this.openSideBar('settings')}
             >Settings</button>
           </div>
+          {this.props.staticContext}
           <Card color="brew" customClass={styles.new}>
             <div className={styles.brew__numbers}>
               <ul className={styles.brew__numbersList}>

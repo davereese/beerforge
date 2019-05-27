@@ -48,7 +48,10 @@ class App extends React.Component<any, any> {
                 history={props.history}
               />
             )} />
-            <Route path="/brew" component={Brew} />
+            <Route path="/brew" render={props => (
+              // @ts-ignore-line
+              <Brew {...{props}} {...this.props} />
+            )} />
             {/* <Route component={NoMatch} /> */}
           </Switch>
         </main>

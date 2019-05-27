@@ -5,10 +5,16 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import Provider from './Store/BrewProvider';
+import Consumer from './Store/BrewConsumer';
 
 ReactDOM.render(
   <BrowserRouter>
-    <App />
+    <Provider>
+      <Consumer>
+        <App />
+      </Consumer>
+    </Provider>
   </BrowserRouter>,
   document.getElementById('root')
 );
