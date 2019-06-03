@@ -15,7 +15,8 @@ input[type="text"],
 input[type="number"],
 input[type="password"],
 input[type="email"],
-select {
+select,
+textarea {
   display: inline-block;
   box-sizing: border-box;
   margin: 5px 0 10px;
@@ -40,4 +41,96 @@ select {
 
 select {
   appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' class='svg-triangle' width='10' height='10'><path d='M 5,6 10,0 0,0 z' fill='rgb(46, 25, 34)' /></svg>");
+  background-position: calc(100% - 15px) 19px;
+  background-repeat: no-repeat;
+}
+
+select::-ms-expand {
+  display: none; /* hide the default arrow in ie10 and ie11 */
+}
+
+textarea {
+  padding: 15px;
+  max-width: 100%;
+  min-width: 100%;
+  min-height: 100px;
+  max-height: 500px;
+  height: auto;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+input[type="checkbox"] {
+  +label {
+    display: flex;
+    align-items: center;
+    padding: 8px 0 11px;
+    height: 22px;
+    cursor: pointer;
+
+    &::before {
+      content: '';
+      position: relative;
+      display: block;
+      margin-right: 5px;
+      width: 22px;
+      height: 22px;
+      border-radius: 2px;
+      background-color: rgba($button-brown-bg, 0.3);
+    }
+  }
+
+  &:checked {
+    +label::before {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'><path d='M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z' fill='rgb(46, 25, 34)'/></svg>");
+      background-position: 3px 4px;
+      background-repeat: no-repeat;
+    }
+  }
+}
+
+// toggle mode
+input[type="checkbox"].toggle {
+  +label {
+    &::before {
+      display: none;
+    }
+  
+    .toggle {
+      display: inline-block;
+      position: relative;
+      margin: 0 5px;
+      width: 50px;
+      height: 30px;
+      border: none;
+      border-radius: 3px;
+      background-color: $button-default-bg;
+      outline: none;
+      vertical-align: middle;
+      font-size: 1rem;
+      cursor: pointer;
+
+      &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        margin-top: 4px;
+        left: 4px;
+        width: 22px;
+        height: 22px;
+        border-radius: 2px;
+        background-color: $button-brown-bg;
+        transition: left 0.3s;
+      }
+    }
+  }
+
+  &:checked {
+    +label .toggle::before {
+      left: 24px;
+    }
+  }
 }

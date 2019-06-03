@@ -1,0 +1,53 @@
+@import '../../../styles/variables';
+@import '../../../styles/utilities';
+
+.formContainer {
+  color: $text-dark;
+
+  .sideBarClose {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: darken($brew-callout, 9%);
+    font-size: px-to-rem(12px);
+  }
+
+  h2 {
+    margin-bottom: 15px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+    background-color: $brew-card-bg;
+    font-size: px-to-rem(13px);
+    color: $text-dark;
+
+    &::placeholder {
+      color: $placeholder-dark;
+      font-weight: $weight-light;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    margin-top: 15px;
+    font-size: px-to-rem(11px);
+
+    button {
+      margin-right: 10px;
+    }
+
+    button:last-child {
+      margin-left: auto;
+      margin-right: 0;
+    }
+  }
+
+  input[type="checkbox"] {
+    +label::before {
+      background-color: $brew-card-bg;
+    }
+  }
+}

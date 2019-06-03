@@ -1,18 +1,17 @@
-import React, { RefObject } from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import axios from 'axios';
 
 import styles from './Brew.module.scss';
 import Card from '../../components/Card/Card';
-import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
 import { pen } from '../../resources/javascript/penSvg.js';
-import FormSelector from './FormSelector/FormSelector';
-import { brew } from '../../Store/BrewProvider';
+import FormHandler from './FormHandler/FormHandler';
+import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props extends RouteComponentProps {
-  brew: brew;
+  brew: BrewInterface;
   updateBrew: Function;
 }
 
@@ -57,6 +56,11 @@ class Brew extends React.Component<Props, any> {
     this.setState({form: choice});
   }
 
+  closeSidebar = () => {
+    this.setState({sideBarOpen: false});
+    window.setTimeout(() => {this.setState({form: null})}, 500);
+  }
+
   nextForm = (event: any) => {
     const formOrder = [
       'settings', 'fermentables', 'hops', 'yeast', 'mash',
@@ -67,7 +71,21 @@ class Brew extends React.Component<Props, any> {
     }
   }
 
+  transformNotes = () => {
+    if (this.props.brew.notes) {
+      return {__html: this.props.brew.notes.replace(/\n/g, '<br>')};
+    }
+  }
+
+  parseStringValues = (string: string | undefined) => {
+    if (typeof string !== 'string') { return ''};
+    let newString = string.charAt(0).toUpperCase() + string.slice(1)
+    return newString.replace(/([a-z])([A-Z])/g, '$1 $2')
+  }
+
   render() {
+    const {brew, updateBrew} = this.props;
+
     const top = {
       marginTop: this.state.topSpacing
     };
@@ -85,7 +103,7 @@ class Brew extends React.Component<Props, any> {
             <h1>
               {!this.state.editingName
                 ? <>
-                    {this.props.brew.name === '' ? 'New Brew' : this.props.brew.name}
+                    {brew.name === '' ? 'New Brew' : brew.name}
                     <button
                       className={`button button--link ${styles.edit}`}
                       onClick={() =>
@@ -97,9 +115,9 @@ class Brew extends React.Component<Props, any> {
                   </>
                 : <input
                     className={styles.nameInput}
-                    value={this.props.brew.name}
+                    value={brew.name}
                     ref={this.nameInput}
-                    onChange={(e) => this.props.updateBrew({name: e.currentTarget.value})}
+                    onChange={(e) => updateBrew({name: e.currentTarget.value})}
                     onBlur={() => this.setState({editingName: false})}
                   />
               }
@@ -114,21 +132,21 @@ class Brew extends React.Component<Props, any> {
             <div className={styles.brew__numbers}>
               <ul className={styles.brew__numbersList}>
                 <li>
-                    Brew Method:
-                    <button
-                      className={`button button--link ${styles.edit}`}
-                      onClick={this.openSideBar('settings')}
-                    >{pen}</button>
-                </li>
-                <li>
-                  Batch Size:
+                  Brew Method: {this.parseStringValues(brew.batchType)}
                   <button
                     className={`button button--link ${styles.edit}`}
                     onClick={this.openSideBar('settings')}
                   >{pen}</button>
                 </li>
                 <li>
-                  System Efficiency:
+                  Batch Size: {brew.batchSize ? `${brew.batchSize} gal` : null}
+                  <button
+                    className={`button button--link ${styles.edit}`}
+                    onClick={this.openSideBar('settings')}
+                  >{pen}</button>
+                </li>
+                <li>
+                  System Efficiency: {brew.systemEfficiency ? `${brew.systemEfficiency}%` : null}
                   <button
                     className={`button button--link ${styles.edit}`}
                     onClick={this.openSideBar('settings')}
@@ -233,9 +251,18 @@ class Brew extends React.Component<Props, any> {
               </div>
               <div className={styles.section__values}>
                 {/* <span>Strike with <strong>5.5 gal</strong> at <strong>160° F</strong></span>
-                <span>Mash for <strong>90 min</strong></span>
-                <span>Mash at <strong>149° F</strong></span>
-                <span>Sparge with <strong>8.3 gal</strong> at <strong>168° F</strong></span> */}
+                <span>Mash at <strong>149° F</strong></span> */}
+                <span>{brew.strikeTemp
+                  ? <>Strike with <strong>XX gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
+                  : null}
+                </span>
+                <span>
+                  {brew.mashLength ? <>Mash for <strong>{brew.mashLength} min</strong></> : null}
+                </span>
+                <span></span>
+                <span>
+                  {brew.spargeTemp ? <>Sparge with <strong>XX gal</strong> at <strong>{brew.spargeTemp}° F</strong></> : null}
+                </span>
               </div>
             </div>
             <div className={styles.brew__section}>
@@ -247,9 +274,10 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={`${styles.section__values} ${styles.withStats}`}>
-                {/* <span>Boil Time: <strong>60 min</strong></span>
-                <span>Boil Size: <strong>7.5 gal</strong></span> */}
-                <div></div>
+                <span>{brew.boilLength ? <>Boil Time: <strong>{brew.boilLength} min</strong></> : null}</span>
+                {/* <span>Boil Size: <strong>7.5 gal</strong></span> */}
+                <span></span>
+                <span></span>
                 <div className={styles.section__stats}>
                   <div className={styles.brew__stat}>
                     <span className={styles.value}></span>
@@ -272,13 +300,15 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={`${styles.section__values} ${styles.withStats}`}>
-                <div>
-                  {/* <span>Length: <strong>14 days</strong></span> */}
-                </div>
-                <div>
-                  {/* <span>Temp: <strong>65° F</strong></span> */}
-                </div>
-                <div></div>
+                <span>
+                  {brew.primaryLength ? <>Primary Length: <strong>{brew.primaryLength} days</strong></> : null}
+                  {brew.secondaryLength ? <><br />Secondary Length: <strong>{brew.secondaryLength} days</strong></> : null}
+                </span>
+                <span>
+                  {brew.primaryTemp ? <>Temp: <strong>{brew.primaryTemp}° F</strong></> : null}
+                  {brew.secondaryTemp ? <><br />Temp: <strong>{brew.secondaryTemp}° F</strong></> : null}
+                </span>
+                <span></span>
                 <div className={styles.section__stats}>
                   <div className={styles.brew__stat}>
                     <span className={styles.value}></span>
@@ -301,10 +331,16 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={styles.section__values}>
-                {/* <span><strong>Kegged/Forced</strong></span>
-                <span>CO2 Vol: <strong>2.3</strong></span>
-                <span>Temp: <strong>34° F</strong></span>
-                <span>Pressure: <strong>7.26 psi</strong></span> */}
+                <span>{brew.packagingType && brew.carbonationMethod
+                  ? <strong>{this.parseStringValues(brew.packagingType)}/{this.parseStringValues(brew.carbonationMethod)}</strong>
+                  : null}
+                </span>
+                <span>{brew.co2VolumeTarget ? <>CO2 Vol: <strong>{brew.co2VolumeTarget}</strong></> : null}</span>
+                <span>{brew.beerTemp ? <>Temp: <strong>{brew.beerTemp}° F</strong></> : null}</span>
+                <span>{brew.amountForCO2
+                  ? <>Pressure: <strong>{brew.amountForCO2} {brew.packagingType === 'kegged' ? 'psi' : 'oz'}</strong></>
+                  : null}
+                </span>
               </div>
             </div>
             <div className={styles.brew__section}>
@@ -316,7 +352,10 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={styles.brew__notes}>
-                {/* <p></p> */}
+                {this.props.brew.notes
+                  ? <div dangerouslySetInnerHTML={this.transformNotes()} />
+                  : null
+                }
               </div>
             </div>
           </Card>
@@ -327,27 +366,12 @@ class Brew extends React.Component<Props, any> {
         </div>
         <div className={styles.sideBar} role="complementary">
           <Card color="brew" customStyle={top} customClass={`${styles.formsContainer}`}>
-            <button
-              className={`button button--link ${styles.sideBarClose}`}
-              onClick={() => this.setState({sideBarOpen: false})}
-            >Done</button>
-            <FormSelector form={this.state.form} />
-            <div className={styles.formsContainer__footer}>
-              <button
-                className="button button--green button--no-shadow"
-                onClick={() => {}}
-              >Submit</button>
-              <button
-                className="button button--brown button--no-shadow"
-                onClick={() => this.setState({sideBarOpen: false})}
-              >Cancel</button>
-              {this.state.form !== 'notes' ?
-                <button
-                  className="button button--no-shadow"
-                  onClick={this.nextForm}
-                >Next</button>
-              : <br />}
-            </div>
+            <FormHandler
+              {...this.props}
+              form={this.state.form}
+              nextForm={this.nextForm}
+              closeSidebar={this.closeSidebar}
+            />
           </Card>
         </div>
       </section>

@@ -45,29 +45,6 @@
   .formsContainer {
     padding: 15px;
     position: relative;
-
-    .sideBarClose {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      color: darken($brew-callout, 9%);
-      font-size: px-to-rem(12px);
-    }
-
-    &__footer {
-      display: flex;
-      margin-top: 15px;
-      font-size: px-to-rem(11px);
-
-      button {
-        margin-right: 10px;
-      }
-
-      button:last-child {
-        margin-left: auto;
-        margin-right: 0;
-      }
-    }
   }
 
   .new {
@@ -249,6 +226,7 @@
       display: grid;
       grid-template-columns: 30% 20% 20% 30%;
       padding: 15px 15px 25px;
+      line-height: 1.5;
     }
 
     .withStats {
