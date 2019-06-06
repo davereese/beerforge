@@ -15,6 +15,7 @@ import NotesForm from '../../../components/Forms/NotesForm';
 interface Props {
   form: string;
   nextForm: any;
+  editingData: any;
   closeSidebar: any;
   updateBrew: Function;
   brew: BrewInterface;
@@ -24,6 +25,7 @@ function FormHandler({
   form,
   nextForm,
   brew,
+  editingData,
   closeSidebar,
   updateBrew,
 }: Props) {
@@ -31,7 +33,7 @@ function FormHandler({
   let title: string,
       component: ReactElement | null,
       submitText: string;
-  const [formData, setFormData] = useState<BrewInterface | null>({});
+  const [formData, setFormData] = useState<BrewInterface | null>(null);
 
   // Stuff that isn't supposed to be part of the brew
   const [optionData, setOptionData] = useState<any | null>({});
@@ -54,6 +56,21 @@ function FormHandler({
     nextForm();
   };
 
+  const handleDelete = () => {
+    // @ts-ignore-line
+    let ingredientArray = [...formData[form]];
+    let dataToSet: any = [];
+    const index = ingredientArray.findIndex(ingredient => ingredient === editingData);
+
+    if (index > -1) {
+      dataToSet = ingredientArray;
+      dataToSet.splice(index, 1);
+    } else {
+      dataToSet = [...ingredientArray, formData];
+    }
+    updateBrew({...formData, fermentables: dataToSet});
+  };
+
   switch (form) {
     case 'settings':
       title = 'Settings';
@@ -61,9 +78,14 @@ function FormHandler({
       submitText = 'Submit';
       break;
     case 'fermentables':
-      title = 'Add Fermentable';
-      component = <AddFermentableForm data={brew} dataUpdated={setData} />;
-      submitText = '+ Add';
+      if (editingData) {
+        title = 'Edit Fermentable';
+        submitText = 'Edit';
+      } else {
+        title = 'Add Fermentable';
+        submitText = '+ Add';
+      }
+      component = <AddFermentableForm brew={brew} editingData={editingData} dataUpdated={setData} />;
       break;
     case 'hops':
       title = 'Add Hop';
@@ -124,12 +146,18 @@ function FormHandler({
           className="button button--brown button--no-shadow"
           onClick={closeSidebar}
         >Cancel</button>
-        {form !== 'notes' ?
-          <button
-            className="button button--no-shadow"
-            onClick={handleNext}
-          >Next</button>
-        : <br />}
+        {form !== 'notes' && editingData === null
+          ? <button
+              className="button button--no-shadow"
+              onClick={handleNext}
+            >Next</button>
+          : <br />}
+        {editingData !== null
+          ? <button
+              className="button button--error button--no-shadow"
+              onClick={handleDelete}
+            >Delete</button>
+          : null}
       </div>
     </div>
   );

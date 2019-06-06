@@ -1,5 +1,5 @@
-@import './variables';
-@import './utilities';
+@import "./variables";
+@import "./utilities";
 
 .button {
   display: inline-block;
@@ -23,7 +23,10 @@
 
   &:hover,
   &:focus {
-    background-color: darken(desaturate(adjust-hue($button-default-bg, -5%), 5%), 5%);
+    background-color: darken(
+      desaturate(adjust-hue($button-default-bg, -5%), 5%),
+      5%
+    );
   }
 
   // COLORS
@@ -34,7 +37,10 @@
 
     &:hover,
     &:focus {
-      background-color: darken(desaturate(adjust-hue($button-yellow, -5%), 5%), 5%);
+      background-color: darken(
+        desaturate(adjust-hue($button-yellow, -5%), 5%),
+        5%
+      );
     }
   }
 
@@ -45,7 +51,10 @@
 
     &:hover,
     &:focus {
-      background-color: darken(desaturate(adjust-hue(rgba($button-brown-bg, 0.5), -5%), 5%), 5%);
+      background-color: darken(
+        desaturate(adjust-hue(rgba($button-brown-bg, 0.5), -5%), 5%),
+        5%
+      );
     }
   }
 
@@ -56,7 +65,24 @@
 
     &:hover,
     &:focus {
-      background-color: darken(desaturate(adjust-hue($button-green-bg, -5%), 5%), 5%);
+      background-color: darken(
+        desaturate(adjust-hue($button-green-bg, -5%), 5%),
+        5%
+      );
+    }
+  }
+
+  &--error {
+    box-shadow: 0 10px 30px rgba($black, 0.15);
+    background-color: $button-error-bg;
+    color: $button-default-text;
+
+    &:hover,
+    &:focus {
+      background-color: darken(
+        desaturate(adjust-hue($button-error-bg, -5%), 5%),
+        5%
+      );
     }
   }
 
@@ -143,7 +169,7 @@
 
     &.plus {
       &::before {
-        content: '+';
+        content: "+";
         color: $button-yellow;
         font-size: px-to-rem(31px);
         line-height: 0.8;

@@ -1,6 +1,5 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import axios from 'axios';
 
 import styles from './Brew.module.scss';
 import Card from '../../components/Card/Card';
@@ -9,6 +8,7 @@ import ListItem from '../../components/ListItem/ListItem';
 import { pen } from '../../resources/javascript/penSvg.js';
 import FormHandler from './FormHandler/FormHandler';
 import { BrewInterface } from '../../Store/BrewProvider';
+import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 
 interface Props extends RouteComponentProps {
   brew: BrewInterface;
@@ -16,8 +16,8 @@ interface Props extends RouteComponentProps {
 }
 
 class Brew extends React.Component<Props, any> {
-  private brewContainer = React.createRef<HTMLDivElement>();
-  private nameInput = React.createRef<HTMLInputElement>();
+  brewContainer: React.RefObject<HTMLDivElement>;
+  nameInput: React.RefObject<HTMLInputElement>;
 
   constructor(props: Props) {
     super(props);
@@ -26,11 +26,21 @@ class Brew extends React.Component<Props, any> {
       editingName: false,
       topSpacing: 0,
       form: '',
+      editingData: null,
     }
+    this.brewContainer = React.createRef<HTMLDivElement>();
+    this.nameInput = React.createRef<HTMLInputElement>();
   }
 
   componentDidMount() {
     window.addEventListener('scroll', this.handleScroll, { passive: true })
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.brew !== prevProps.brew) {
+      // if the brew has changed, reset some stuff
+      this.setState({editingData: null});
+    }
   }
 
   componentWillUnmount() {
@@ -38,8 +48,9 @@ class Brew extends React.Component<Props, any> {
   }
 
   handleScroll = (event: Event) => {
-    // @ts-ignore-line
-    const rect = this.brewContainer.current.getBoundingClientRect();
+    const rect = this.brewContainer.current
+      ? this.brewContainer.current.getBoundingClientRect()
+      : new ClientRect;
     if (rect.top < -30) {
       this.setState({topSpacing: (rect.top * -1) - 30});
     } else if (rect.top > -30 && rect.top < 0) {
@@ -49,16 +60,16 @@ class Brew extends React.Component<Props, any> {
     }
   }
 
-  openSideBar = (choice: string | null = null) => (event: any) => {
+  openSideBar = (choice: string | null = null, editingData: any | null = null) => (event: any) => {
     if (!this.state.sideBarOpen) {
       this.setState({sideBarOpen: !this.state.sideBarOpen});
     }
-    this.setState({form: choice});
+    this.setState({form: choice, editingData: editingData});
   }
 
   closeSidebar = () => {
     this.setState({sideBarOpen: false});
-    window.setTimeout(() => {this.setState({form: null})}, 500);
+    window.setTimeout(() => {this.setState({form: null, editingData: null})}, 500);
   }
 
   nextForm = (event: any) => {
@@ -117,7 +128,7 @@ class Brew extends React.Component<Props, any> {
                     className={styles.nameInput}
                     value={brew.name}
                     ref={this.nameInput}
-                    onChange={(e) => updateBrew({name: e.currentTarget.value})}
+                    onChange={(e) => updateBrew({...brew, name: e.currentTarget.value})}
                     onBlur={() => this.setState({editingName: false})}
                   />
               }
@@ -168,11 +179,15 @@ class Brew extends React.Component<Props, any> {
                 </div>
                 <div className={styles.brew__stat}>
                   <span className={styles.value}>
-                    {/* <div
-                      className={styles.srmSwatch}
-                      style={{backgroundColor: getSrmToRgb(7)}}
-                    /> */}
-                    
+                    {brew.srm
+                      ? <>
+                          <div
+                            className={styles.srmSwatch}
+                            style={{backgroundColor: getSrmToRgb(brew.srm)}}
+                          />
+                          {brew.srm}
+                        </>
+                      : null }
                   </span>
                   <label className={styles.label}>SRM</label>
                 </div>
@@ -182,21 +197,26 @@ class Brew extends React.Component<Props, any> {
           <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
             <div className={styles.brew__header}>
               <h2>Fermentables</h2>
-              {/* <span>Total: 12.75 lbs</span> */}
+              {brew.fermentables.length > 0
+                ? <span>Total: {brew.totalFermentables} lbs</span>
+                : null}
               <button
                 className={`button button--icon plus ${styles.editButton}`}
                 onClick={this.openSideBar('fermentables')}
               ><span>Edit</span></button>
             </div>
             <List customClass={styles.brew__ingredients}>
-              {/* <ListItem
-                color="brew"
-                clicked={() => {}}
-              >
-                <span>12.75 lbs</span>
-                <span>American Two-Row</span>
-                <span>1.8 SRM</span>
-              </ListItem> */}
+              {brew.fermentables.map((fermentable, index) => (
+                <ListItem
+                  color="brew"
+                  clicked={this.openSideBar('fermentables', fermentable)}
+                  key={`${fermentable.id}${index}`}
+                >
+                  <span>{fermentable.weight} lbs</span>
+                  <span>{fermentable.name}</span>
+                  <span>{fermentable.lovibond} °L</span>
+                </ListItem>
+              ))}
             </List>
           </Card>
           <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
@@ -250,18 +270,24 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={styles.section__values}>
-                {/* <span>Strike with <strong>5.5 gal</strong> at <strong>160° F</strong></span>
-                <span>Mash at <strong>149° F</strong></span> */}
                 <span>{brew.strikeTemp
-                  ? <>Strike with <strong>XX gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
+                  ? <>Strike with <strong>{brew.strikeVolume} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
                   : null}
                 </span>
                 <span>
-                  {brew.mashLength ? <>Mash for <strong>{brew.mashLength} min</strong></> : null}
+                  {brew.mashLength
+                    ? <>Mash for <strong>{brew.mashLength} min</strong></>
+                    : null}
                 </span>
-                <span></span>
                 <span>
-                  {brew.spargeTemp ? <>Sparge with <strong>XX gal</strong> at <strong>{brew.spargeTemp}° F</strong></> : null}
+                  {brew.targetMashTemp
+                    ? <>Mash at <strong>{brew.targetMashTemp}° F</strong></>
+                    : null}
+                </span>
+                <span>
+                  {brew.spargeTemp
+                    ? <>Sparge with <strong>XX gal</strong> at <strong>{brew.spargeTemp}° F</strong></>
+                    : null}
                 </span>
               </div>
             </div>
@@ -274,7 +300,9 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={`${styles.section__values} ${styles.withStats}`}>
-                <span>{brew.boilLength ? <>Boil Time: <strong>{brew.boilLength} min</strong></> : null}</span>
+                <span>{brew.boilLength
+                  ? <>Boil Time: <strong>{brew.boilLength} min</strong></>
+                  : null}</span>
                 {/* <span>Boil Size: <strong>7.5 gal</strong></span> */}
                 <span></span>
                 <span></span>
@@ -301,12 +329,20 @@ class Brew extends React.Component<Props, any> {
               </div>
               <div className={`${styles.section__values} ${styles.withStats}`}>
                 <span>
-                  {brew.primaryLength ? <>Primary Length: <strong>{brew.primaryLength} days</strong></> : null}
-                  {brew.secondaryLength ? <><br />Secondary Length: <strong>{brew.secondaryLength} days</strong></> : null}
+                  {brew.primaryLength
+                    ? <>Primary Length: <strong>{brew.primaryLength} days</strong></>
+                    : null}
+                  {brew.secondaryLength
+                    ? <><br />Secondary Length: <strong>{brew.secondaryLength} days</strong></>
+                    : null}
                 </span>
                 <span>
-                  {brew.primaryTemp ? <>Temp: <strong>{brew.primaryTemp}° F</strong></> : null}
-                  {brew.secondaryTemp ? <><br />Temp: <strong>{brew.secondaryTemp}° F</strong></> : null}
+                  {brew.primaryTemp
+                    ? <>Temp: <strong>{brew.primaryTemp}° F</strong></>
+                    : null}
+                  {brew.secondaryTemp
+                    ? <><br />Temp: <strong>{brew.secondaryTemp}° F</strong></>
+                    : null}
                 </span>
                 <span></span>
                 <div className={styles.section__stats}>
@@ -335,8 +371,12 @@ class Brew extends React.Component<Props, any> {
                   ? <strong>{this.parseStringValues(brew.packagingType)}/{this.parseStringValues(brew.carbonationMethod)}</strong>
                   : null}
                 </span>
-                <span>{brew.co2VolumeTarget ? <>CO2 Vol: <strong>{brew.co2VolumeTarget}</strong></> : null}</span>
-                <span>{brew.beerTemp ? <>Temp: <strong>{brew.beerTemp}° F</strong></> : null}</span>
+                <span>{brew.co2VolumeTarget
+                  ? <>CO2 Vol: <strong>{brew.co2VolumeTarget}</strong></>
+                  : null}</span>
+                <span>{brew.beerTemp
+                  ? <>Temp: <strong>{brew.beerTemp}° F</strong></>
+                  : null}</span>
                 <span>{brew.amountForCO2
                   ? <>Pressure: <strong>{brew.amountForCO2} {brew.packagingType === 'kegged' ? 'psi' : 'oz'}</strong></>
                   : null}
@@ -370,6 +410,7 @@ class Brew extends React.Component<Props, any> {
               {...this.props}
               form={this.state.form}
               nextForm={this.nextForm}
+              editingData={this.state.editingData}
               closeSidebar={this.closeSidebar}
             />
           </Card>

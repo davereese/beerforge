@@ -47,6 +47,17 @@ function tanh(number) {
 
 // PUBLIC FUNCTIONS
 
+// * Total fermentable weight
+export function totalFermentableWeight(malts) {
+  let totalFermentableWeight = 0;
+  malts.forEach(fermentable => {
+    totalFermentableWeight = fermentable.weight
+      ? Number(totalFermentableWeight) + Number(fermentable.weight)
+      : 0;
+  });
+  return totalFermentableWeight;
+};
+
 // * Total Water
 export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
   // boilTime is in hours, hense (boilTime / 60)
@@ -54,13 +65,13 @@ export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
 
   const totalWater = (((batchSize + trubLoss) / (1 - (shrinkage / 100))) / (1 - ((boilTime / 60) * (boilOff / 100)))) + equipmentLoss + (grainWeight * absorptionRate);
   return totalWater.toFixed(2);
-}
+};
 
 // * Strike Water Volume
 export function strikeVolume(grainWeight, ratio = 1.5) {
   const sVol = (ratio * grainWeight) / 4;
-  return sVol;
-}
+  return parseFloat(sVol.toFixed(2));
+};
 
 // * Strike Water Temperature
 export function strikeTemp(grainTemp, targetTemp, ratio, factor) {
@@ -69,7 +80,7 @@ export function strikeTemp(grainTemp, targetTemp, ratio, factor) {
   const useFactor = factor ? factor : 1;
   const Tw = ((0.2 / ratio) * (targetTemp - (grainTemp * useFactor)) + parseInt(targetTemp)).toFixed(2);
   return parseInt(Tw); // round it
-}
+};
 
 // * Sparge Water Volume
 export function spargeVolume(totalWater, mashVolume) {
@@ -81,7 +92,7 @@ export function evaporationPercent(postBoilV, preBoilV, minutes) {
   // 100 - (postBoil volume * 100 / preBoil volume)
   const result = (100 - (postBoilV * 100 / preBoilV)) / (minutes / 60);
   return result.toFixed(1);
-}
+};
 
 // * Pre-Boil Gravity
 export function preBoilG(OG, grainVol, totalWaterVol, vol) {
@@ -91,14 +102,14 @@ export function preBoilG(OG, grainVol, totalWaterVol, vol) {
 
   // convert back to gravity units and return
   return convertToGravityUnits(PreBoilG);
-}
+};
 
 // * Pre-Boil Volume
 export function preBoilVol(totalWaterVol, grainVol) {
   // totalWaterVol - (grainVol * absorptionRate) - equipmentLoss
   const result = totalWaterVol - (grainVol * absorptionRate) - equipmentLoss;
   return result.toFixed(2)
-}
+};
 
 // * Original Gravity
 export function OG(malts, efficiency, volume) {
@@ -114,14 +125,14 @@ export function OG(malts, efficiency, volume) {
 
   // convert back to gravity units and return
   return convertToGravityUnits(OG);
-}
+};
 
 // * Target Yeast Pitching Rate
 export function targetPitchingRate(OG, vol, targetRate) {
   // Target pitch rate: million cells / ml / degree plato
   const rate = (targetRate * 1000000) * gal2ml(vol) * convertToPlato(OG);
   return (rate / 1000000000).toPrecision(3);
-}
+};
 
 // * Yeast Pitching Rate
 export function pitchingRate(type, number = null, date = null, grams = null, cells = null) {
@@ -134,7 +145,7 @@ export function pitchingRate(type, number = null, date = null, grams = null, cel
     viableCells = grams * cells * 1000000;
   }
   return (viableCells / 1000000).toPrecision(3);
-}
+};
 
 // * Final Gravity
 export function FG(OG, attenuation) {
@@ -143,7 +154,7 @@ export function FG(OG, attenuation) {
   const aPercentage = attenuation/100;
 
   return ((gravity - (gravity * aPercentage) + 1000) / 1000).toFixed(3);
-}
+};
 
 // * Alcohol Content
 export function alcoholContent(OG, FG, type = 'ABV') {
@@ -158,14 +169,14 @@ export function alcoholContent(OG, FG, type = 'ABV') {
   const result = type === 'ABW' ? ABW.toFixed(2) : ABV.toFixed(2);
 
   return result;
-}
+};
 
 // * Attenuation
 export function attenuation(OG, FG) {
   // A = 100 * (OG – FG)/(OG – 1.0)
   const A = (100 * (OG - FG)/(OG - 1.0)).toFixed(1);
   return A;
-}
+};
 
 // * IBU
 export function IBU(hops, OG, vol, type = 'rager') {
@@ -188,7 +199,7 @@ export function IBU(hops, OG, vol, type = 'rager') {
   }
   
   return IBU.toFixed(2);
-}
+};
 
 // * SRM
 export function SRM(malts, vol) {
@@ -198,15 +209,14 @@ export function SRM(malts, vol) {
       SRM;
 
   for ( let i = 0; i < malts.length; i++ ) {
-    MCU += (malts[i].color * malts[i].weight) / vol;
-
+    MCU += (malts[i].lovibond * malts[i].weight) / vol;
     MCU = Infinity === MCU ? 0 : MCU;
   }
 
   SRM = (1.4922 * Math.pow(MCU, 0.6859)).toFixed(2);
 
-  return SRM;
-}
+  return parseFloat(SRM);
+};
 
 // * CO2
 export function CO2(temp, vol, type, beerVol) {
@@ -233,4 +243,4 @@ export function CO2(temp, vol, type, beerVol) {
   }
 
   return parseFloat(X);
-}
+};
