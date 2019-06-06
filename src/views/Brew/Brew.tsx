@@ -286,7 +286,11 @@ class Brew extends React.Component<Props, any> {
                 </span>
                 <span>
                   {brew.spargeTemp
-                    ? <>Sparge with <strong>XX gal</strong> at <strong>{brew.spargeTemp}° F</strong></>
+                    ? <>Sparge&nbsp;
+                      {brew.spargeVolume
+                        ? <>with <strong>{brew.spargeVolume} gal</strong> </>
+                        : null}
+                      at <strong>{brew.spargeTemp}° F</strong></>
                     : null}
                 </span>
               </div>
@@ -300,20 +304,21 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={`${styles.section__values} ${styles.withStats}`}>
+                <span>{brew.preBoilVolume
+                  ? <>Pre-boil Vol: <strong>{brew.preBoilVolume} gal</strong></>
+                  : null}</span>
                 <span>{brew.boilLength
                   ? <>Boil Time: <strong>{brew.boilLength} min</strong></>
                   : null}</span>
-                {/* <span>Boil Size: <strong>7.5 gal</strong></span> */}
-                <span></span>
                 <span></span>
                 <div className={styles.section__stats}>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}></span>
+                    <span className={styles.value}>{brew.preBoilG}</span>
                     <label className={styles.label}>PRE</label>
                   </div>
                   <span className={styles.arrow}></span>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}></span>
+                    <span className={styles.value}>{brew.og}</span>
                     <label className={styles.label}>OG</label>
                   </div>
                 </div>
@@ -347,7 +352,7 @@ class Brew extends React.Component<Props, any> {
                 <span></span>
                 <div className={styles.section__stats}>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}></span>
+                    <span className={styles.value}>{brew.og}</span>
                     <label className={styles.label}>OG</label>
                   </div>
                   <span className={styles.arrow}></span>

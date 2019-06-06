@@ -9,7 +9,7 @@ const absorptionRate = 0.15; // gal/lb of grain
 // PRIVATE FUNCTIONS
 
 function convertToGravityUnits(value) {
-  return ((value / 1000) + 1).toFixed(3);
+  return parseFloat(((value / 1000) + 1).toFixed(3));
 }
 
 function convertToGravityPoints(gravity) {
@@ -62,9 +62,14 @@ export function totalFermentableWeight(malts) {
 export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
   // boilTime is in hours, hense (boilTime / 60)
   // totalWater = (((batchSize + trubLoss) / (1 - (shrinkage / 100))) / (1 - (boilTime * (boilOff / 100)))) + equipmentLoss + (grainWeight * absorptionRate)
+  // TODO: convert all strings to numbers beforse saving to data model
+  batchSize = parseFloat(batchSize);
+  boilTime = parseFloat(boilTime);
+  boilOff = parseFloat(boilOff);
+  grainWeight = parseFloat(grainWeight);
 
   const totalWater = (((batchSize + trubLoss) / (1 - (shrinkage / 100))) / (1 - ((boilTime / 60) * (boilOff / 100)))) + equipmentLoss + (grainWeight * absorptionRate);
-  return totalWater.toFixed(2);
+  return parseFloat(totalWater.toFixed(4));
 };
 
 // * Strike Water Volume
@@ -84,7 +89,7 @@ export function strikeTemp(grainTemp, targetTemp, ratio, factor) {
 
 // * Sparge Water Volume
 export function spargeVolume(totalWater, mashVolume) {
-  return (totalWater - mashVolume).toFixed(2);
+  return parseFloat((totalWater - mashVolume).toFixed(2));
 }
 
 // Boil-Off Evaporation Percentage
@@ -108,16 +113,19 @@ export function preBoilG(OG, grainVol, totalWaterVol, vol) {
 export function preBoilVol(totalWaterVol, grainVol) {
   // totalWaterVol - (grainVol * absorptionRate) - equipmentLoss
   const result = totalWaterVol - (grainVol * absorptionRate) - equipmentLoss;
-  return result.toFixed(2)
+  return parseFloat(result.toFixed(2));
 };
 
 // * Original Gravity
 export function OG(malts, efficiency, volume) {
+  efficiency = parseFloat(efficiency);
+  volume = parseFloat(volume);
+
   let totalPoints = 0,
       OG = null;
 
   for ( let i = 0; i < malts.length; i++ ) {
-    totalPoints += convertToGravityPoints(malts[i].potential) * malts[i].weight;
+    totalPoints += malts[i].potential * malts[i].weight;
   }
 
   // multiply by efficiency factor
