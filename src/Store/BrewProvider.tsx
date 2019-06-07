@@ -133,7 +133,7 @@ export default class Provider extends React.Component {
     if (brew.fermentables && brew.batchSize) {
       brew.srm = Calculator.SRM(brew.fermentables, brew.batchSize);
     }
-    if (brew.totalFermentables, brew.waterToGrain) {
+    if (brew.totalFermentables && brew.waterToGrain) {
       brew.strikeVolume = Calculator.strikeVolume(brew.totalFermentables, brew.waterToGrain);
     }
     if (brew.grainTemp && brew.targetMashTemp && brew.waterToGrain) {
@@ -186,6 +186,7 @@ export default class Provider extends React.Component {
       <ThemeContext.Provider
         value={{
           ...this.state,
+          // @ts-ignore-line
           updateBrew: this.updateBrew,
         }}
       >

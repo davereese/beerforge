@@ -74,6 +74,8 @@ class Dashboard extends React.Component<Props, any> {
               {brew.name} <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
             </ListItem>
           );
+        } else {
+          return null;
         }
       })
       : <li className={styles.noBrews}>

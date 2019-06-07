@@ -71,7 +71,12 @@ function FormHandler({
       dataToSet = [...ingredientArray, formData];
     }
 
+    console.log({dataToSet}, {formData});
+
     setFormData({...brew, [form]: dataToSet});
+
+    console.log({formData});
+
     updateBrew({...formData, [form]: dataToSet});
   };
 

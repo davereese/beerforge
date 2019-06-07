@@ -50,7 +50,7 @@ class Brew extends React.Component<Props, any> {
   handleScroll = (event: Event) => {
     const rect = this.brewContainer.current
       ? this.brewContainer.current.getBoundingClientRect()
-      : new ClientRect;
+      : new DOMRect();
     if (rect.top < -30) {
       this.setState({topSpacing: (rect.top * -1) - 30});
     } else if (rect.top > -30 && rect.top < 0) {
@@ -117,11 +117,12 @@ class Brew extends React.Component<Props, any> {
                     {brew.name === '' ? 'New Brew' : brew.name}
                     <button
                       className={`button button--link ${styles.edit}`}
-                      onClick={() =>
-                        this.setState({editingName: true}, () => {
-                          this.nameInput.current !== null ? this.nameInput.current.focus() : null;
-                        })
-                      }
+                      onClick={() => {
+                        this.setState(
+                          {editingName: true},
+                          () => this.nameInput.current !== null ? this.nameInput.current.focus() : null
+                        )
+                      }}
                     >{pen}</button>
                   </>
                 : <input

@@ -58,6 +58,7 @@ function AddFermentableForm(props: Props) {
     if (dataToSet[lastIndex].id && dataToSet[lastIndex].id !== 0) {
       props.dataUpdated({...props.brew, fermentables: dataToSet});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   useEffect(() => {
