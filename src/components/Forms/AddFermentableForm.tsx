@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import styles from "./Forms.module.scss"
 import { BrewInterface, FermentableInterface } from '../../Store/BrewProvider';
 
 interface Props {
@@ -55,7 +54,10 @@ function AddFermentableForm(props: Props) {
       dataToSet = [...fermentablesArray, formData];
     }
 
-    props.dataUpdated({...props.brew, fermentables: dataToSet});
+    const lastIndex = dataToSet.length - 1;
+    if (dataToSet[lastIndex].id && dataToSet[lastIndex].id !== 0) {
+      props.dataUpdated({...props.brew, fermentables: dataToSet});
+    }
   }, [formData]);
 
   useEffect(() => {

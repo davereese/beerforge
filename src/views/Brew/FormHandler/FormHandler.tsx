@@ -52,7 +52,9 @@ function FormHandler({
   };
 
   const handleNext = () => {
-    updateBrew({...formData});
+    if (formData !== null) {
+      updateBrew({...formData});
+    }
     nextForm();
   };
 
@@ -68,7 +70,9 @@ function FormHandler({
     } else {
       dataToSet = [...ingredientArray, formData];
     }
-    updateBrew({...formData, fermentables: dataToSet});
+
+    setFormData({...brew, [form]: dataToSet});
+    updateBrew({...formData, [form]: dataToSet});
   };
 
   switch (form) {
@@ -93,9 +97,14 @@ function FormHandler({
       submitText = '+ Add';
       break;
     case 'yeast':
-      title = 'Add Yeast';
-      component = <AddYeastForm data={brew} dataUpdated={setData} />;
-      submitText = '+ Add';
+      if (editingData) {
+        title = 'Edit Yeast';
+        submitText = 'Edit';
+      } else {
+        title = 'Add Yeast';
+        submitText = '+ Add';
+      }
+      component = <AddYeastForm brew={brew} editingData={editingData} dataUpdated={setData} />;
       break;
     case 'mash':
       title = 'Mash';

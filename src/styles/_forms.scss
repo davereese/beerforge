@@ -15,6 +15,7 @@ input[type="text"],
 input[type="number"],
 input[type="password"],
 input[type="email"],
+input[type="date"],
 select,
 textarea {
   display: inline-block;
@@ -28,6 +29,7 @@ textarea {
   border-radius: 4px;
   outline: none;
   font-size: px-to-rem(14px);
+  font-family: $montserrat;
 
   &.error {
     border: 1px solid $error-color;

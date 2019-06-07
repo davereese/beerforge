@@ -11,19 +11,23 @@ export interface FermentableInterface {
 };
 
 export interface HopInterface {
-  id: number;
-  name: string;
-  weight: number;
-  alphaAcid: number;
-  lengthInBoil: number;
+  id?: number;
+  name?: string;
+  weight?: number;
+  alphaAcid?: number;
+  lengthInBoil?: number;
 };
 
 export interface YeastInterface {
-  id: number;
-  name: string;
-  yeastForm: string;
-  amount: number;
+  id?: number;
+  name?: string;
+  yeastForm?: string;
+  amount?: number;
+  type?: string;
   mfgDate?: Date;
+  average_attenuation?: number;
+  cell_count?: number;
+  viableCellCount?: number;
 };
 
 export interface BrewInterface {
@@ -32,6 +36,8 @@ export interface BrewInterface {
   batchSize?: number;
   systemEfficiency?: number;
   targetPitchingRate?: string;
+  targetPitchingCellCount?: number;
+  pitchCellCount?: number;
   fermentables: FermentableInterface[];
   totalFermentables?: number;
   hops: HopInterface[];
@@ -65,7 +71,7 @@ export interface BrewInterface {
   preBoilG?: number;
   fg?: number;
   attenuation?: number;
-  abv?: number;
+  alcoholContent?: number;
 };
 
 const DEFAULT_STATE = {
@@ -95,6 +101,19 @@ export default class Provider extends React.Component {
     return comparison;
   };
 
+  compareAmount = (a: YeastInterface, b: YeastInterface) => {
+    const amountA = Number(a.amount);
+    const amountB = Number(b.amount);
+  
+    let comparison = 0;
+    if (amountA > amountB) {
+      comparison = -1;
+    } else if (amountA < amountB) {
+      comparison = 1;
+    }
+    return comparison;
+  };
+
   updateBrew = (brew: BrewInterface): void => {
     // Sort ingredients
     if (brew.fermentables) {
@@ -102,6 +121,9 @@ export default class Provider extends React.Component {
     }
     if (brew.hops) {
       brew.hops.sort(this.compareWeight);
+    }
+    if (brew.yeast) {
+      brew.yeast.sort(this.compareAmount);
     }
 
     // Run Calculations
@@ -129,8 +151,27 @@ export default class Provider extends React.Component {
     if (brew.og && brew.totalFermentables && brew.totalWater && brew.batchSize) {
       brew.preBoilG = Calculator.preBoilG(brew.og, brew.totalFermentables, brew.totalWater, brew.batchSize);
     }
+    if (brew.og && brew.batchSize && brew.targetPitchingRate) {
+      brew.targetPitchingCellCount = Calculator.targetPitchingRate(brew.og, brew.batchSize, brew.targetPitchingRate);
+    }
+    if (brew.yeast.length > 0) {
+      let totalCellCount = 0;
+      brew.yeast.forEach(item => {
+        totalCellCount += item.viableCellCount ? item.viableCellCount : 0;
+      });
+      brew.pitchCellCount = totalCellCount;
+    }
     if (brew.totalWater && brew.totalFermentables) {
       brew.preBoilVolume = Calculator.preBoilVol(brew.totalWater, brew.totalFermentables);
+    }
+    if (brew.yeast.length > 0 && brew.og) {
+      let attenuationAdditions = 0;
+      brew.yeast.forEach(item => attenuationAdditions += item.average_attenuation ? item.average_attenuation : 0);
+      brew.attenuation = attenuationAdditions / brew.yeast.length;
+      brew.fg = Calculator.FG(brew.og, brew.attenuation);
+    }
+    if (brew.og && brew.fg) {
+      brew.alcoholContent = Calculator.alcoholContent(brew.og, brew.fg, 'ABV');
     }
     if (brew.beerTemp && brew.co2VolumeTarget && brew.carbonationMethod && brew.batchSize) {
       brew.amountForCO2 = Calculator.CO2(brew.beerTemp, brew.co2VolumeTarget, brew.carbonationMethod, brew.batchSize);

@@ -9,7 +9,10 @@ interface Props {
 }
 
 function BrewSettingsForm(props: Props) {
-  const [formData, setFormData] = useState(props.data);
+  const [formData, setFormData] = useState({
+    ...props.data,
+    targetPitchingRate: props.data.targetPitchingRate ? props.data.targetPitchingRate : '0.75'
+  });
 
   const dataChanged = (type: string) => (event: any) => {
     const data = event.currentTarget.value;

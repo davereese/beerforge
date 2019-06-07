@@ -166,15 +166,15 @@ class Brew extends React.Component<Props, any> {
               </ul>
               <div className={styles.brew__stats}>
                 <div className={styles.brew__stat}>
-                  <span className={styles.value}></span>
+                  <span className={styles.value}>{brew.alcoholContent ? `${brew.alcoholContent}%` : null}</span>
                   <label className={styles.label}>ABV</label>
                 </div>
                 <div className={styles.brew__stat}>
-                  <span className={styles.value}></span>
-                  <label className={styles.label}>ATTEN.</label>
+                  <span className={styles.value}>{brew.attenuation ? `${brew.attenuation}%` : null}</span>
+                  <label className={styles.label}>ATTEN</label>
                 </div>
                 <div className={styles.brew__stat}>
-                  <span className={styles.value}></span>
+                  <span className={styles.value}>{brew.ibu}</span>
                   <label className={styles.label}>IBU</label>
                 </div>
                 <div className={styles.brew__stat}>
@@ -212,7 +212,7 @@ class Brew extends React.Component<Props, any> {
                   clicked={this.openSideBar('fermentables', fermentable)}
                   key={`${fermentable.id}${index}`}
                 >
-                  <span>{fermentable.weight} lbs</span>
+                  <span>{fermentable.weight} lb{fermentable.weight && fermentable.weight > 1 ? 's' : null}</span>
                   <span>{fermentable.name}</span>
                   <span>{fermentable.lovibond} °L</span>
                 </ListItem>
@@ -244,20 +244,29 @@ class Brew extends React.Component<Props, any> {
           <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
             <div className={styles.brew__header}>
               <h2>Yeast</h2>
-              {/* <span>Cell Count: 200 bn</span> */}
+              {brew.yeast.length > 0
+                ? <span>{brew.pitchCellCount} bn cells {brew.targetPitchingCellCount
+                    ? <>of {brew.targetPitchingCellCount} bn target</>
+                    : null}
+                  </span>
+                : null}
               <button
                 className={`button button--icon plus ${styles.editButton}`}
                 onClick={this.openSideBar('yeast')}
               ><span>Edit</span></button>
             </div>
-            <List customClass={styles.brew__ingredients}>
-              {/* <ListItem
-                color="brew"
-                clicked={() => {}}
-              >
-                <span>2 packs</span>
-                <span>White Labs California Ale WLP001</span>
-              </ListItem> */}
+            <List customClass={`${styles.brew__ingredients} ${styles.yeast}`}>
+              {brew.yeast.map((item, index) => (
+                <ListItem
+                  color="brew"
+                  clicked={this.openSideBar('yeast', item)}
+                  key={`${item.id}${index}`}
+                >
+                  <span>{item.amount} pack{item.amount && item.amount > 1 ? 's' : null}</span>
+                  <span>{item.name}</span>
+                  <span>{item.average_attenuation}% average attenuation</span>
+                </ListItem>
+              ))}
             </List>
           </Card>
           <Card color="brew" customClass={styles.new}>
@@ -357,7 +366,7 @@ class Brew extends React.Component<Props, any> {
                   </div>
                   <span className={styles.arrow}></span>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}></span>
+                    <span className={styles.value}>{brew.fg}</span>
                     <label className={styles.label}>FG</label>
                   </div>
                 </div>

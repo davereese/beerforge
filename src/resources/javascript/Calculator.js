@@ -139,20 +139,23 @@ export function OG(malts, efficiency, volume) {
 export function targetPitchingRate(OG, vol, targetRate) {
   // Target pitch rate: million cells / ml / degree plato
   const rate = (targetRate * 1000000) * gal2ml(vol) * convertToPlato(OG);
-  return (rate / 1000000000).toPrecision(3);
+  return parseFloat((rate / 1000000000).toPrecision(3));
 };
 
 // * Yeast Pitching Rate
-export function pitchingRate(type, number = null, date = null, grams = null, cells = null) {
+export function pitchingRate(type, cellCount, amount, date = null) {
   let viableCells;
   if (type === 'liquid') {
     const daysElapsed = Math.floor((Date.now() - Date.parse(date)) / 86400000);
-    const liquidCells = number * 100000000;
+    const liquidCells = cellCount * amount * 1000000;
     viableCells = liquidCells - (liquidCells * ((daysElapsed * 0.7) / 100));
   } else if (type === 'dry') {
-    viableCells = grams * cells * 1000000;
+    viableCells = cellCount * amount * 1000000;
   }
-  return (viableCells / 1000000).toPrecision(3);
+  const result = (viableCells / 1000000).toPrecision(3) < cellCount
+    ? (viableCells / 1000000).toPrecision(3)
+    : cellCount;
+  return parseFloat(result);
 };
 
 // * Final Gravity
@@ -161,7 +164,7 @@ export function FG(OG, attenuation) {
   const gravity = convertToGravityPoints(OG);
   const aPercentage = attenuation/100;
 
-  return ((gravity - (gravity * aPercentage) + 1000) / 1000).toFixed(3);
+  return parseFloat(((gravity - (gravity * aPercentage) + 1000) / 1000).toFixed(3));
 };
 
 // * Alcohol Content
@@ -176,7 +179,7 @@ export function alcoholContent(OG, FG, type = 'ABV') {
 
   const result = type === 'ABW' ? ABW.toFixed(2) : ABV.toFixed(2);
 
-  return result;
+  return parseFloat(result);
 };
 
 // * Attenuation

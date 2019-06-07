@@ -184,13 +184,14 @@
       box-sizing: border-box;
       padding: 15px;
       margin: 0;
-      width: 33.3%;
+      width: 29%;
       font-weight: $weight-medium;
       font-size: px-to-rem(15px);
       text-transform: uppercase;
     }
 
     span {
+      width: 42%;
       text-align: center;
       text-transform: none;
       color: $brew-callout;
@@ -201,6 +202,12 @@
     li {
       display: grid;
       grid-template-columns: 16% 42% 14% 14% auto;
+    }
+
+    &.yeast {
+      li {
+        grid-template-columns: 16% 42% auto;
+      }
     }
   }
 
