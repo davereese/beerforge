@@ -35,7 +35,7 @@ export interface YeastInterface {
 
 export interface BrewInterface {
   name?: string;
-  batchType?: string;
+  batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
   batchSize?: number;
   systemEfficiency?: number;
   targetPitchingRate?: string;
@@ -158,8 +158,11 @@ export default class Provider extends React.Component {
     if (brew.batchSize && brew.boilLength && brew.evaporationRate && brew.totalFermentables) {
       brew.totalWater = Calculator.totalWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables);
     }
-    if (brew.totalWater && brew.strikeVolume) {
-      brew.spargeVolume = Calculator.spargeVolume(brew.totalWater, brew.strikeVolume);
+    if (brew.batchType === 'allGrain' && brew.totalWater && brew.strikeVolume) {
+        brew.spargeVolume = Calculator.spargeVolume(brew.totalWater, brew.strikeVolume);
+    }
+    if (brew.batchType === 'partialMash' && brew.strikeVolume) {
+      brew.spargeVolume = brew.strikeVolume;
     }
     if (brew.fermentables.length > 0 && brew.systemEfficiency && brew.batchSize) {
       brew.og = Calculator.OG(brew.fermentables, brew.systemEfficiency, brew.batchSize);

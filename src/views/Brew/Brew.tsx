@@ -76,6 +76,9 @@ class Brew extends React.Component<Props, any> {
     const formOrder = [
       'settings', 'fermentables', 'hops', 'yeast', 'mash',
       'boil', 'fermentation', 'packaging', 'notes'];
+    if (this.props.brew.batchType && this.props.brew.batchType === 'extract') {
+      formOrder.splice(4, 1);
+    }
     const position = formOrder.indexOf(this.state.form);
     if (position < formOrder.length -1) {
       this.setState({form: formOrder[position + 1]});
@@ -276,40 +279,44 @@ class Brew extends React.Component<Props, any> {
             </List>
           </Card>
           <Card color="brew" customClass={styles.new}>
-            <div className={styles.brew__section}>
-              <div className={styles.brew__header}>
-                <h2>Mash</h2>
-                <button
-                  className={`button button--icon plus ${styles.editButton}`}
-                  onClick={this.openSideBar('mash')}
-                ><span>Edit</span></button>
-              </div>
-              <div className={styles.section__values}>
-                <span>{brew.strikeTemp
-                  ? <>Strike with <strong>{brew.strikeVolume} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
-                  : null}
-                </span>
-                <span>
-                  {brew.mashLength
-                    ? <>Mash for <strong>{brew.mashLength} min</strong></>
-                    : null}
-                </span>
-                <span>
-                  {brew.targetMashTemp
-                    ? <>Mash at <strong>{brew.targetMashTemp}° F</strong></>
-                    : null}
-                </span>
-                <span>
-                  {brew.spargeTemp
-                    ? <>Sparge&nbsp;
-                      {brew.spargeVolume
-                        ? <>with <strong>{brew.spargeVolume} gal</strong> </>
+            {brew.batchType !== 'extract'
+              ? <>
+                <div className={styles.brew__section}>
+                  <div className={styles.brew__header}>
+                    <h2>Mash</h2>
+                    <button
+                      className={`button button--icon plus ${styles.editButton}`}
+                      onClick={this.openSideBar('mash')}
+                    ><span>Edit</span></button>
+                  </div>
+                  <div className={styles.section__values}>
+                    <span>{brew.strikeTemp
+                      ? <>Strike with <strong>{brew.strikeVolume} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
+                      : null}
+                    </span>
+                    <span>
+                      {brew.mashLength
+                        ? <>Mash for <strong>{brew.mashLength} min</strong></>
                         : null}
-                      at <strong>{brew.spargeTemp}° F</strong></>
-                    : null}
-                </span>
-              </div>
-            </div>
+                    </span>
+                    <span>
+                      {brew.targetMashTemp
+                        ? <>Mash at <strong>{brew.targetMashTemp}° F</strong></>
+                        : null}
+                    </span>
+                    <span>
+                      {brew.spargeTemp
+                        ? <>Sparge&nbsp;
+                          {brew.spargeVolume
+                            ? <>with <strong>{brew.spargeVolume} gal</strong> </>
+                            : null}
+                          at <strong>{brew.spargeTemp}° F</strong></>
+                        : null}
+                    </span>
+                  </div>
+                </div>
+                </>
+              : null}
             <div className={styles.brew__section}>
               <div className={styles.brew__header}>
                 <h2>Boil</h2>
@@ -319,13 +326,20 @@ class Brew extends React.Component<Props, any> {
                 ><span>Edit</span></button>
               </div>
               <div className={`${styles.section__values} ${styles.withStats}`}>
+                {brew.batchType === 'partialMash' && brew.preBoilVolume && brew.spargeVolume
+                  ? <span>Top off with <strong>
+                      {brew.preBoilVolume - (brew.spargeVolume * 2)} gal
+                    </strong></span>
+                  : null}
                 <span>{brew.preBoilVolume
-                  ? <>Pre-boil Vol: <strong>{brew.preBoilVolume} gal</strong></>
+                  ? <>Boil Vol: <strong>{brew.preBoilVolume} gal</strong></>
                   : null}</span>
                 <span>{brew.boilLength
                   ? <>Boil Time: <strong>{brew.boilLength} min</strong></>
                   : null}</span>
-                <span></span>
+                {brew.batchType !== 'partialMash'
+                  ? <span></span>
+                  : null}
                 <div className={styles.section__stats}>
                   <div className={styles.brew__stat}>
                     <span className={styles.value}>{brew.preBoilG}</span>

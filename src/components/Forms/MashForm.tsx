@@ -29,15 +29,17 @@ function MashForm(props: Props) {
           onChange={dataChanged('targetMashTemp')}
         />
       </label>
-      <label>Water to Grain Ratio (qts)<br />
-        <input
-          type="number"
-          step="0.1"
-          placeholder="1.5"
-          defaultValue={`${props.brew.waterToGrain}`}
-          onChange={dataChanged('waterToGrain')}
-        />
-      </label>
+      {props.brew.batchType === 'allGrain' || props.brew.batchType === 'partialMash'
+        ? <label>Water to Grain Ratio (qts)<br />
+            <input
+              type="number"
+              step="0.1"
+              placeholder={props.brew.batchType === 'partialMash' ? '1' : '1.5'}
+              defaultValue={`${props.brew.waterToGrain}`}
+              onChange={dataChanged('waterToGrain')}
+            />
+          </label>
+        : null}
       <label>Initial Grain Temperature (°F)<br />
         <input
           type="number"
