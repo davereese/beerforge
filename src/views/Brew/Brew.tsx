@@ -285,7 +285,7 @@ class Brew extends React.Component<Props, any> {
                   <div className={styles.brew__header}>
                     <h2>Mash</h2>
                     <button
-                      className={`button button--icon plus ${styles.editButton}`}
+                      className={`button button--icon pen ${styles.editButton}`}
                       onClick={this.openSideBar('mash')}
                     ><span>Edit</span></button>
                   </div>
@@ -321,7 +321,7 @@ class Brew extends React.Component<Props, any> {
               <div className={styles.brew__header}>
                 <h2>Boil</h2>
                 <button
-                  className={`button button--icon plus ${styles.editButton}`}
+                  className={`button button--icon pen ${styles.editButton}`}
                   onClick={this.openSideBar('boil')}
                 ><span>Edit</span></button>
               </div>
@@ -357,7 +357,7 @@ class Brew extends React.Component<Props, any> {
               <div className={styles.brew__header}>
                 <h2>Fermentation</h2>
                 <button
-                  className={`button button--icon plus ${styles.editButton}`}
+                  className={`button button--icon pen ${styles.editButton}`}
                   onClick={this.openSideBar('fermentation')}
                 ><span>Edit</span></button>
               </div>
@@ -396,7 +396,7 @@ class Brew extends React.Component<Props, any> {
               <div className={styles.brew__header}>
                 <h2>Packaging</h2>
                 <button
-                  className={`button button--icon plus ${styles.editButton}`}
+                  className={`button button--icon pen ${styles.editButton}`}
                   onClick={this.openSideBar('packaging')}
                 ><span>Edit</span></button>
               </div>
@@ -421,7 +421,7 @@ class Brew extends React.Component<Props, any> {
               <div className={styles.brew__header}>
                 <h2>Notes</h2>
                 <button
-                  className={`button button--icon plus ${styles.editButton}`}
+                  className={`button button--icon pen ${styles.editButton}`}
                   onClick={this.openSideBar('notes')}
                 ><span>Edit</span></button>
               </div>
