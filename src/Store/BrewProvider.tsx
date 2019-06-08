@@ -25,12 +25,11 @@ export interface HopInterface {
 export interface YeastInterface {
   id?: number;
   name?: string;
-  yeastForm?: string;
   amount?: number;
   type?: string;
   mfgDate?: Date;
-  average_attenuation?: number;
-  cell_count?: number;
+  averageAttenuation?: number;
+  cellCount?: number;
   viableCellCount?: number;
 };
 
@@ -183,7 +182,7 @@ export default class Provider extends React.Component {
     }
     if (brew.yeast.length > 0 && brew.og) {
       let attenuationAdditions = 0;
-      brew.yeast.forEach(item => attenuationAdditions += item.average_attenuation ? item.average_attenuation : 0);
+      brew.yeast.forEach(item => attenuationAdditions += item.averageAttenuation ? item.averageAttenuation : 0);
       brew.attenuation = attenuationAdditions / brew.yeast.length;
       brew.fg = Calculator.FG(brew.og, brew.attenuation);
     }

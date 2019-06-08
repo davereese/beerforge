@@ -11,6 +11,11 @@ interface Props {
   dataUpdated: Function;
 }
 
+interface yeastResults extends YeastInterface {
+  cell_count: number;
+  average_attenuation: number;
+}
+
 async function listAllYeast() {
   try {
     // @ts-ignore-line
@@ -28,13 +33,21 @@ async function listAllYeast() {
 
 function AddYeastForm(props: Props) {
   const [formData, setFormData] = useState<YeastInterface>({});
-  const [yeast, setYeast] = useState<YeastInterface[]>([]);
+  const [yeast, setYeast] = useState<yeastResults[]>([]);
 
   const dataChanged = (type: string) => (event: any) => {
     let data: YeastInterface = {};
     if (type === 'yeast') {
       const choice = yeast.find(item => item.id === parseInt(event.currentTarget.value));
-      data = choice ? choice : {};
+      data = choice
+        ? {
+          id: choice.id,
+          name: choice.name,
+          type: choice.type,
+          cellCount: choice.cell_count,
+          averageAttenuation: choice.average_attenuation,
+        }
+        : {};
     } else if (type === 'amount') {
       data.amount = Number(event.currentTarget.value) + 0;
     } else if (type === 'mfgDate') {
@@ -44,7 +57,7 @@ function AddYeastForm(props: Props) {
     if (data !== undefined) {
       data.viableCellCount = pitchingRate(
         data.type ? data.type : formData.type,
-        data.cell_count ? data.cell_count : formData.cell_count,
+        data.cellCount ? data.cellCount : formData.cellCount,
         data.amount ? data.amount : formData.amount,
         data.mfgDate ? data.mfgDate : formData.mfgDate
       );

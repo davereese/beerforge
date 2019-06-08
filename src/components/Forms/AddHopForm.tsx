@@ -11,7 +11,7 @@ interface Props {
   dataUpdated: Function;
 }
 
-interface HopData extends HopInterface {
+interface HopResults extends HopInterface {
   average_alpha: number;
 }
 
@@ -32,18 +32,20 @@ async function listAllHops() {
 
 function AddHopForm(props: Props) {
   const [formData, setFormData] = useState<HopInterface>({});
-  const [hops, setHops] = useState<HopData[]>([]);
+  const [hops, setHops] = useState<HopResults[]>([]);
 
   const dataChanged = (type: string) => (event: any) => {
     let data: HopInterface = {};
     if (type === 'hop') {
       const choice = hops.find(hop => hop.id === parseInt(event.currentTarget.value));
-      data = choice ? {
-        id: choice.id,
-        name: choice.name,
-        alphaAcid: Number(choice.average_alpha),
-        form: 'pellet',
-      } : {};
+      data = choice
+        ? {
+          id: choice.id,
+          name: choice.name,
+          alphaAcid: Number(choice.average_alpha),
+          form: 'pellet',
+          }
+        : {};
     } else if (type === 'form') {
       data[type] = event.currentTarget.value;
     } else {

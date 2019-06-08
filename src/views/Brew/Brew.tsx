@@ -270,7 +270,7 @@ class Brew extends React.Component<Props, any> {
                 >
                   <span>{item.amount} pack{item.amount && item.amount > 1 ? 's' : null}</span>
                   <span>{item.name}</span>
-                  <span>{item.average_attenuation}% average attenuation</span>
+                  <span>{item.averageAttenuation}% average attenuation</span>
                 </ListItem>
               ))}
             </List>
