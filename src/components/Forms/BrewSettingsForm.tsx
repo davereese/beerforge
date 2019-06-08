@@ -25,6 +25,15 @@ function BrewSettingsForm(props: Props) {
 
   return(
     <>
+      <label>
+        Name<br />
+        <input
+          type="text"
+          placeholder="New Brew"
+          defaultValue={`${props.brew.name}`}
+          onChange={dataChanged('name')}
+        />
+      </label>
       <label>Batch Type<br />
         <select
           onChange={dataChanged('batchType')}
