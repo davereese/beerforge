@@ -4,12 +4,12 @@ import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props {
-  data: BrewInterface;
+  brew: BrewInterface;
   dataUpdated: Function;
 }
 
 function PackagingForm(props: Props) {
-  const [formData, setFormData] = useState(props.data);
+  const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
     const data = event.currentTarget.value;
@@ -24,7 +24,7 @@ function PackagingForm(props: Props) {
     <>
       <label>Packaging Type<br />
         <select
-          defaultValue={`${props.data.packagingType}`}
+          defaultValue={`${props.brew.packagingType}`}
           onChange={dataChanged('packagingType')}
         >
           <option value="">Choose One</option>
@@ -34,7 +34,7 @@ function PackagingForm(props: Props) {
       </label>
       <label>Carbonation Method<br />
         <select
-          defaultValue={`${props.data.carbonationMethod}`}
+          defaultValue={`${props.brew.carbonationMethod}`}
           onChange={dataChanged('carbonationMethod')}
         >
           <option value="">Choose One</option>
@@ -50,7 +50,7 @@ function PackagingForm(props: Props) {
             type="number"
             step="0.1"
             placeholder="2.5"
-            defaultValue={`${props.data.co2VolumeTarget}`}
+            defaultValue={`${props.brew.co2VolumeTarget}`}
             onChange={dataChanged('co2VolumeTarget')}
            />
         </label>
@@ -58,7 +58,7 @@ function PackagingForm(props: Props) {
           <input
             type="number"
             placeholder="34"
-            defaultValue={`${props.data.beerTemp}`}
+            defaultValue={`${props.brew.beerTemp}`}
             onChange={dataChanged('beerTemp')}
           />
         </label>

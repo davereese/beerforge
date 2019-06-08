@@ -4,12 +4,12 @@ import { BrewInterface } from '../../Store/BrewProvider';
 import Textarea from '../Textarea/Textarea';
 
 interface Props {
-  data: BrewInterface;
+  brew: BrewInterface;
   dataUpdated: Function;
 }
 
 function NotesForm(props: Props) {
-  const [formData, setFormData] = useState(props.data);
+  const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (data: string) => {
     setFormData({...formData, notes: data});
@@ -22,7 +22,7 @@ function NotesForm(props: Props) {
   return(
     <>
       <Textarea
-        data={props.data.notes}
+        data={props.brew.notes}
         valueUpdated={dataChanged}
       />
     </>

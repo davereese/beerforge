@@ -16,6 +16,10 @@ export interface HopInterface {
   weight?: number;
   alphaAcid?: number;
   lengthInBoil?: number;
+  ibu?: number;
+  unit?: 'g' | 'oz';
+  form?: 'pellet' | 'leaf';
+  [key: string]: string | number | undefined;
 };
 
 export interface YeastInterface {
@@ -41,6 +45,7 @@ export interface BrewInterface {
   fermentables: FermentableInterface[];
   totalFermentables?: number;
   hops: HopInterface[];
+  totalHops?: number;
   yeast: YeastInterface[];
   totalWater?: number;
   strikeTempFactor?: number;
@@ -127,7 +132,7 @@ export default class Provider extends React.Component {
     }
 
     // Run Calculations
-    if (brew.fermentables) {
+    if (brew.fermentables.length > 0) {
       brew.totalFermentables = Calculator.totalFermentableWeight(brew.fermentables);
     }
     if (brew.fermentables && brew.batchSize) {
@@ -135,6 +140,18 @@ export default class Provider extends React.Component {
     }
     if (brew.totalFermentables && brew.waterToGrain) {
       brew.strikeVolume = Calculator.strikeVolume(brew.totalFermentables, brew.waterToGrain);
+    }
+    if (brew.hops.length) {
+      brew.totalHops = Calculator.totalHopWeight(brew.hops);
+    }
+    if (brew.hops.length > 0 && brew.og && brew.batchSize) {
+      let totalIbu = 0;
+      brew.hops = brew.hops.map(hop => {
+        hop.ibu = Calculator.IBU([hop], brew.og, brew.batchSize, 'rager');
+        totalIbu += hop.ibu ? hop.ibu : 0;
+        return hop;
+      });
+      brew.ibu = parseFloat(totalIbu.toFixed(2));
     }
     if (brew.grainTemp && brew.targetMashTemp && brew.waterToGrain) {
       brew.strikeTemp = Calculator.strikeTemp(brew.grainTemp, brew.targetMashTemp, brew.waterToGrain, brew.strikeTempFactor);

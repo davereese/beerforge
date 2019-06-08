@@ -35,11 +35,12 @@ function AddYeastForm(props: Props) {
     if (type === 'yeast') {
       const choice = yeast.find(item => item.id === parseInt(event.currentTarget.value));
       data = choice ? choice : {};
-    } if (type === 'amount') {
+    } else if (type === 'amount') {
       data.amount = Number(event.currentTarget.value) + 0;
-    } if (type === 'mfgDate') {
+    } else if (type === 'mfgDate') {
       data.mfgDate = event.currentTarget.value;
     }
+
     if (data !== undefined) {
       data.viableCellCount = pitchingRate(
         data.type ? data.type : formData.type,

@@ -33,9 +33,10 @@ function AddFermentableForm(props: Props) {
     if (type === 'fermentable') {
       const choice = fermentables.find(fermentable => fermentable.id === parseInt(event.currentTarget.value));
       data = choice ? choice : {};
-    } if (type === 'weight') {
+    } else if (type === 'weight') {
       data.weight = Number(event.currentTarget.value) + 0;
     }
+
     if (data !== undefined) {
       setFormData({...formData, ...data});
     }

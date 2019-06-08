@@ -4,12 +4,12 @@ import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props {
-  data: BrewInterface;
+  brew: BrewInterface;
   dataUpdated: Function;
 }
 
 function TagsForm(props: Props) {
-  const [formData, setFormData] = useState(props.data);
+  const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
     const data = event.currentTarget.value;

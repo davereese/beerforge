@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props {
-  data: BrewInterface;
+  brew: BrewInterface;
   dataUpdated: Function;
 }
 
 function MashForm(props: Props) {
-  const [formData, setFormData] = useState(props.data);
+  const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
     const data = event.currentTarget.value;
@@ -25,7 +25,7 @@ function MashForm(props: Props) {
         <input
           type="number"
           placeholder="150"
-          defaultValue={`${props.data.targetMashTemp}`}
+          defaultValue={`${props.brew.targetMashTemp}`}
           onChange={dataChanged('targetMashTemp')}
         />
       </label>
@@ -34,7 +34,7 @@ function MashForm(props: Props) {
           type="number"
           step="0.1"
           placeholder="1.5"
-          defaultValue={`${props.data.waterToGrain}`}
+          defaultValue={`${props.brew.waterToGrain}`}
           onChange={dataChanged('waterToGrain')}
         />
       </label>
@@ -42,7 +42,7 @@ function MashForm(props: Props) {
         <input
           type="number"
           placeholder="70"
-          defaultValue={`${props.data.grainTemp}`}
+          defaultValue={`${props.brew.grainTemp}`}
           onChange={dataChanged('grainTemp')}
         />
       </label>
@@ -50,7 +50,7 @@ function MashForm(props: Props) {
         <input
           type="number"
           placeholder="60"
-          defaultValue={`${props.data.mashLength}`}
+          defaultValue={`${props.brew.mashLength}`}
           onChange={dataChanged('mashLength')}
         />
       </label>
@@ -58,7 +58,7 @@ function MashForm(props: Props) {
         <input
           type="number"
           placeholder="168"
-          defaultValue={`${props.data.spargeTemp}`}
+          defaultValue={`${props.brew.spargeTemp}`}
           onChange={dataChanged('spargeTemp')}
         />
       </label>

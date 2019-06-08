@@ -71,19 +71,14 @@ function FormHandler({
       dataToSet = [...ingredientArray, formData];
     }
 
-    console.log({dataToSet}, {formData});
-
     setFormData({...brew, [form]: dataToSet});
-
-    console.log({formData});
-
     updateBrew({...formData, [form]: dataToSet});
   };
 
   switch (form) {
     case 'settings':
       title = 'Settings';
-      component = <BrewSettingsForm data={brew} dataUpdated={setData} />
+      component = <BrewSettingsForm brew={brew} dataUpdated={setData} />
       submitText = 'Submit';
       break;
     case 'fermentables':
@@ -97,9 +92,14 @@ function FormHandler({
       component = <AddFermentableForm brew={brew} editingData={editingData} dataUpdated={setData} />;
       break;
     case 'hops':
-      title = 'Add Hop';
-      component = <AddHopForm data={brew} dataUpdated={setData} />;
-      submitText = '+ Add';
+      if (editingData) {
+        title = 'Edit Hop';
+        submitText = 'Edit';
+      } else {
+        title = 'Add Hop';
+        submitText = '+ Add';
+      }
+      component = <AddHopForm brew={brew} editingData={editingData} dataUpdated={setData} />;
       break;
     case 'yeast':
       if (editingData) {
@@ -113,27 +113,27 @@ function FormHandler({
       break;
     case 'mash':
       title = 'Mash';
-      component = <MashForm data={brew} dataUpdated={setData} />;
+      component = <MashForm brew={brew} dataUpdated={setData} />;
       submitText = 'Submit';
       break;
     case 'boil':
       title = 'Boil';
-      component = <BoilForm data={brew} dataUpdated={setData} />;
+      component = <BoilForm brew={brew} dataUpdated={setData} />;
       submitText = 'Submit';
       break;
     case 'fermentation':
       title = 'Fermentation';
-      component = <FermentationForm data={brew} dataUpdated={setData} />;
+      component = <FermentationForm brew={brew} dataUpdated={setData} />;
       submitText = 'Submit';
       break;
     case 'packaging':
       title = 'Packaging';
-      component = <PackagingForm data={brew} dataUpdated={setData} />;
+      component = <PackagingForm brew={brew} dataUpdated={setData} />;
       submitText = 'Submit';
       break;
     case 'notes':
       title = 'Notes';
-      component = <NotesForm data={brew} dataUpdated={setData} />;
+      component = <NotesForm brew={brew} dataUpdated={setData} />;
       submitText = 'Submit';
       break;
     default:

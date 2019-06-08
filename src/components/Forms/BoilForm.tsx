@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props {
-  data: BrewInterface;
+  brew: BrewInterface;
   dataUpdated: Function;
 }
 
 function BoilForm(props: Props) {
-  const [formData, setFormData] = useState(props.data);
+  const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
     const data = event.currentTarget.value;
@@ -25,7 +25,7 @@ function BoilForm(props: Props) {
         <input
           type="number"
           placeholder="60"
-          defaultValue={`${props.data.boilLength}`}
+          defaultValue={`${props.brew.boilLength}`}
           onChange={dataChanged('boilLength')}
         />
       </label>
@@ -33,7 +33,7 @@ function BoilForm(props: Props) {
         <input
           type="number"
           placeholder="1.5"
-          defaultValue={`${props.data.evaporationRate}`}
+          defaultValue={`${props.brew.evaporationRate}`}
           onChange={dataChanged('evaporationRate')}
         />
       </label>

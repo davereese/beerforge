@@ -4,19 +4,19 @@ import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props {
-  data: BrewInterface;
+  brew: BrewInterface;
   dataUpdated: Function;
 }
 
 function FermentationForm(props: Props) {
-  const [formData, setFormData] = useState(props.data);
+  const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
     const data = event.currentTarget.value;
     setFormData({...formData, [type]: data});
   };
 
-  const [secondary, setSecondary] = useState(props.data.secondaryLength ? true : false);
+  const [secondary, setSecondary] = useState(props.brew.secondaryLength ? true : false);
 
   const toggleSecondary = (event: any) => {
     setSecondary(event.currentTarget.checked);
@@ -33,7 +33,7 @@ function FermentationForm(props: Props) {
           <input
             type="number"
             placeholder="14"
-            defaultValue={`${props.data.primaryLength}`}
+            defaultValue={`${props.brew.primaryLength}`}
             onChange={dataChanged('primaryLength')}
           />
         </label>
@@ -41,7 +41,7 @@ function FermentationForm(props: Props) {
           <input
             type="number"
             placeholder="64"
-            defaultValue={`${props.data.primaryTemp}`}
+            defaultValue={`${props.brew.primaryTemp}`}
             onChange={dataChanged('primaryTemp')}
           />
         </label>
@@ -59,7 +59,7 @@ function FermentationForm(props: Props) {
             <input
               type="number"
               placeholder="14"
-              defaultValue={`${props.data.secondaryLength}`}
+              defaultValue={`${props.brew.secondaryLength}`}
               onChange={dataChanged('secondaryLength')}
             />
           </label>
@@ -67,7 +67,7 @@ function FermentationForm(props: Props) {
             <input
               type="number"
               placeholder="64"
-              defaultValue={`${props.data.secondaryTemp}`}
+              defaultValue={`${props.brew.secondaryTemp}`}
               onChange={dataChanged('secondaryTemp')}
             />
           </label>

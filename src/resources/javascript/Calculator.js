@@ -58,6 +58,15 @@ export function totalFermentableWeight(malts) {
   return totalFermentableWeight;
 };
 
+// * Total hop weight
+export function totalHopWeight(hops) {
+  let totalHops = 0;
+  hops.forEach(hop => {
+    totalHops += hop.weight ? hop.weight : 0;
+  });
+ return totalHops;
+};
+
 // * Total Water
 export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
   // boilTime is in hours, hense (boilTime / 60)
@@ -152,9 +161,7 @@ export function pitchingRate(type, cellCount, amount, date = null) {
   } else if (type === 'dry') {
     viableCells = cellCount * amount * 1000000;
   }
-  const result = (viableCells / 1000000).toPrecision(3) < cellCount
-    ? (viableCells / 1000000).toPrecision(3)
-    : cellCount;
+  const result = (viableCells / 1000000).toPrecision(3);
   return parseFloat(result);
 };
 
@@ -197,19 +204,19 @@ export function IBU(hops, OG, vol, type = 'rager') {
       IBU = 0;
 
   for ( let i = 0; i < hops.length; i++ ) {
-    const utilizationFactor = hops[i].type === 'pellet' ? 1.15 : 1.0;
+    const utilizationFactor = hops[i].form === 'pellet' ? 1.15 : 1.0;
 
     if (type === 'tinseth') {
-      utilization = (1.65 * Math.pow(0.000125, OG - 1.0) * ((1 - Math.pow(Math.E, -0.04 * hops[i].length)) / 4.15));
-      IBU += utilization * ((hops[i].aa / 100.0 * oz2kg(hops[i].weight) * 1000000) / gal2l(vol) * utilizationFactor);
+      utilization = (1.65 * Math.pow(0.000125, OG - 1.0) * ((1 - Math.pow(Math.E, -0.04 * hops[i].lengthInBoil)) / 4.15));
+      IBU += utilization * ((hops[i].alphaAcid / 100.0 * oz2kg(hops[i].weight) * 1000000) / gal2l(vol) * utilizationFactor);
     } else if (type === 'rager') {
-      utilization = 18.11 + 13.86 * tanh((hops[i].length - 31.32) / 18.27);
+      utilization = 18.11 + 13.86 * tanh((hops[i].lengthInBoil - 31.32) / 18.27);
       const adjustment = Math.max(0, (OG - 1.050) / 0.2);
-      IBU += oz2kg(hops[i].weight) * 100 * utilization * utilizationFactor * hops[i].aa / (gal2l(vol) * (1 + adjustment));
+      IBU += oz2kg(hops[i].weight) * 100 * utilization * utilizationFactor * hops[i].alphaAcid / (gal2l(vol) * (1 + adjustment));
     }
   }
   
-  return IBU.toFixed(2);
+  return !isNaN(IBU) ? parseFloat(IBU.toFixed(2)) : undefined;
 };
 
 // * SRM

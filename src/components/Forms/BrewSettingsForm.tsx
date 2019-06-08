@@ -4,14 +4,14 @@ import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props {
-  data: BrewInterface;
+  brew: BrewInterface;
   dataUpdated: Function;
 }
 
 function BrewSettingsForm(props: Props) {
   const [formData, setFormData] = useState({
-    ...props.data,
-    targetPitchingRate: props.data.targetPitchingRate ? props.data.targetPitchingRate : '0.75'
+    ...props.brew,
+    targetPitchingRate: props.brew.targetPitchingRate ? props.brew.targetPitchingRate : '0.75'
   });
 
   const dataChanged = (type: string) => (event: any) => {
@@ -28,7 +28,7 @@ function BrewSettingsForm(props: Props) {
       <label>Batch Type<br />
         <select
           onChange={dataChanged('batchType')}
-          defaultValue={props.data.batchType}
+          defaultValue={props.brew.batchType}
         >
           <option value="">Choose One</option>
           <option value="allGrain">All Grain</option>
@@ -43,7 +43,7 @@ function BrewSettingsForm(props: Props) {
           <input
             type="number"
             placeholder="6"
-            defaultValue={`${props.data.batchSize}`}
+            defaultValue={`${props.brew.batchSize}`}
             onChange={dataChanged('batchSize')}
           />
         </label>
@@ -52,7 +52,7 @@ function BrewSettingsForm(props: Props) {
           <input
             type="number"
             placeholder="75"
-            defaultValue={`${props.data.systemEfficiency}`}
+            defaultValue={`${props.brew.systemEfficiency}`}
             onChange={dataChanged('systemEfficiency')}
           />
         </label>
@@ -62,7 +62,7 @@ function BrewSettingsForm(props: Props) {
         <input
           placeholder="0"
           type="number"
-          defaultValue={`${props.data.strikeTempFactor}`}
+          defaultValue={`${props.brew.strikeTempFactor}`}
           onChange={dataChanged('strikeTempFactor')}
         />
       </label>
@@ -70,7 +70,7 @@ function BrewSettingsForm(props: Props) {
         Target Pitching Rate (million cells / ml / °Plato)<br />
           <select
             onChange={dataChanged('targetPitchingRate')}
-            defaultValue={props.data.targetPitchingRate ? props.data.targetPitchingRate : "0.75"}
+            defaultValue={props.brew.targetPitchingRate ? props.brew.targetPitchingRate : "0.75"}
           >
             <option value="0.35">0.35 (Mfr. rate for Ale)</option>
             <option value="0.5">0.5 (Mfr. rate for Ale)</option>

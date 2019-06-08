@@ -223,23 +223,28 @@ class Brew extends React.Component<Props, any> {
           <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
             <div className={styles.brew__header}>
               <h2>Hops</h2>
-              {/* <span>Total: 1 oz</span> */}
+              <span>{brew.hops.length > 0
+                ? <>Total: {brew.totalHops} oz</>
+                : null}
+              </span>
               <button
                 className={`button button--icon plus ${styles.editButton}`}
                 onClick={this.openSideBar('hops')}
               ><span>Edit</span></button>
             </div>
             <List customClass={styles.brew__ingredients}>
-              {/* <ListItem
-                color="brew"
-                clicked={() => {}}
-              >
-                <span>1 oz</span>
-                <span>Horizon</span>
-                <span>13% AA</span>
-                <span>60 min</span>
-                <span>49.12 IBU</span>
-              </ListItem> */}
+              {brew.hops.map((hop, index) => (
+                <ListItem
+                  color="brew"
+                  clicked={this.openSideBar('hops', hop)}
+                  key={`${hop.id}${index}`}
+                >
+                  <span>{hop.weight} oz</span>
+                  <span>{hop.name}</span>
+                  <span>{hop.alphaAcid}% AA</span>
+                  <span>{hop.ibu ? <>{hop.ibu} IBU</> : null}</span>
+                </ListItem>
+              ))}
             </List>
           </Card>
           <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
