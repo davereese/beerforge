@@ -1,6 +1,22 @@
 import React from 'react';
+import axios from 'axios';
+
 import * as Calculator from '../resources/javascript/Calculator';
 
+async function saveBrew(brew: BrewInterface) {
+  try {
+    // @ts-ignore-line
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const authHeaders = {'authorization': currentUser ? currentUser.token : null};
+    return await axios.post('http://localhost:4000/api/brews', {brew: brew}, {
+      headers: authHeaders,
+    }).then(result => {
+      return result.data;
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
 export interface FermentableInterface {
   id?: number;
   name?: string;
@@ -8,6 +24,7 @@ export interface FermentableInterface {
   unit?: 'lbs' | 'oz';
   lovibond?: number;
   potential?: number;
+  extract?: boolean;
 };
 
 export interface HopInterface {
@@ -211,6 +228,10 @@ export default class Provider extends React.Component {
     this.setState({brew});
   };
 
+  saveBrewToDB = (): void => {
+      saveBrew(this.state.brew);
+  };
+
   render() {
     return (
       <ThemeContext.Provider
@@ -218,6 +239,7 @@ export default class Provider extends React.Component {
           ...this.state,
           // @ts-ignore-line
           updateBrew: this.updateBrew,
+          saveBrewToDB: this.saveBrewToDB,
         }}
       >
         {this.props.children}

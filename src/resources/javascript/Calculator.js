@@ -12,7 +12,7 @@ const thermodynamicConstant = 0.2;
 // PRIVATE FUNCTIONS
 
 function convertToGravityUnits(value) {
-  return parseFloat(((value / 1000) + 1).toFixed(3));
+  return parseFloat(((value / 1000) + 1)).toFixed(3);
 }
 
 function convertToGravityPoints(gravity) {
@@ -98,7 +98,7 @@ export function totalBIABWater(batchSize, boilTime, boilOff, grainWeight, hopWei
 // * Strike Water Volume
 export function strikeVolume(grainWeight, ratio = 1.5) {
   const sVol = (ratio * grainWeight) / 4;
-  return parseFloat(sVol.toFixed(2));
+  return parseFloat(sVol).toFixed(2);
 };
 
 // * Strike Water Temperature
@@ -121,7 +121,7 @@ export function biabStrikeTemp(totalWater, grainWeight, targetTemp, grainTemp, f
 
 // * Sparge Water Volume
 export function spargeVolume(totalWater, mashVolume) {
-  return parseFloat((totalWater - mashVolume).toFixed(2));
+  return parseFloat((totalWater - mashVolume)).toFixed(2);
 }
 
 // Boil-Off Evaporation Percentage
@@ -153,7 +153,7 @@ export function preBoilVol(totalWaterVol, grainVol, batchType = 'allGrain') {
   // totalWaterVol - (grainVol * absorptionRate) - equipmentLoss
   const loss = batchType === 'BIAB' ? 0 : equipmentLoss;
   const result = totalWaterVol - (grainVol * absorptionRate) - loss;
-  return parseFloat(result.toFixed(2));
+  return parseFloat(result).toFixed(2);
 };
 
 // * Original Gravity
@@ -202,7 +202,7 @@ export function FG(OG, attenuation) {
   const gravity = convertToGravityPoints(OG);
   const aPercentage = attenuation/100;
 
-  return parseFloat(((gravity - (gravity * aPercentage) + 1000) / 1000).toFixed(3));
+  return parseFloat(((gravity - (gravity * aPercentage) + 1000) / 1000)).toFixed(3);
 };
 
 // * Alcohol Content

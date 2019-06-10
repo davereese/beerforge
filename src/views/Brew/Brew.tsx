@@ -13,6 +13,7 @@ import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 interface Props extends RouteComponentProps {
   brew: BrewInterface;
   updateBrew: Function;
+  saveBrewToDB: Function;
 }
 
 class Brew extends React.Component<Props, any> {
@@ -98,7 +99,7 @@ class Brew extends React.Component<Props, any> {
   }
 
   render() {
-    const {brew, updateBrew} = this.props;
+    const {brew, updateBrew, saveBrewToDB} = this.props;
 
     const top = {
       marginTop: this.state.topSpacing
@@ -450,6 +451,7 @@ class Brew extends React.Component<Props, any> {
           <button
             type="submit"
             className={`button button--large ${styles.saveButton}`}
+            onClick={(e) => saveBrewToDB()}
           >Save &amp; Get Brewing!</button>
         </div>
         <div className={styles.sideBar} role="complementary">
