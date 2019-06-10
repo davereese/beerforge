@@ -48,6 +48,16 @@ function MashForm(props: Props) {
           onChange={dataChanged('grainTemp')}
         />
       </label>
+      {props.brew.batchType === 'BIAB'
+        ? <label>Kettle Size (gal)<br />
+            <input
+              type="number"
+              placeholder="10"
+              defaultValue={`${props.brew.kettleSize}`}
+              onChange={dataChanged('kettleSize')}
+            />
+          </label>
+        : null}
       <label>Mash Length (min)<br />
         <input
           type="number"

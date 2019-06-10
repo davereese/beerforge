@@ -53,7 +53,9 @@ export interface BrewInterface {
   targetMashTemp?: number;
   waterToGrain?: number;
   grainTemp?: number;
+  totalMashVolume?: number;
   mashLength?: number;
+  kettleSize?: number;
   spargeTemp?: number;
   spargeVolume?: number;
   boilLength?: number;
@@ -137,7 +139,7 @@ export default class Provider extends React.Component {
     if (brew.fermentables && brew.batchSize) {
       brew.srm = Calculator.SRM(brew.fermentables, brew.batchSize);
     }
-    if (brew.totalFermentables && brew.waterToGrain) {
+    if (brew.batchType !== 'BIAB' && brew.totalFermentables && brew.waterToGrain) {
       brew.strikeVolume = Calculator.strikeVolume(brew.totalFermentables, brew.waterToGrain);
     }
     if (brew.hops.length) {
@@ -152,14 +154,21 @@ export default class Provider extends React.Component {
       });
       brew.ibu = parseFloat(totalIbu.toFixed(2));
     }
-    if (brew.grainTemp && brew.targetMashTemp && brew.waterToGrain) {
+    if (brew.batchType !== 'BIAB' && brew.grainTemp && brew.targetMashTemp && brew.waterToGrain) {
       brew.strikeTemp = Calculator.strikeTemp(brew.grainTemp, brew.targetMashTemp, brew.waterToGrain, brew.strikeTempFactor);
     }
     if (brew.batchSize && brew.boilLength && brew.evaporationRate && brew.totalFermentables) {
-      brew.totalWater = Calculator.totalWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables);
+      if (brew.batchType === 'BIAB') {
+        brew.totalWater = Calculator.totalBIABWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables, brew.totalHops);
+      } else {
+        brew.totalWater = Calculator.totalWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables);
+      }
+    }
+    if (brew.batchType === 'BIAB' && brew.totalWater && brew.totalFermentables && brew.grainTemp && brew.targetMashTemp) {
+      brew.strikeTemp = Calculator.biabStrikeTemp(brew.totalWater, brew.totalFermentables, brew.targetMashTemp, brew.grainTemp, brew.strikeTempFactor);
     }
     if (brew.batchType === 'allGrain' && brew.totalWater && brew.strikeVolume) {
-        brew.spargeVolume = Calculator.spargeVolume(brew.totalWater, brew.strikeVolume);
+      brew.spargeVolume = Calculator.spargeVolume(brew.totalWater, brew.strikeVolume);
     }
     if (brew.batchType === 'partialMash' && brew.strikeVolume) {
       brew.spargeVolume = brew.strikeVolume;
@@ -181,7 +190,10 @@ export default class Provider extends React.Component {
       brew.pitchCellCount = totalCellCount;
     }
     if (brew.totalWater && brew.totalFermentables) {
-      brew.preBoilVolume = Calculator.preBoilVol(brew.totalWater, brew.totalFermentables);
+      brew.preBoilVolume = Calculator.preBoilVol(brew.totalWater, brew.totalFermentables, brew.batchType);
+      if (brew.batchType === 'BIAB') {
+        brew.totalMashVolume = Calculator.totalMashVolume(brew.totalWater, brew.totalFermentables);
+      }
     }
     if (brew.yeast.length > 0 && brew.og) {
       let attenuationAdditions = 0;
@@ -196,7 +208,6 @@ export default class Provider extends React.Component {
       brew.amountForCO2 = Calculator.CO2(brew.beerTemp, brew.co2VolumeTarget, brew.carbonationMethod, brew.batchSize);
     }
 
-    console.log(brew);
     this.setState({brew});
   };
 

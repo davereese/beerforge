@@ -284,15 +284,29 @@ class Brew extends React.Component<Props, any> {
                 <div className={styles.brew__section}>
                   <div className={styles.brew__header}>
                     <h2>Mash</h2>
+                    <span>{brew.batchType === 'BIAB' &&
+                      brew.totalMashVolume &&
+                      brew.kettleSize &&
+                      Number(brew.totalMashVolume) > Number(brew.kettleSize)
+                        ? <>Warning: Total mash volume exceeds kettle size</>
+                        : null}
+                    </span>
                     <button
                       className={`button button--icon pen ${styles.editButton}`}
                       onClick={this.openSideBar('mash')}
                     ><span>Edit</span></button>
                   </div>
                   <div className={styles.section__values}>
-                    <span>{brew.strikeTemp
-                      ? <>Strike with <strong>{brew.strikeVolume} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
-                      : null}
+                    <span>
+                      {brew.strikeVolume && brew.batchType !== 'BIAB' && brew.strikeTemp
+                        ? <>Strike with <strong>{brew.strikeVolume} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
+                        : null}
+                      {brew.totalWater && brew.batchType === 'BIAB' && brew.strikeTemp
+                        ? <>Strike with <strong>{brew.totalWater.toFixed(2)} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
+                        : null}
+                      {brew.totalMashVolume && brew.batchType === 'BIAB'
+                        ? <><br />Total Mash Vol: <strong>{brew.totalMashVolume} gal</strong></>
+                        : null}
                     </span>
                     <span>
                       {brew.mashLength

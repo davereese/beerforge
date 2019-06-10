@@ -1,10 +1,13 @@
 // CONSTANTS
 // TODO: make these customizable
 const trubLoss = 0.5; // gal
-const shrinkage = 4; // 4%
 const equipmentLoss = 1; // gal
-const absorptionRate = 0.15; // gal/lb of grain
+const absorptionRate = 0.125; // gal/lb of grain
+const hopAbsorptionRate = 0.0365; // gal/oz
 
+// Not customizable
+const shrinkage = 4; // 4%
+const thermodynamicConstant = 0.2;
 
 // PRIVATE FUNCTIONS
 
@@ -71,7 +74,6 @@ export function totalHopWeight(hops) {
 export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
   // boilTime is in hours, hense (boilTime / 60)
   // totalWater = (((batchSize + trubLoss) / (1 - (shrinkage / 100))) / (1 - (boilTime * (boilOff / 100)))) + equipmentLoss + (grainWeight * absorptionRate)
-  // TODO: convert all strings to numbers beforse saving to data model
   batchSize = parseFloat(batchSize);
   boilTime = parseFloat(boilTime);
   boilOff = parseFloat(boilOff);
@@ -79,6 +81,18 @@ export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
 
   const totalWater = (((batchSize + trubLoss) / (1 - (shrinkage / 100))) / (1 - ((boilTime / 60) * (boilOff / 100)))) + equipmentLoss + (grainWeight * absorptionRate);
   return parseFloat(totalWater.toFixed(4));
+};
+
+// * BIAB Total Water
+export function totalBIABWater(batchSize, boilTime, boilOff, grainWeight, hopWeight) {
+  batchSize = parseFloat(batchSize);
+  boilTime = parseFloat(boilTime);
+  boilOff = parseFloat(boilOff);
+  grainWeight = parseFloat(grainWeight);
+  hopWeight = parseFloat(hopWeight);
+
+  const totalWater = (((batchSize + ((boilTime / 60) * boilOff)) + (absorptionRate * grainWeight)) + (hopAbsorptionRate * hopWeight)) + trubLoss;
+  return parseFloat(totalWater.toFixed(2));
 };
 
 // * Strike Water Volume
@@ -91,9 +105,18 @@ export function strikeVolume(grainWeight, ratio = 1.5) {
 export function strikeTemp(grainTemp, targetTemp, ratio, factor) {
   // R - ratio of water to grain, T1 - initial temp of grain, T2 - mash temp target
   // Strike Water Temperature Tw = (0.2 / R)(T2 - T1) + T2
-  const useFactor = factor ? factor : 1;
-  const Tw = ((0.2 / ratio) * (targetTemp - (grainTemp * useFactor)) + parseInt(targetTemp)).toFixed(2);
-  return parseInt(Tw); // round it
+  const useFactor = factor ? factor : 1; // the factor is for equipment temp losses
+  const Tw = ((thermodynamicConstant / ratio) * (targetTemp - (grainTemp * useFactor)) + parseInt(targetTemp)).toFixed(2);
+  return parseInt(Tw, 10); // round it
+};
+
+// * BIAB Strike Water Temperature
+export function biabStrikeTemp(totalWater, grainWeight, targetTemp, grainTemp, factor) {
+  // (.2/((totalwater/grain)*4))*(mashTemp-grainTemp)+mashTemp
+  // if ($scope.recipe.units != 'us') thermodynamicConstant = 0.41
+  // const useFactor = factor ? factor : 1;
+  const Tw = ((thermodynamicConstant / ((totalWater / grainWeight) * 4)) * (targetTemp - grainTemp) + parseInt(targetTemp)).toFixed(2);
+  return parseInt(Tw, 10);
 };
 
 // * Sparge Water Volume
@@ -108,6 +131,13 @@ export function evaporationPercent(postBoilV, preBoilV, minutes) {
   return result.toFixed(1);
 };
 
+// * BIAB Total Mash Volume
+export function totalMashVolume(totalWaterVol, grainWeight) {
+  // Mash volume plus grains. Used to see if the batch will fit in the kettle.
+  const grainSpace = 0.08; // grain takes up 0.08 gallons/pound or 0.667 L/kg
+  return ((grainWeight * grainSpace) + totalWaterVol).toFixed(2);
+};
+
 // * Pre-Boil Gravity
 export function preBoilG(OG, grainVol, totalWaterVol, vol) {
   const PBVol = preBoilVol(totalWaterVol, grainVol);
@@ -119,9 +149,10 @@ export function preBoilG(OG, grainVol, totalWaterVol, vol) {
 };
 
 // * Pre-Boil Volume
-export function preBoilVol(totalWaterVol, grainVol) {
+export function preBoilVol(totalWaterVol, grainVol, batchType = 'allGrain') {
   // totalWaterVol - (grainVol * absorptionRate) - equipmentLoss
-  const result = totalWaterVol - (grainVol * absorptionRate) - equipmentLoss;
+  const loss = batchType === 'BIAB' ? 0 : equipmentLoss;
+  const result = totalWaterVol - (grainVol * absorptionRate) - loss;
   return parseFloat(result.toFixed(2));
 };
 

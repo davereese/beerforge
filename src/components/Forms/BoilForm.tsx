@@ -29,10 +29,10 @@ function BoilForm(props: Props) {
           onChange={dataChanged('boilLength')}
         />
       </label>
-      <label>Evaporation Rate (%/hr)<br />
+      <label>{props.brew.batchType === 'BIAB' ? 'Evaporation Loss (gal)' : 'Evaporation Rate (%/hr)'}<br />
         <input
           type="number"
-          placeholder="1.5"
+          placeholder={props.brew.batchType === 'BIAB' ? '0.5' : '1.5'}
           defaultValue={`${props.brew.evaporationRate}`}
           onChange={dataChanged('evaporationRate')}
         />
