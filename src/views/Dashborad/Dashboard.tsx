@@ -52,7 +52,7 @@ class Dashboard extends React.Component<Props, any> {
   }
 
   handleBrewClick = (brewId: number) => (event: any) => {
-    console.log({brewId});
+    this.props.history.push(`brew/${brewId}`);
   }
 
   togglePage = (page: number) => (event: any) => {

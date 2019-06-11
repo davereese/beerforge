@@ -14,6 +14,8 @@ interface Props extends RouteComponentProps {
   brew: BrewInterface;
   updateBrew: Function;
   saveBrewToDB: Function;
+  getBrewfromDB: Function;
+  clearBrew: Function;
 }
 
 class Brew extends React.Component<Props, any> {
@@ -23,6 +25,7 @@ class Brew extends React.Component<Props, any> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      new: true,
       sideBarOpen: false,
       editingName: false,
       topSpacing: 0,
@@ -34,6 +37,11 @@ class Brew extends React.Component<Props, any> {
   }
 
   componentDidMount() {
+    const brewId = Number(window.location.pathname.split('/')[2]);
+    if (!isNaN(brewId)) {
+      this.props.getBrewfromDB(brewId).then((res: BrewInterface) => this.setState({new: false}));
+    }
+
     window.addEventListener('scroll', this.handleScroll, { passive: true })
   }
 
@@ -45,7 +53,8 @@ class Brew extends React.Component<Props, any> {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll)
+    window.removeEventListener('scroll', this.handleScroll);
+    this.props.clearBrew();
   }
 
   handleScroll = (event: Event) => {
@@ -144,7 +153,7 @@ class Brew extends React.Component<Props, any> {
             >Settings</button>
           </div>
           {this.props.staticContext}
-          <Card color="brew" customClass={styles.new}>
+          <Card color="brew" customClass={this.state.new ? styles.new : styles.view}>
             <div className={styles.brew__numbers}>
               <ul className={styles.brew__numbersList}>
                 <li>
@@ -199,7 +208,7 @@ class Brew extends React.Component<Props, any> {
               </div>
             </div>
           </Card>
-          <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
+          <Card color="brew" customClass={`${this.state.new ? styles.new : styles.view} ${styles.brew__editingSection}`}>
             <div className={styles.brew__header}>
               <h2>Fermentables</h2>
               {brew.fermentables.length > 0
@@ -224,7 +233,7 @@ class Brew extends React.Component<Props, any> {
               ))}
             </List>
           </Card>
-          <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
+          <Card color="brew" customClass={`${this.state.new ? styles.new : styles.view} ${styles.brew__editingSection}`}>
             <div className={styles.brew__header}>
               <h2>Hops</h2>
               <span>{brew.hops.length > 0
@@ -251,7 +260,7 @@ class Brew extends React.Component<Props, any> {
               ))}
             </List>
           </Card>
-          <Card color="brew" customClass={`${styles.new} ${styles.brew__editingSection}`}>
+          <Card color="brew" customClass={`${this.state.new ? styles.new : styles.view} ${styles.brew__editingSection}`}>
             <div className={styles.brew__header}>
               <h2>Yeast</h2>
               {brew.yeast.length > 0
@@ -279,7 +288,7 @@ class Brew extends React.Component<Props, any> {
               ))}
             </List>
           </Card>
-          <Card color="brew" customClass={styles.new}>
+          <Card color="brew" customClass={this.state.new ? styles.new : styles.view}>
             {brew.batchType !== 'extract'
               ? <>
                 <div className={styles.brew__section}>

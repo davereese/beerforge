@@ -3,7 +3,7 @@ import React from 'react';
 import styles from './ListItem.module.scss';
 
 interface Props {
-  clicked: any;
+  clicked?: any;
   data?: string;
   label?: string;
   color?: 'dashboard' | 'brew';

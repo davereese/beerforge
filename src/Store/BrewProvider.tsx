@@ -10,8 +10,19 @@ async function saveBrew(brew: BrewInterface) {
     const authHeaders = {'authorization': currentUser ? currentUser.token : null};
     return await axios.post('http://localhost:4000/api/brews', {brew: brew}, {
       headers: authHeaders,
-    }).then(result => {
-      return result.data;
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getBrew(brewId: number) {
+  try {
+    // @ts-ignore-line
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const authHeaders = {'authorization': currentUser ? currentUser.token : null};
+    return await axios.get(`http://localhost:4000/api/brews/${brewId}`, {
+      headers: authHeaders,
     });
   } catch (error) {
     console.log(error);
@@ -51,7 +62,9 @@ export interface YeastInterface {
 };
 
 export interface BrewInterface {
+  id?: number;
   name?: string;
+  dateBrewed?: Date;
   batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
   batchSize?: number;
   systemEfficiency?: number;
@@ -202,6 +215,7 @@ export default class Provider extends React.Component {
     if (brew.yeast.length > 0) {
       let totalCellCount = 0;
       brew.yeast.forEach(item => {
+        item.viableCellCount = Calculator.pitchingRate(item.type, item.cellCount, item.amount, item.mfgDate);
         totalCellCount += item.viableCellCount ? item.viableCellCount : 0;
       });
       brew.pitchCellCount = totalCellCount;
@@ -229,7 +243,27 @@ export default class Provider extends React.Component {
   };
 
   saveBrewToDB = (): void => {
-      saveBrew(this.state.brew);
+    saveBrew(this.state.brew).then(res => {
+      this.clearBrew();
+    });
+  };
+
+  getBrewfromDB = (id: number): Promise<any> => {
+    return getBrew(id).then(res => {
+      if (res) {
+        const brew = {...res.data.brew};
+        this.updateBrew(brew);
+      }
+    });
+  };
+
+  clearBrew = (): void => {
+    this.setState({brew: {
+      name: '',
+      fermentables: [],
+      hops: [],
+      yeast: [],
+    }});
   };
 
   render() {
@@ -240,6 +274,8 @@ export default class Provider extends React.Component {
           // @ts-ignore-line
           updateBrew: this.updateBrew,
           saveBrewToDB: this.saveBrewToDB,
+          getBrewfromDB: this.getBrewfromDB,
+          clearBrew: this.clearBrew,
         }}
       >
         {this.props.children}
