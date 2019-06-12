@@ -99,6 +99,8 @@ function AddHopForm(props: Props) {
     // set the form default valies to be the data we're editing.
     if (props.editingData !== null) {
       setFormData(props.editingData);
+    } else {
+      setFormData({id: 0});
     }
   }, [props.editingData]);
 
