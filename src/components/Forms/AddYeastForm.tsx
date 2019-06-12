@@ -18,8 +18,7 @@ interface yeastResults extends YeastInterface {
 
 async function listAllYeast() {
   try {
-    // @ts-ignore-line
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const authHeaders = {'authorization': currentUser ? currentUser.token : null};
     return await axios.get('http://localhost:4000/api/ingredients/yeast', {
       headers: authHeaders,

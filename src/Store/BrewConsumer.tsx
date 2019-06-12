@@ -9,13 +9,14 @@ export default class Consumer extends React.Component {
       <ThemeContext.Consumer>
         {
           // @ts-ignore-line
-          ({brew, updateBrew, saveBrewToDB, getBrewfromDB, clearBrew}) => {
+          ({brew, updateBrew, saveBrewToDB, updateBrewOnDB, getBrewfromDB, clearBrew}) => {
             return React.Children.map(children, child =>
               // @ts-ignore-line
               React.cloneElement(child, {
                 brew,
                 updateBrew,
                 saveBrewToDB,
+                updateBrewOnDB,
                 getBrewfromDB,
                 clearBrew,
               })

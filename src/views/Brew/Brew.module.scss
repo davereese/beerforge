@@ -65,6 +65,10 @@
     }
   }
 
+  .dateBrewed {
+    margin-left: px-to-rem(20px);
+  }
+
   &__pageHeading {
     display: flex;
     justify-content: space-between;
