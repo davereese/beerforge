@@ -127,16 +127,17 @@
   &--page {
     margin-right: 5px;
     padding: 5px;
-    width: 29px;
+    width: 30px;
     height: auto;
     border: 1px solid transparent;
     border-radius: 50%;
     background-color: transparent;
     text-align: center;
-    transition: color 0.3s, border-color 0.3s;
+    transition: color 0.3s, border-color 0.3s, background-color 0.3s;
 
     &:hover {
       color: $button-link-hover;
+      background-color: rgba(saturate($button-default-bg, 75%), 0.5);
     }
 
     &.on {
@@ -145,6 +146,11 @@
 
       &:hover {
         border-color: $button-link-hover;
+        background-color: rgba(saturate($button-default-bg, 75%), 0.5);
+      }
+
+      &:focus {
+        background-color: transparent;
       }
     }
   }

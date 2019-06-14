@@ -22,7 +22,7 @@ function Header({ currentUser, logOutUser }: any) {
         </div>
       ) : null}
       {window.location.pathname === "/dashboard" && currentUser ? (
-        <button className={styles.loginLink} onClick={logOutUser}>
+        <button className={`button button--link ${styles.loginLink}`} onClick={logOutUser}>
           Log Out
         </button>
       ) : null}
