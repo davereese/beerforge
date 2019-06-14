@@ -25,7 +25,7 @@ class LoginSignup extends React.Component<any, any> {
   async logInOrSignUpUser(url: string, body: Object) {
     try {
       const response = await axios.post(url, body);
-      this.props.onLoginSuccess(response.data);
+      this.props.saveUser({currentUser: response.data});
       this.props.history.push('/dashboard');
     } catch (error) {
       this.setState({error: error.response.status});

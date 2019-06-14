@@ -17,13 +17,10 @@ interface HopResults extends HopInterface {
 
 async function listAllHops() {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const authHeaders = {'authorization': currentUser ? currentUser.token : null};
-    return await axios.get('http://localhost:4000/api/ingredients/hops', {
-      headers: authHeaders,
-    }).then(result => {
-      return result.data;
-    });
+    return await axios.get('http://localhost:4000/api/ingredients/hops')
+      .then(result => {
+        return result.data;
+      });
   } catch (error) {
     console.log(error);
   }

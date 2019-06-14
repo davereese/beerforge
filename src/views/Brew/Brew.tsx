@@ -7,20 +7,25 @@ import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
 import { pen } from '../../resources/javascript/penSvg.js';
 import FormHandler from './FormHandler/FormHandler';
-import { BrewInterface } from '../../Store/BrewProvider';
+import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } from '../../Store/BrewProvider';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
+import { UserInterface } from '../../Store/UserProvider';
 
 interface Props extends RouteComponentProps {
+  currentUser: UserInterface;
+  loadUser: Function;
+  saveUser: Function;
+  logOutUser: Function;
   brew: BrewInterface;
-  updateBrew: Function;
-  saveBrewToDB: Function;
-  updateBrewOnDB: Function;
-  getBrewfromDB: Function;
   clearBrew: Function;
+  getBrewfromDB: Function;
+  saveBrewToDB: Function;
+  updateBrew: Function;
+  updateBrewOnDB: Function;
 }
 
-class Brew extends React.Component<Props, any> {
+class Brew extends React.Component<any, any> {
   brewContainer: React.RefObject<HTMLDivElement>;
   nameInput: React.RefObject<HTMLInputElement>;
 
@@ -40,13 +45,14 @@ class Brew extends React.Component<Props, any> {
   }
 
   componentDidMount() {
+    // before we start using the current user, let's just make sure they haven't expired, shall we?
+    this.props.loadUser();
     const brewId = Number(window.location.pathname.split('/')[2]);
     if (!isNaN(brewId)) {
       this.props.getBrewfromDB(brewId)
         .then(() => {
           const {brew} = this.props;
-          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-          const readOnly = brew.userId !== currentUser.id ? true : false;
+          const readOnly = brew.userId !== this.props.currentUser.id ? true : false;
           this.setState({
             new: false,
             readOnly: readOnly,
@@ -119,8 +125,14 @@ class Brew extends React.Component<Props, any> {
     return newString.replace(/([a-z])([A-Z])/g, '$1 $2')
   }
 
+  handleSave = (e: any) => {
+    // double check current user hasn't expired
+    this.props.loadUser();
+    this.state.new ? this.props.saveBrewToDB() : this.props.updateBrewOnDB() 
+  }
+
   render() {
-    const {brew, updateBrew, saveBrewToDB, updateBrewOnDB} = this.props;
+    const {brew, updateBrew} = this.props;
 
     const top = {
       marginTop: this.state.topSpacing
@@ -249,7 +261,7 @@ class Brew extends React.Component<Props, any> {
                 : null}
             </div>
             <List customClass={styles.brew__ingredients}>
-              {brew.fermentables.map((fermentable, index) => (
+              {brew.fermentables.map((fermentable: FermentableInterface, index: number) => (
                 <ListItem
                   color="brew"
                   clicked={!this.state.readOnly ? this.openSideBar('fermentables', fermentable) : null}
@@ -277,7 +289,7 @@ class Brew extends React.Component<Props, any> {
                 : null}
             </div>
             <List customClass={styles.brew__ingredients}>
-              {brew.hops.map((hop, index) => (
+              {brew.hops.map((hop: HopInterface, index: number) => (
                 <ListItem
                   color="brew"
                   clicked={!this.state.readOnly ? this.openSideBar('hops', hop) : null}
@@ -308,7 +320,7 @@ class Brew extends React.Component<Props, any> {
                 : null}
             </div>
             <List customClass={`${styles.brew__ingredients} ${styles.yeast}`}>
-              {brew.yeast.map((item, index) => (
+              {brew.yeast.map((item: YeastInterface, index: number) => (
                 <ListItem
                   color="brew"
                   clicked={!this.state.readOnly ? this.openSideBar('yeast', item) : null}
@@ -504,14 +516,14 @@ class Brew extends React.Component<Props, any> {
             ? <button
                 type="submit"
                 className={`button button--large ${styles.saveButton}`}
-                onClick={(e) => this.state.new ? saveBrewToDB() : updateBrewOnDB() }
+                onClick={this.handleSave}
               >{this.state.new ? <>Save &amp; Get Brewing!</> : <>Update Brew</>}</button>
             : null}
         </div>
         <div className={styles.sideBar} role="complementary">
           <Card color="brew" customStyle={top} customClass={`${styles.formsContainer}`}>
             <FormHandler
-              {...this.props}
+              {...this.props as Props}
               form={this.state.form}
               nextForm={this.nextForm}
               editingData={this.state.editingData}

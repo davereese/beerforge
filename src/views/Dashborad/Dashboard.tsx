@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 import styles from './Dashboard.module.scss';
@@ -11,18 +11,8 @@ import ListItem from '../../components/ListItem/ListItem';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 
-interface Props extends RouteComponentProps {
-  user: {
-    username: string;
-    first_name: string;
-    last_name: string;
-    beers: number;
-    badges: number;
-  };
-}
-
-class Dashboard extends React.Component<Props, any> {
-  constructor(props: Props) {
+class Dashboard extends React.Component<any, any> {
+  constructor(props: any) {
     super(props);
 
     this.state = {
@@ -33,9 +23,8 @@ class Dashboard extends React.Component<Props, any> {
 
   async listUserBrews() {
     try {
-      // @ts-ignore-line
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      const authHeaders = {'authorization': currentUser ? currentUser.token : null};
+      this.props.loadUser();
+      const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
       await axios.get('http://localhost:4000/api/brews', {
         headers: authHeaders,
       }).then(result => {
@@ -89,7 +78,7 @@ class Dashboard extends React.Component<Props, any> {
     return (
       <section className={styles.dashboard}>
         <div className={styles.topRow}>
-          <UserInfo user={this.props.user} brews={this.state.brewLog} />
+          <UserInfo user={this.props.currentUser} brews={this.state.brewLog} />
           <Link
             to="brew"
             className="button button--large button--yellow"

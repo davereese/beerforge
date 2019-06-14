@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, withRouter, RouteComponentProps } from 'react-router-dom';
 
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -7,58 +7,66 @@ import Fade from './components/Fade/Fade';
 import Dashboard from './views/Dashborad/Dashboard';
 import LoginSignup from './views/LoginSignup/LoginSignup';
 import Brew from './views/Brew/Brew';
+import { BrewInterface } from './Store/BrewProvider';
+import { UserInterface } from './Store/UserProvider';
 
-// Check for logged in user
-// @ts-ignore-line
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+interface Props extends RouteComponentProps {
+  currentUser: UserInterface;
+  loadUser: Function;
+  saveUser: Function;
+  logOutUser: Function;
+  brew: BrewInterface;
+  clearBrew: Function;
+  getBrewfromDB: Function;
+  saveBrewToDB: Function;
+  updateBrew: Function;
+  updateBrewOnDB: Function;
+  history: any;
+}
 
-class App extends React.Component<any, any> {
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      currentUser: currentUser,
-    }
+function isEmpty(obj: any) {
+  for(var key in obj) {
+      if(obj.hasOwnProperty(key))
+          return false;
   }
+  return true;
+}
+class App extends React.Component<any, Props> {
+  componentDidMount() {
+    if (isEmpty(this.props.currentUser)) {
+      this.props.history.push('/login');
+    }
+  };
+
+  componentDidUpdate(prevProps: Props) {
+    if (!isEmpty(prevProps.currentUser) && isEmpty(this.props.currentUser)) {
+      this.props.history.push('/login');
+    }
+  };
 
   render() {
-    const handleLogIn = (response: any) => {
-      this.setState({currentUser: response});
-      localStorage.setItem('currentUser', JSON.stringify(response));
-    }
-
-    const handleLogOut = () => {
-      this.setState({currentUser: null});
-      localStorage.removeItem('currentUser');
-    }
-
     return (
       <Fade>
-        <Header user={this.state.currentUser} onLogout={handleLogOut} />
-        <main>
-          <Switch>
-            {/* <Route path="/" exact component={Home} /> */}
-            <Route path="/dashboard" exact render={props => (
-              <Dashboard {...props} user={this.state.currentUser} />
-            )} />
-            <Route path="/login" exact render={props => (
-              <LoginSignup
-                onLoginSuccess={handleLogIn}
-                onSignupSuccess={handleLogIn}
-                history={props.history}
-              />
-            )} />
-            <Route path="/brew" render={props => (
-              // @ts-ignore-line
-              <Brew {...{props}} {...this.props} />
-            )} />
-            {/* <Route component={NoMatch} /> */}
-          </Switch>
-        </main>
+        <Header {...this.props} />
+          <main>
+            <Switch>
+              {/* <Route path="/" exact component={Home} /> */}
+              <Route path="/dashboard" exact render={props => (
+                <Dashboard {...{props}} {...this.props} />
+              )} />
+              <Route path="/login" exact render={props => (
+                <LoginSignup {...this.props} history={props.history} />
+              )} />
+              <Route path="/brew" render={props => (
+                <Brew {...{props}} {...this.props} />
+              )} />
+              {/* <Route component={NoMatch} /> */}
+            </Switch>
+          </main>
         <Footer />
       </Fade>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

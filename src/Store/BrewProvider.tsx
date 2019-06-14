@@ -1,12 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 
+import { ls } from './UserProvider';
 import * as Calculator from '../resources/javascript/Calculator';
 
-const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-const authHeaders = {'authorization': currentUser ? currentUser.token : null};
-
 async function saveBrew(brew: BrewInterface) {
+  const currentUser = ls.load('currentUser');
+  const authHeaders = {'authorization': currentUser ? currentUser.token : null};
   try {
     return await axios.post('http://localhost:4000/api/brews', {brew: brew}, {
       headers: authHeaders,
@@ -17,6 +17,8 @@ async function saveBrew(brew: BrewInterface) {
 }
 
 async function updateBrewDB(brew: BrewInterface) {
+  const currentUser = ls.load('currentUser');
+  const authHeaders = {'authorization': currentUser ? currentUser.token : null};
   try {
     return await axios.put(`http://localhost:4000/api/brews/${brew.id}`, {brew: brew}, {
       headers: authHeaders,
@@ -27,6 +29,8 @@ async function updateBrewDB(brew: BrewInterface) {
 }
 
 async function getBrew(brewId: number) {
+  const currentUser = ls.load('currentUser');
+  const authHeaders = {'authorization': currentUser ? currentUser.token : null};
   try {
     return await axios.get(`http://localhost:4000/api/brews/${brewId}`, {
       headers: authHeaders,
@@ -128,9 +132,9 @@ const DEFAULT_STATE = {
   } as BrewInterface
 };
 
-export const ThemeContext = React.createContext(DEFAULT_STATE);
+export const BrewContext = React.createContext(DEFAULT_STATE);
 
-export default class Provider extends React.Component {
+export default class BrewProvider extends React.Component {
   state = DEFAULT_STATE;
 
   compareWeight = (a: FermentableInterface | HopInterface, b: FermentableInterface | HopInterface) => {
@@ -252,13 +256,13 @@ export default class Provider extends React.Component {
   };
 
   saveBrewToDB = (): void => {
-    saveBrew(this.state.brew).then(res => {
+    saveBrew(this.state.brew).then(() => {
       this.clearBrew();
     });
   };
 
   updateBrewOnDB = (): void => {
-    updateBrewDB(this.state.brew).then(res => {
+    updateBrewDB(this.state.brew).then(() => {
       // this.clearBrew();
     });
   };
@@ -283,7 +287,7 @@ export default class Provider extends React.Component {
 
   render() {
     return (
-      <ThemeContext.Provider
+      <BrewContext.Provider
         value={{
           ...this.state,
           // @ts-ignore-line
@@ -295,7 +299,7 @@ export default class Provider extends React.Component {
         }}
       >
         {this.props.children}
-      </ThemeContext.Provider>
+      </BrewContext.Provider>
     );
   }
 }

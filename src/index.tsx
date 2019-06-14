@@ -5,16 +5,19 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import Provider from './Store/BrewProvider';
-import Consumer from './Store/BrewConsumer';
+import UserProvider from './Store/UserProvider';
+import BrewProvider from './Store/BrewProvider';
+import ContentConsumer from './Store/ContextConsumer';
 
 ReactDOM.render(
   <BrowserRouter>
-    <Provider>
-      <Consumer>
-        <App />
-      </Consumer>
-    </Provider>
+    <UserProvider>
+      <BrewProvider>
+        <ContentConsumer>
+          <App />
+        </ContentConsumer>
+      </BrewProvider>
+    </UserProvider>
   </BrowserRouter>,
   document.getElementById('root')
 );
