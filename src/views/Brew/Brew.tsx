@@ -11,6 +11,7 @@ import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } fro
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import { UserInterface } from '../../Store/UserProvider';
+import { ModalProviderInterface } from '../../Store/ModalProvider';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -25,6 +26,7 @@ interface Props extends RouteComponentProps {
   updateBrewOnDB: Function;
   deleteBrewFromDB: Function;
   history: any;
+  modalProps: ModalProviderInterface;
 }
 
 class Brew extends React.Component<any, any> {

@@ -8,15 +8,18 @@ import * as serviceWorker from './serviceWorker';
 import UserProvider from './Store/UserProvider';
 import BrewProvider from './Store/BrewProvider';
 import ContentConsumer from './Store/ContextConsumer';
+import ModalProvider from './Store/ModalProvider';
 
 ReactDOM.render(
   <BrowserRouter>
     <UserProvider>
-      <BrewProvider>
-        <ContentConsumer>
-          <App />
-        </ContentConsumer>
-      </BrewProvider>
+      <ModalProvider>
+        <BrewProvider>
+          <ContentConsumer>
+            <App />
+          </ContentConsumer>
+        </BrewProvider>
+      </ModalProvider>
     </UserProvider>
   </BrowserRouter>,
   document.getElementById('root')

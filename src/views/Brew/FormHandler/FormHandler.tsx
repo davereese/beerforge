@@ -11,6 +11,7 @@ import BoilForm from '../../../components/Forms/BoilForm';
 import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
+import { ModalProviderInterface } from '../../../Store/ModalProvider';
 
 interface Props {
   form: string;
@@ -20,6 +21,7 @@ interface Props {
   updateBrew: Function;
   deleteBrewFromDB: Function
   brew: BrewInterface;
+  modalProps: ModalProviderInterface;
 }
 
 function FormHandler({
@@ -30,6 +32,7 @@ function FormHandler({
   closeSidebar,
   updateBrew,
   deleteBrewFromDB,
+  modalProps,
 }: Props) {
 
   let title: string,
@@ -77,10 +80,29 @@ function FormHandler({
     updateBrew({...formData, [form]: dataToSet});
   };
 
+  const handleDeleteBrew = () => {
+    modalProps.showModal({
+      title: `Are you sure you want to permanently remove <strong>${brew.name}</strong>?`,
+      buttons: <>
+          <button
+            className="button button--brown"
+            onClick={() => modalProps.hideModal()}
+          >No, cancel</button>
+          <button
+            className="button"
+            onClick={() => {
+              deleteBrewFromDB(brew.id);
+              modalProps.hideModal();
+            }}
+          >Yes, remove</button>
+        </>
+    });
+  };
+
   switch (form) {
     case 'settings':
       title = 'Settings';
-      component = <BrewSettingsForm brew={brew} dataUpdated={setData} delete={deleteBrewFromDB} />
+      component = <BrewSettingsForm brew={brew} dataUpdated={setData} delete={handleDeleteBrew} />
       submitText = 'Submit';
       break;
     case 'fermentables':

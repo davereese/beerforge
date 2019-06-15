@@ -7,6 +7,7 @@ import Fade from './components/Fade/Fade';
 import Dashboard from './views/Dashborad/Dashboard';
 import LoginSignup from './views/LoginSignup/LoginSignup';
 import Brew from './views/Brew/Brew';
+import Modal from './components/Modal/Modal';
 import { BrewInterface } from './Store/BrewProvider';
 import { UserInterface } from './Store/UserProvider';
 
@@ -23,6 +24,7 @@ interface Props extends RouteComponentProps {
   updateBrewOnDB: Function;
   deleteBrewFromDB: Function;
   history: any;
+  modalProps: any;
 }
 
 function isEmpty(obj: any) {
@@ -49,21 +51,22 @@ class App extends React.Component<any, Props> {
     return (
       <Fade>
         <Header {...this.props} />
-          <main>
-            <Switch>
-              {/* <Route path="/" exact component={Home} /> */}
-              <Route path="/dashboard" exact render={props => (
-                <Dashboard {...{props}} {...this.props} />
-              )} />
-              <Route path="/login" exact render={props => (
-                <LoginSignup {...this.props} history={props.history} />
-              )} />
-              <Route path="/brew" render={props => (
-                <Brew {...{props}} {...this.props} />
-              )} />
-              {/* <Route component={NoMatch} /> */}
-            </Switch>
-          </main>
+        <main>
+          <Switch>
+            {/* <Route path="/" exact component={Home} /> */}
+            <Route path="/dashboard" exact render={props => (
+              <Dashboard {...{props}} {...this.props} />
+            )} />
+            <Route path="/login" exact render={props => (
+              <LoginSignup {...this.props} history={props.history} />
+            )} />
+            <Route path="/brew" render={props => (
+              <Brew {...{props}} {...this.props} />
+            )} />
+            {/* <Route component={NoMatch} /> */}
+          </Switch>
+        </main>
+        <Modal modalProps={this.props.modalProps} />
         <Footer />
       </Fade>
     );

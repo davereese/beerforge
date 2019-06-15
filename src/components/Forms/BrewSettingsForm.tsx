@@ -93,7 +93,7 @@ function BrewSettingsForm(props: Props) {
           </select>
       </label>
       {props.brew.id
-        ? <button className={`button button--error button--no-shadow ${styles.fullButton}`} onClick={() => props.delete(props.brew.id)}>Remove Brew</button>
+        ? <button className={`button button--error button--no-shadow ${styles.fullButton}`} onClick={() => props.delete()}>Remove Brew</button>
         : null}
     </>
   );
