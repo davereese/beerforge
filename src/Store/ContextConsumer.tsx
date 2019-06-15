@@ -14,7 +14,7 @@ export default class ContextConsumer extends React.Component {
           <BrewContext.Consumer>
             {
               // @ts-ignore-line
-              ({brew, updateBrew, saveBrewToDB, updateBrewOnDB, getBrewfromDB, clearBrew}) => {
+              ({brew, updateBrew, saveBrewToDB, updateBrewOnDB, getBrewfromDB, deleteBrewFromDB, clearBrew}) => {
                 return React.Children.map(children, child =>
                   // @ts-ignore-line
                   React.cloneElement(child, {
@@ -23,6 +23,7 @@ export default class ContextConsumer extends React.Component {
                     saveBrewToDB,
                     updateBrewOnDB,
                     getBrewfromDB,
+                    deleteBrewFromDB,
                     clearBrew,
                     currentUser,
                     saveUser,

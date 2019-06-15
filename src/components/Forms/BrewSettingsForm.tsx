@@ -6,6 +6,7 @@ import { BrewInterface } from '../../Store/BrewProvider';
 interface Props {
   brew: BrewInterface;
   dataUpdated: Function;
+  delete: Function;
 }
 
 function BrewSettingsForm(props: Props) {
@@ -91,6 +92,9 @@ function BrewSettingsForm(props: Props) {
             <option value="2.0">2.0 (High OG Lager)</option>
           </select>
       </label>
+      {props.brew.id
+        ? <button className={`button button--error button--no-shadow ${styles.fullButton}`} onClick={() => props.delete(props.brew.id)}>Remove Brew</button>
+        : null}
     </>
   );
 };

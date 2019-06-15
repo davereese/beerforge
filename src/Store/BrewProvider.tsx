@@ -37,6 +37,19 @@ async function getBrew(brewId: number) {
     });
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+}
+
+async function deleteBrew(brewId: number) {
+  const currentUser = ls.load('currentUser');
+  const authHeaders = {'authorization': currentUser ? currentUser.token : null};
+  try {
+    return await axios.delete(`http://localhost:4000/api/brews/${brewId}`, {
+      headers: authHeaders,
+    });
+  } catch (error) {
+    console.log(error);
   }
 }
 export interface FermentableInterface {
@@ -269,10 +282,16 @@ export default class BrewProvider extends React.Component {
 
   getBrewfromDB = (id: number): Promise<any> => {
     return getBrew(id).then(res => {
-      if (res) {
+      if (res.data) {
         const brew = {...res.data.brew};
         this.updateBrew(brew);
       }
+    });
+  };
+
+  deleteBrewFromDB = (id: number): void => {
+    deleteBrew(id).then(() => {
+      this.clearBrew();
     });
   };
 
@@ -295,6 +314,7 @@ export default class BrewProvider extends React.Component {
           saveBrewToDB: this.saveBrewToDB,
           updateBrewOnDB: this.updateBrewOnDB,
           getBrewfromDB: this.getBrewfromDB,
+          deleteBrewFromDB: this.deleteBrewFromDB,
           clearBrew: this.clearBrew,
         }}
       >

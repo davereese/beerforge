@@ -18,6 +18,7 @@ interface Props {
   editingData: any;
   closeSidebar: any;
   updateBrew: Function;
+  deleteBrewFromDB: Function
   brew: BrewInterface;
 }
 
@@ -28,6 +29,7 @@ function FormHandler({
   editingData,
   closeSidebar,
   updateBrew,
+  deleteBrewFromDB,
 }: Props) {
 
   let title: string,
@@ -78,7 +80,7 @@ function FormHandler({
   switch (form) {
     case 'settings':
       title = 'Settings';
-      component = <BrewSettingsForm brew={brew} dataUpdated={setData} />
+      component = <BrewSettingsForm brew={brew} dataUpdated={setData} delete={deleteBrewFromDB} />
       submitText = 'Submit';
       break;
     case 'fermentables':

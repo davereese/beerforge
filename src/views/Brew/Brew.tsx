@@ -23,6 +23,8 @@ interface Props extends RouteComponentProps {
   saveBrewToDB: Function;
   updateBrew: Function;
   updateBrewOnDB: Function;
+  deleteBrewFromDB: Function;
+  history: any;
 }
 
 class Brew extends React.Component<any, any> {
@@ -57,6 +59,8 @@ class Brew extends React.Component<any, any> {
             new: false,
             readOnly: readOnly,
           });
+        }, (error: any) => {
+          this.props.history.push('/dashboard');
         });
     }
 
@@ -67,6 +71,11 @@ class Brew extends React.Component<any, any> {
     if (this.props.brew !== prevProps.brew) {
       // if the brew has changed, reset some stuff
       this.setState({editingData: null});
+    }
+    if (prevProps.brew.id && !this.props.brew.id) {
+      // if we had a brew with an id, and all of a sudden we don't, we must
+      // have deleted it. Redirect to the dashboard.
+      this.props.history.push('/dashboard');
     }
   }
 

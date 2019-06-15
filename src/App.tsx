@@ -21,6 +21,7 @@ interface Props extends RouteComponentProps {
   saveBrewToDB: Function;
   updateBrew: Function;
   updateBrewOnDB: Function;
+  deleteBrewFromDB: Function;
   history: any;
 }
 
