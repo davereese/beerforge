@@ -19,7 +19,7 @@ class LoginSignup extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    document.title = "BeerForge | Log In";
+    document.title = "BeerForge | Log In or Sign Up";
   }
 
   async logInOrSignUpUser(url: string, body: Object) {

@@ -12,7 +12,7 @@ import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import { UserInterface } from '../../Store/UserProvider';
 import { ModalProviderInterface } from '../../Store/ModalProvider';
-import { scrollToTop } from '../../resources/javascript/ScrollToTop';
+import { scrollToTop } from '../../resources/javascript/ScrollToTop.js';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -50,6 +50,7 @@ class Brew extends React.Component<any, any> {
   }
 
   componentDidMount() {
+    document.title = "BeerForge | New Brew";
     // before we start using the current user, let's just make sure they haven't expired, shall we?
     this.props.loadUser();
     const brewId = Number(window.location.pathname.split('/')[2]);
@@ -61,7 +62,7 @@ class Brew extends React.Component<any, any> {
           this.setState({
             new: false,
             readOnly: readOnly,
-          });
+          }, () => document.title = `BeerForge | Viewing ${brew.name}`);
         }, (error: any) => {
           this.props.history.push('/dashboard');
         });
