@@ -12,6 +12,7 @@ import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import { UserInterface } from '../../Store/UserProvider';
 import { ModalProviderInterface } from '../../Store/ModalProvider';
+import { scrollToTop } from '../../resources/javascript/ScrollToTop';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -139,7 +140,25 @@ class Brew extends React.Component<any, any> {
   handleSave = (e: any) => {
     // double check current user hasn't expired
     this.props.loadUser();
-    this.state.new ? this.props.saveBrewToDB() : this.props.updateBrewOnDB() 
+    this.state.new
+      ? this.props.saveBrewToDB()
+        .then(() => {
+          const {brew} = this.props;
+          this.props.history.push(`/brew/${brew.id}`);
+          this.setState({
+            new: false,
+            readOnly: false,
+          });
+          scrollToTop(300);
+        }, (error: any) => {
+          console.log(error);
+        })
+      : this.props.updateBrewOnDB()
+        .then(() => {
+          scrollToTop(300);
+        }, (error: any) => {
+          console.log(error);
+        });
   }
 
   render() {

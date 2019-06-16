@@ -13,6 +13,7 @@ async function saveBrew(brew: BrewInterface) {
     });
   } catch (error) {
     console.log(error);
+    throw error;
   }
 }
 
@@ -268,16 +269,17 @@ export default class BrewProvider extends React.Component {
     this.setState({brew});
   };
 
-  saveBrewToDB = (): void => {
-    saveBrew(this.state.brew).then(() => {
-      this.clearBrew();
+  saveBrewToDB = (): Promise<any> => {
+    return saveBrew(this.state.brew).then(res => {
+      if (res.data) {
+        const brew = {...res.data.brew};
+        this.updateBrew(brew);
+      }
     });
   };
 
-  updateBrewOnDB = (): void => {
-    updateBrewDB(this.state.brew).then(() => {
-      // this.clearBrew();
-    });
+  updateBrewOnDB = (): Promise<any> => {
+    return updateBrewDB(this.state.brew).then();
   };
 
   getBrewfromDB = (id: number): Promise<any> => {
