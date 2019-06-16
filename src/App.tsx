@@ -10,6 +10,7 @@ import Brew from './views/Brew/Brew';
 import Modal from './components/Modal/Modal';
 import { BrewInterface } from './Store/BrewProvider';
 import { UserInterface } from './Store/UserProvider';
+import { isEmpty } from './resources/javascript/isEmpty';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -27,13 +28,6 @@ interface Props extends RouteComponentProps {
   modalProps: any;
 }
 
-function isEmpty(obj: any) {
-  for(var key in obj) {
-      if(obj.hasOwnProperty(key))
-          return false;
-  }
-  return true;
-}
 class App extends React.Component<any, Props> {
   componentDidMount() {
     if (isEmpty(this.props.currentUser)) {

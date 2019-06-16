@@ -5,14 +5,15 @@ import styles from './Brew.module.scss';
 import Card from '../../components/Card/Card';
 import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
-import { pen } from '../../resources/javascript/penSvg.js';
 import FormHandler from './FormHandler/FormHandler';
+import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } from '../../Store/BrewProvider';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
-import FormattedDate from '../../components/FormattedDate/FormattedDate';
+import { scrollToTop } from '../../resources/javascript/scrollToTop';
+import { pen } from '../../resources/javascript/penSvg.js';
 import { UserInterface } from '../../Store/UserProvider';
 import { ModalProviderInterface } from '../../Store/ModalProvider';
-import { scrollToTop } from '../../resources/javascript/ScrollToTop.js';
+import { isEmpty } from '../../resources/javascript/isEmpty';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -64,7 +65,11 @@ class Brew extends React.Component<any, any> {
             readOnly: readOnly,
           }, () => document.title = `BeerForge | Viewing ${brew.name}`);
         }, (error: any) => {
-          this.props.history.push('/dashboard');
+          if (isEmpty(this.props.currentUser)) {
+            this.props.history.push('/');
+          } else {
+            this.props.history.push('/dashboard');
+          }
         });
     }
 

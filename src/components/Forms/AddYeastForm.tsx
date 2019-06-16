@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import styles from "./Forms.module.scss"
-import { pitchingRate } from '../../resources/javascript/Calculator';
+import { pitchingRate } from '../../resources/javascript/calculator';
 import { BrewInterface, YeastInterface } from '../../Store/BrewProvider';
 
 interface Props {

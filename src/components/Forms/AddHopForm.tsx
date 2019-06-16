@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import styles from "./Forms.module.scss"
 import { BrewInterface, HopInterface } from '../../Store/BrewProvider';
-import { IBU } from "../../resources/javascript/Calculator";
+import { IBU } from "../../resources/javascript/calculator";
 
 interface Props {
   brew: BrewInterface;

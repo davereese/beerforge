@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import { ls } from './UserProvider';
-import * as Calculator from '../resources/javascript/Calculator';
+import * as Calculator from '../resources/javascript/calculator';
 
 async function saveBrew(brew: BrewInterface) {
   const currentUser = ls.load('currentUser');
