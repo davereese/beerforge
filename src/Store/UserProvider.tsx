@@ -46,6 +46,14 @@ export default class UserProvider extends React.Component {
     ls.save('currentUser', userData.currentUser, 720);
   };
 
+  updateUser = (userData: UserInterface): void => {
+    const storage = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    // @ts-ignore-line
+    var record = {value: JSON.stringify(userData.currentUser), timestamp: storage.timestamp}
+		localStorage.setItem('currentUser', JSON.stringify(record));
+    this.setState({currentUser: userData.currentUser});
+  };
+
   loadUser = (): void => {
     const user = ls.load('currentUser');
     this.setState({currentUser: user !== false ? user : false});
@@ -63,6 +71,7 @@ export default class UserProvider extends React.Component {
           ...this.state,
           // @ts-ignore-line
           saveUser: this.saveUser,
+          updateUser: this.updateUser,
           loadUser: this.loadUser,
           logOutUser: this.logOutUser,
         }}

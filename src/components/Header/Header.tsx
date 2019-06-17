@@ -16,12 +16,16 @@ function Header({ currentUser, logOutUser }: any) {
           Log In
         </Link>
       ) : null}
-      {window.location.pathname !== "/dashboard" && currentUser ? (
+      {window.location.pathname !== "/dashboard"
+        && window.location.pathname !== "/profile"
+        && currentUser ? (
         <div title={currentUser.username} className={styles.header__user}>
           <Avatar currentUser={true} />
         </div>
       ) : null}
-      {window.location.pathname === "/dashboard" && currentUser ? (
+      {(window.location.pathname === "/dashboard"
+        || window.location.pathname === "/profile")
+        && currentUser ? (
         <button className={`button button--link ${styles.loginLink}`} onClick={logOutUser}>
           Log Out
         </button>

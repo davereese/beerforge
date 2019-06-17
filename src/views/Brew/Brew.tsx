@@ -18,6 +18,7 @@ import { isEmpty } from '../../resources/javascript/isEmpty';
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
   loadUser: Function;
+  updateUser: Function;
   saveUser: Function;
   logOutUser: Function;
   brew: BrewInterface;

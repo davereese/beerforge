@@ -46,7 +46,9 @@
   }
 
   &.login::before,
-  &.old-login::after {
+  &.old-login::after,
+  &.profile::before,
+  &.old-profile::after {
     background-image: linear-gradient(125.4deg, darken($default-bg-1, 8%) 0%, $default-bg-2 85%);
   }
 

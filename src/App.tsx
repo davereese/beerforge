@@ -8,6 +8,7 @@ import Dashboard from './views/Dashborad/Dashboard';
 import LoginSignup from './views/LoginSignup/LoginSignup';
 import Brew from './views/Brew/Brew';
 import Modal from './components/Modal/Modal';
+import Profile from './views/Profile/Profile';
 import { BrewInterface } from './Store/BrewProvider';
 import { UserInterface } from './Store/UserProvider';
 import { isEmpty } from './resources/javascript/isEmpty';
@@ -15,6 +16,7 @@ import { isEmpty } from './resources/javascript/isEmpty';
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
   loadUser: Function;
+  updateUser: Function;
   saveUser: Function;
   logOutUser: Function;
   brew: BrewInterface;
@@ -56,6 +58,9 @@ class App extends React.Component<any, Props> {
             )} />
             <Route path="/brew" render={props => (
               <Brew {...{props}} {...this.props} />
+            )} />
+            <Route path="/profile" render={props => (
+              <Profile {...{props}} {...this.props} />
             )} />
             {/* <Route component={NoMatch} /> */}
           </Switch>

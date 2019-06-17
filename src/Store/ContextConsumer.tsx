@@ -12,7 +12,7 @@ export default class ContextConsumer extends React.Component {
       <UserContext.Consumer>
         {
           // @ts-ignore-line
-          ({currentUser, saveUser, loadUser, logOutUser}) => (
+          ({currentUser, saveUser, loadUser, updateUser, logOutUser}) => (
             <ModalContext.Consumer>
               {
                 (modalProps) => (
@@ -32,6 +32,7 @@ export default class ContextConsumer extends React.Component {
                             clearBrew,
                             currentUser,
                             saveUser,
+                            updateUser,
                             loadUser,
                             logOutUser,
                             modalProps

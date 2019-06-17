@@ -21,3 +21,23 @@ section {
 strong {
   font-weight: $weight-semibold;
 }
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+
+  span {
+    display: block;
+    margin-right: 10px;
+    white-space: nowrap;
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    margin-top: 1px;
+    width: 100%;
+    border-bottom: 1px solid rgba($label-color, 0.5);
+  }
+}

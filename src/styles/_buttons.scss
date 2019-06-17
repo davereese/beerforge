@@ -72,6 +72,20 @@
     }
   }
 
+  &--red {
+    box-shadow: 0 10px 30px rgba($black, 0.15);
+    background-color: $button-red-bg;
+    color: $text-dark;
+
+    &:hover,
+    &:focus {
+      background-color: darken(
+        desaturate(adjust-hue($button-red-bg, -5%), 5%),
+        5%
+      );
+    }
+  }
+
   &--error {
     box-shadow: 0 10px 30px rgba($black, 0.15);
     background-color: $button-error-bg;

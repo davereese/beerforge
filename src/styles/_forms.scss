@@ -38,6 +38,11 @@ textarea {
   &.dark {
     background-color: rgba($input-bg-dark, 0.3);
     color: $text-light;
+
+    &::placeholder {
+      color: $placeholder-light;
+      font-weight: $weight-light;
+    }
   }
 }
 
