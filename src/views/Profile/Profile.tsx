@@ -139,11 +139,11 @@ class Profile extends React.Component<any, any> {
           </label>
           <div className={styles.buttons}>
             <button
-              className="button button--yellow"
+              className="button button--green"
               onClick={this.updateUser}
             >Update Info</button>
             <button
-              className="button button--red"
+              className="button button--yellow"
               onClick={this.handleDeleteUser}
             >Delete Account</button>
           </div>

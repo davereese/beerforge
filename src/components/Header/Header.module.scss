@@ -29,7 +29,34 @@
   }
 
   &__user {
+    position: relative;
     width: 35px;
     height: 35px;
+  }
+
+  .avatar {
+    cursor: pointer;
+  }
+
+  .userMenu {
+    text-align: right;
+
+    &__header {
+      text-transform: none;
+    }
+
+    &__buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+
+      button {
+        white-space: nowrap;
+
+        &:last-child {
+          margin-left: 10px;
+        }
+      }
+    }
   }
 }

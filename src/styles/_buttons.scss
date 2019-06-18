@@ -130,6 +130,12 @@
     }
   }
 
+  &--small {
+    padding: 5px 15px;
+    height: 36px;
+    font-size: px-to-rem(11px);
+  }
+
   &--large {
     padding: 15px 40px;
     height: 52px;
