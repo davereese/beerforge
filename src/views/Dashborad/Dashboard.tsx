@@ -25,7 +25,7 @@ class Dashboard extends React.Component<any, any> {
     try {
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
-      await axios.get('http://localhost:4000/api/brews', {
+      await axios.get('http://localhost:4000/api/brews/20', {
         headers: authHeaders,
       }).then(result => {
         this.setState({brewLog: result.data});
@@ -78,7 +78,7 @@ class Dashboard extends React.Component<any, any> {
     return (
       <section className={styles.dashboard}>
         <div className={styles.topRow}>
-          <UserInfo user={this.props.currentUser} brews={this.state.brewLog} />
+          <UserInfo user={this.props.currentUser} />
           <Link
             to="brew"
             className="button button--large button--yellow"
@@ -104,7 +104,7 @@ class Dashboard extends React.Component<any, any> {
                     : null
                   }
                 </div>
-              <Link to="/all-brews">All Brews</Link>
+              <Link to="/brews">All Brews</Link>
             </div>
           </Card>
         </div>
