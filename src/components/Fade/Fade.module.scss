@@ -41,7 +41,9 @@
   &.default::before,
   &.old-default::after,
   &.dashboard::before,
-  &.old-dashboard::after {
+  &.old-dashboard::after,
+  &.brews::before,
+  &.old-brews::after {
     background-image: linear-gradient(125.4deg, $default-bg-1 0%, $default-bg-2 118.45%);
   }
 

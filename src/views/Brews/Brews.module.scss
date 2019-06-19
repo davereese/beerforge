@@ -1,0 +1,91 @@
+@import '../../styles/variables';
+@import '../../styles/utilities';
+
+.allBrews {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr;
+
+  .topRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__header {
+    color: $text-light;
+    margin-bottom: 5px;
+  }
+
+  .brewLogHeader {
+    display: grid;
+    grid-template-columns: 60% 10% 10% 10% auto;
+    padding: 17px 15px;
+    margin-top: 20px;
+
+    label {
+      color: $error-color;
+      text-transform: uppercase;
+      font-weight: $weight-medium;
+      white-space: nowrap;
+
+      &:last-child {
+        text-align: right;
+      }
+
+      &.nameCol {
+        width: 55%;
+      }
+    }
+  }
+
+  .brewLog {
+    display: flex;
+    flex-direction: column;
+
+    li {
+      transition: all 0.3s;
+    }
+
+    &__item {
+      display: grid;
+      grid-template-columns: 60% 10% 10% 10% auto;
+      cursor: pointer;
+      color: $text-light;
+
+      .nameCol {
+        width: 55%;
+      }
+
+      span {
+        padding-top: 2px;
+        color: $label-color;
+        font-size: px-to-rem(11px);
+        letter-spacing: 0.03em;
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+
+      .srmSwatch {
+        display: inline-block;
+        margin-right: 5px;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        border: 1px solid $label-color;
+        transform: translateY(1px);
+      }
+    }
+  }
+
+  .brewLogPages {
+    display: flex;
+    justify-content: center;
+
+    button:hover {
+      background-color: rgba(darken(saturate($button-default-bg, 25%), 2.5%), 0.8);
+    }
+  }
+}

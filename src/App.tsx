@@ -12,6 +12,7 @@ import Profile from './views/Profile/Profile';
 import { BrewInterface } from './Store/BrewProvider';
 import { UserInterface } from './Store/UserProvider';
 import { isEmpty } from './resources/javascript/isEmpty';
+import Brews from './views/Brews/Brews';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -58,6 +59,9 @@ class App extends React.Component<any, Props> {
             )} />
             <Route path="/brew" render={props => (
               <Brew {...{props}} {...this.props} />
+            )} />
+            <Route path="/brews" render={props => (
+              <Brews {...{props}} {...this.props} />
             )} />
             <Route path="/profile" render={props => (
               <Profile {...{props}} {...this.props} />
