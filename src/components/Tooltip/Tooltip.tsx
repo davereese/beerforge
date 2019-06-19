@@ -4,10 +4,10 @@ import styles from './Tooltip.module.scss';
 
 interface Props {
   show: boolean;
-  children?: any;
-  placement?: string;
+  placement: 'bottom' | 'bottom-center' | 'bottom-right' | 'bottom-left' | 'top' | 'top-center' | 'top-right' | 'top-left';
   onClose: Function;
-  className: any;
+  children?: any;
+  className?: any;
 };
 
 function Tooltip({

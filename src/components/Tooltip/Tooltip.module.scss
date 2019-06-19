@@ -5,7 +5,7 @@
   display: block;
   top: 0;
   background-color: rgba($site-bg, 0.9);
-  padding: 20px;
+  padding: 10px 15px;
   border-radius: 5px;
   line-height: 1;
   color: $text-light;
@@ -66,6 +66,34 @@
   &.bottom-right {
     @extend .bottom;
     transform: translateX(calc(-100% + 18px));
+
+    &::after {
+      left: auto;
+      right: 7px;
+    }
+  }
+
+  &.top,
+  &.top-center {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, calc(-100% - 8px));
+
+    &::after {
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid rgba($site-bg, 0.9);
+    }
+  }
+
+  &.top-right {
+    @extend .top;
+    transform: translate(calc(-100% + 18px), calc(-100% - 8px));
 
     &::after {
       left: auto;

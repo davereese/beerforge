@@ -82,7 +82,7 @@ function AddFermentableForm(props: Props) {
 
   return(
     <>
-      <label>Batch Type<br />
+      <label>Fermentable<br />
         <select
           onChange={dataChanged('fermentable')}
           value={formData.id}

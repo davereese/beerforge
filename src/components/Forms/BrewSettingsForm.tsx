@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../Store/BrewProvider';
+import Info from '../Info/Info';
 
 interface Props {
   brew: BrewInterface;
@@ -49,7 +50,7 @@ function BrewSettingsForm(props: Props) {
       </label>
       <div className={styles.row}>
         <label>
-          Batch Size (gal)<br />
+          Batch Size (gal) <Info alignment="top-right" info="Volume of wort you expect to transfer to the&nbsp;fermentor." /><br />
           <input
             type="number"
             placeholder="6"
@@ -58,7 +59,7 @@ function BrewSettingsForm(props: Props) {
           />
         </label>
         <label>
-          System Efficiency (%)<br />
+          System Efficiency (%) <Info alignment="top-right" info="Mash&nbsp;extraction efficiency in percentage." /><br />
           <input
             type="number"
             placeholder="75"
@@ -68,7 +69,7 @@ function BrewSettingsForm(props: Props) {
         </label>
       </div>
       <label>
-        Strike Temperature Adjustment Factor<br />
+        Strike Temperature Adjustment Factor <Info alignment="top-right" info="Equipment&nbsp;losses. You may need to dial this in over time." /><br />
         <input
           placeholder="0"
           type="number"
@@ -77,7 +78,7 @@ function BrewSettingsForm(props: Props) {
         />
       </label>
       <label>
-        Target Pitching Rate (million cells / ml / °Plato)<br />
+        Target Pitching Rate (million cells / ml / °Plato) <Info alignment="top-right" info="It is reccommended to use a rate highter than&nbsp;the&nbsp;manufacturer's." /><br />
           <select
             onChange={dataChanged('targetPitchingRate')}
             defaultValue={props.brew.targetPitchingRate ? props.brew.targetPitchingRate : "0.75"}
