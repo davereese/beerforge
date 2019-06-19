@@ -1,6 +1,8 @@
 @import '../../../styles/variables';
+@import '../../../styles/utilities';
 
 .Activity {
+  position: relative;
   margin: 3px;
   width: 12px;
   height: 12px;
@@ -8,5 +10,15 @@
 
   &.active {
     background-color: $canary;
+  }
+
+  span {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .tooltip {
+    font-size: px-to-rem(10px);
+    line-height: 1.2;
   }
 }

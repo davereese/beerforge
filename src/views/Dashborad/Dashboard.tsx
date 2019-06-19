@@ -25,7 +25,7 @@ class Dashboard extends React.Component<any, any> {
     try {
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
-      await axios.get('http://localhost:4000/api/brews/20', {
+      await axios.get('http://localhost:4000/api/brews', {
         headers: authHeaders,
       }).then(result => {
         this.setState({brewLog: result.data});

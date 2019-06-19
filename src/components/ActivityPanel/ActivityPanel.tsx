@@ -32,7 +32,7 @@ function ActivityPanel({
       brews.forEach((brew: any) => {
         const weeksAgo = weeksBetween(new Date(brew.date_brewed), today);
         if (weeksAgo === i) {
-          color = brew.srm;
+          color = brew.srm ? brew.srm : 0;
           names.push(brew.name);
         }
       });
