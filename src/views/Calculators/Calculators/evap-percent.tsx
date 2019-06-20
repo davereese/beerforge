@@ -7,6 +7,9 @@ class EvaporationPercent extends Component<any, any> {
       postBoilV: '',
       preBoilV: '',
       boilTime: '',
+      totalWater: '',
+      grainWeight: '',
+      batchSize: '',
     }
   }
 
@@ -20,7 +23,7 @@ class EvaporationPercent extends Component<any, any> {
     }
 
     const results = () => {
-      const result = calculator(this.state.postBoilV, this.state.preBoilV, this.state.boilTime);
+      const result = calculator(this.state.preBoilV, this.state.postBoilV, this.state.boilTime);
       if (!isNaN(result) && isFinite(result) && result > 0) {
         label = '%';
         return result;

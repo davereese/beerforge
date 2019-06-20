@@ -125,10 +125,14 @@ export function spargeVolume(totalWater, mashVolume) {
 }
 
 // Boil-Off Evaporation Percentage
-export function evaporationPercent(postBoilV, preBoilV, minutes) {
-  // 100 - (postBoil volume * 100 / preBoil volume)
-  const result = (100 - (postBoilV * 100 / preBoilV)) / (minutes / 60);
-  return result.toFixed(1);
+export function evaporationPercent(preBoil, postBoil, boilTime) {
+  // [V(pb) - V(ab)] / time of boil
+
+  preBoil = parseFloat(preBoil);
+  postBoil = parseFloat(postBoil);
+  boilTime = parseFloat(boilTime);
+
+  return parseFloat((preBoil - postBoil / boilTime)).toFixed(2);
 };
 
 // * BIAB Total Mash Volume
