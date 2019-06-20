@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import styles from "./Forms.module.scss"
-import { BrewInterface } from '../../Store/BrewProvider';
 import Info from '../Info/Info';
+import { BrewInterface } from '../../Store/BrewProvider';
 
 interface Props {
   brew: BrewInterface;
@@ -18,8 +18,24 @@ function BrewSettingsForm(props: Props) {
 
   const dataChanged = (type: string) => (event: any) => {
     const data = event.currentTarget.value;
-    setFormData({...formData, [type]: data});
+    let dateSelected;
+    if (type === 'dateBrewed') {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      dateSelected = `${data}T${hours}:${minutes}`;
+    }
+    setFormData({...formData, [type]: dateSelected});
   };
+
+  const getFormattedDate = (date: string | Date) => {
+    const d = new Date(date);
+    const month = ('0' + (d.getMonth() + 1)).slice(-2)
+    const day = ('0' + d.getDate()).slice(-2)
+    const year = d.getFullYear();
+  
+    return (`${year}-${month}-${day}`);
+  }
 
   useEffect(() => {
     props.dataUpdated(formData);
@@ -36,6 +52,15 @@ function BrewSettingsForm(props: Props) {
           onChange={dataChanged('name')}
         />
       </label>
+      {props.brew.id
+        ? <label>Date Brewed<br />
+            <input
+              type="date"
+              defaultValue={props.brew.dateBrewed ? getFormattedDate(props.brew.dateBrewed).toString() : ''}
+              onChange={dataChanged('dateBrewed')}
+            />
+          </label>
+        : null}
       <label>Batch Type<br />
         <select
           onChange={dataChanged('batchType')}

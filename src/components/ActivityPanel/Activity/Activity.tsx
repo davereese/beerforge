@@ -17,7 +17,7 @@ function Activity({
 }: Props) {
   const [showTooltip, setTooltip] = useState(false);
 
-  const separator = brews.length > 0 ? ' - ' : '';
+  const separator = brews.length > 0 ? '| ' : '';
   let title = brews.map((element, i) => {
     return <span key={i}>{element}</span>;
   });
