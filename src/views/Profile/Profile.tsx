@@ -21,6 +21,10 @@ class Profile extends React.Component<any, any> {
     }
   }
 
+  componentDidMount() {
+    document.title = "BeerForge | Profile";
+  }
+
   dataChanged = (e: any) => {
     const type = e.target.id;
     this.setState({[type]: e.target.value}, () => {

@@ -129,7 +129,7 @@ input[type="checkbox"].toggle {
         width: 22px;
         height: 22px;
         border-radius: 2px;
-        background-color: $button-brown-bg;
+        background-color: rgba($default-card-bg, 0.45);
         transition: left 0.3s;
       }
     }

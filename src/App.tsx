@@ -13,6 +13,7 @@ import { BrewInterface } from './Store/BrewProvider';
 import { UserInterface } from './Store/UserProvider';
 import { isEmpty } from './resources/javascript/isEmpty';
 import Brews from './views/Brews/Brews';
+import Calculators from './views/Calculators/Calculators';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -65,6 +66,9 @@ class App extends React.Component<any, Props> {
             )} />
             <Route path="/profile" render={props => (
               <Profile {...{props}} {...this.props} />
+            )} />
+            <Route path="/calculators" render={props => (
+              <Calculators {...{props}} {...this.props} />
             )} />
             {/* <Route component={NoMatch} /> */}
           </Switch>
