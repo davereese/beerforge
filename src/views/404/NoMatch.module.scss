@@ -1,9 +1,15 @@
 @import '../../styles/variables';
+@import '../../styles/utilities';
 
 .noMatch {
   margin-top: 25vh;
   text-align: center;
   color: $text-light;
+
+  .header {
+    margin-bottom: 8px;
+    font-size: px-to-rem(20px);
+  }
 
   a {
     margin: 30px 10px 0;

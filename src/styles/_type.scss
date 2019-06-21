@@ -4,13 +4,17 @@
 
 $montserrat: 'Montserrat', sans-serif;
 
-h1 {
+h1,
+.h1 {
   margin: 0;
   font-weight: $weight-light;
   font-size: px-to-rem(28px);
+  text-transform: none;
+  letter-spacing: 0;
 }
 
-h2 {
+h2,
+.h2 {
   margin: 0;
   text-transform: uppercase;
   font-weight: $weight-medium;
