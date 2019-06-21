@@ -1,0 +1,11 @@
+@import '../../styles/variables';
+
+.noMatch {
+  margin-top: 25vh;
+  text-align: center;
+  color: $text-light;
+
+  a {
+    margin: 30px 10px 0;
+  }
+}

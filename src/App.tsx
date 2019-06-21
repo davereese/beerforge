@@ -14,6 +14,7 @@ import { UserInterface } from './Store/UserProvider';
 import { isEmpty } from './resources/javascript/isEmpty';
 import Brews from './views/Brews/Brews';
 import Calculators from './views/Calculators/Calculators';
+import NoMatch from './views/404/NoMatch';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -70,7 +71,7 @@ class App extends React.Component<any, Props> {
             <Route path="/calculators" render={props => (
               <Calculators {...{props}} {...this.props} />
             )} />
-            {/* <Route component={NoMatch} /> */}
+            <Route component={NoMatch} />
           </Switch>
         </main>
         <Modal modalProps={this.props.modalProps} />
