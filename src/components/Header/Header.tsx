@@ -22,7 +22,7 @@ function Header({ currentUser, logOutUser, history }: any) {
       {window.location.pathname !== "/profile" && currentUser ? (
         <div title={currentUser.username} className={styles.header__user}>
           <div className={styles.avatar} onClick={() => setTooltip(true)}>
-            <Avatar currentUser={true} />
+            <Avatar user={currentUser} />
           </div>
           <Tooltip
             show={showTooltip}

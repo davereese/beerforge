@@ -10,7 +10,6 @@ interface Props {
     last_name: string;
     brewCount: number;
     badgeCount: number;
-    avatar?: string;
   },
 }
 
@@ -21,7 +20,7 @@ function UserInfo({
   return(
     <div className={styles.user}>
       <div className={styles.avatarContainer}>
-        <Avatar currentUser={true} />
+        <Avatar user={user} />
       </div>
       <div className={styles.infoContainer}>
         <h1 className={styles.infoContainer__header}>

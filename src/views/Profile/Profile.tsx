@@ -103,7 +103,7 @@ class Profile extends React.Component<any, any> {
       <section className={styles.profile}>
         <header>
           <div className={styles.profilePic}>
-            <Avatar currentUser={true} />
+            <Avatar user={currentUser} />
           </div>
           <h1 className={styles.infoContainer__header}>
             {currentUser.username ? currentUser.username : `${currentUser.first_name} ${currentUser.last_name}`}

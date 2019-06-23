@@ -2,9 +2,7 @@
 
 .avatar {
   width: 100%;
-  padding-bottom: 100%;
   border-radius: 50%;
-  background-repeat: no-repeat;
-  background-size: 100%;
-  box-shadow: 0 10px 30px rgba($black, 0.15);
+  line-height: 0;
+  box-shadow: 0 5px 20px rgba(darken($black, 5%), 0.2);
 }
