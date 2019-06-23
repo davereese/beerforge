@@ -9,6 +9,11 @@ import Tooltip from "../Tooltip/Tooltip";
 function Header({ currentUser, logOutUser, history }: any) {
   const [showTooltip, setTooltip] = useState(false);
 
+  const goToProfile = (e: any) => {
+    setTooltip(false);
+    history.push('/profile')
+  }
+
   return (
     <header className={styles.header}>
       <Link to={!currentUser ? "/" : "/dashboard"} className={styles.logoLink}>
@@ -35,7 +40,7 @@ function Header({ currentUser, logOutUser, history }: any) {
               <div className={styles.userMenu__buttons}>
                 <button
                   className="button button--small button--green button--no-shadow"
-                  onClick={() => history.push('/profile')}
+                  onClick={goToProfile}
                 >
                   Profile
                 </button>

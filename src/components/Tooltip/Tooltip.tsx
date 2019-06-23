@@ -26,13 +26,20 @@ function Tooltip({
     }
   }, [tooltipRef]);
 
-  const closeTooltip = () => {
-    setClosing(true);
-    window.setTimeout(() => {
-      setClosing(false);
-      onClose();
-    }, 350);
-  };
+  useEffect(() => {
+    let closeTimeout: any;
+
+    if (closing) {
+      closeTimeout = setTimeout(() => {
+        setClosing(false);
+        onClose();
+      }, 350);
+    }
+
+    return () => {
+      clearTimeout(closeTimeout);
+    }
+  }, [closing, onClose]);
 
   return show ? (
     <span
@@ -44,7 +51,7 @@ function Tooltip({
       `}
       ref={tooltipRef}
       tabIndex={0}
-      onBlur={closeTooltip}
+      onBlur={() => setClosing(true)}
     >
       {children}
     </span>
