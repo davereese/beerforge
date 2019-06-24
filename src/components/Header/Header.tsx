@@ -9,6 +9,11 @@ import Tooltip from "../Tooltip/Tooltip";
 function Header({ currentUser, logOutUser, history }: any) {
   const [showTooltip, setTooltip] = useState(false);
 
+  const logOut = (e: any) => {
+    setTooltip(false);
+    logOutUser();
+  }
+
   const goToProfile = (e: any) => {
     setTooltip(false);
     history.push('/profile')
@@ -46,7 +51,7 @@ function Header({ currentUser, logOutUser, history }: any) {
                 </button>
                 <button
                   className="button button--small button--yellow button--no-shadow"
-                  onClick={logOutUser}
+                  onClick={logOut}
                 >
                   Log Out
                 </button>

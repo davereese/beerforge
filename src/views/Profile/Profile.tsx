@@ -5,6 +5,7 @@ import axios from 'axios';
 import styles from './Profile.module.scss';
 import Avatar from '../../components/Avatar/Avatar';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
+import Loader from '../../components/Loader/Loader';
 
 class Profile extends React.Component<any, any> {
   constructor(props: any) {
@@ -18,6 +19,7 @@ class Profile extends React.Component<any, any> {
       firstName: this.props.currentUser.first_name,
       lastName: this.props.currentUser.last_name,
       error: null,
+      saving: false,
     }
   }
 
@@ -43,6 +45,7 @@ class Profile extends React.Component<any, any> {
 
   updateUser = async () => {
     try {
+      this.setState({saving: true});
       // build our body for the request
       const body = {
         firstName: this.state.firstName,
@@ -57,8 +60,9 @@ class Profile extends React.Component<any, any> {
       });
 
       this.props.updateUser({currentUser: response.data[0]});
+      this.setState({saving: false});
     } catch (error) {
-      this.setState({error: error.response.status});
+      this.setState({error: error.response.status, saving: false});
     }
   }
 
@@ -143,9 +147,12 @@ class Profile extends React.Component<any, any> {
           </label>
           <div className={styles.buttons}>
             <button
-              className="button button--green"
+              className={`button button--green ${styles.updateButton} ${this.state.saving ? styles.saving : null}`}
               onClick={this.updateUser}
-            >Update Info</button>
+            >
+              <span>Update Info</span>
+              {this.state.saving ? <Loader className={styles.savingLoader} /> : null}
+            </button>
             <button
               className="button button--yellow"
               onClick={this.handleDeleteUser}

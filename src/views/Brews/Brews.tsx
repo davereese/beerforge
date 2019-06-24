@@ -9,6 +9,7 @@ import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Card from '../../components/Card/Card';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
+import Loader from '../../components/Loader/Loader';
 
 class Brews extends React.Component<any, any> {
   constructor(props: any) {
@@ -18,20 +19,24 @@ class Brews extends React.Component<any, any> {
       brews: [],
       page: 1,
       numToShow: 20,
+      loading: false,
     }
   }
 
   async listUserBrews(page: number) {
     try {
+      this.setState({loading: true});
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
       await axios.get(`http://localhost:4000/api/brews/${this.state.numToShow}/page/${page}`, {
         headers: authHeaders,
       }).then(result => {
-        this.setState({brews: result.data, page: page}, () => scrollToTop(300));
+        this.setState({brews: result.data, page: page, loading: false}, () => {
+            scrollToTop(300);
+          });
       });
     } catch (error) {
-      this.setState({error: error.response.status});
+      this.setState({error: error.response.status, loading: false});
     }
   }
 
@@ -72,32 +77,38 @@ class Brews extends React.Component<any, any> {
         </div>
         <Card customClass={styles.allBrews__list}>
           <List customClass={styles.brewLog}>
-            {this.state.brews.length > 0
-              ? this.state.brews.map((brew: any, index: number) => {
-                return <ListItem
-                  key={brew.id}
-                  customClass={styles.brewLog__item}
-                  clicked={this.handleBrewClick(brew.id)}
-                  label="Click to see brew details"
-                >
-                  <div className={styles.nameCol}>{brew.name}</div>
-                  <span>{brew.abv ? brew.abv : '--'}</span>
-                  <span>{brew.ibu ? brew.ibu : '--'}</span>
-                  <span>
-                    {brew.srm
-                      ? <>
-                          <div
-                            className={styles.srmSwatch}
-                            style={{backgroundColor: getSrmToRgb(brew.srm)}}
-                          />
-                          {brew.srm}
-                        </>
-                      : '--'}
-                  </span>
-                  <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
-                </ListItem>
-              })
-              : null
+            {this.state.loading ? <Loader className={styles.loader} />
+              : this.state.brews.length > 0
+                ? this.state.brews.map((brew: any, index: number) => {
+                  return <ListItem
+                    key={brew.id}
+                    customClass={styles.brewLog__item}
+                    clicked={this.handleBrewClick(brew.id)}
+                    label="Click to see brew details"
+                  >
+                    <div className={styles.nameCol}>{brew.name}</div>
+                    <span>{brew.abv ? brew.abv : '--'}</span>
+                    <span>{brew.ibu ? brew.ibu : '--'}</span>
+                    <span>
+                      {brew.srm
+                        ? <>
+                            <div
+                              className={styles.srmSwatch}
+                              style={{backgroundColor: getSrmToRgb(brew.srm)}}
+                            />
+                            {brew.srm}
+                          </>
+                        : '--'}
+                    </span>
+                    <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
+                  </ListItem>
+                })
+                : <li className={styles.noBrews}>
+                    <Link
+                      to="brew"
+                      className={`button ${styles.brewLInk}`}
+                    >Get Brewing!</Link>
+                  </li>
             }
           </List>
         </Card>

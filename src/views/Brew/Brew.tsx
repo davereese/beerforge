@@ -14,6 +14,7 @@ import { pen } from '../../resources/javascript/penSvg.js';
 import { UserInterface } from '../../Store/UserProvider';
 import { ModalProviderInterface } from '../../Store/ModalProvider';
 import { isEmpty } from '../../resources/javascript/isEmpty';
+import Loader from '../../components/Loader/Loader';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -46,6 +47,8 @@ class Brew extends React.Component<any, any> {
       topSpacing: 0,
       form: '',
       editingData: null,
+      loading: false,
+      saving: false,
     }
     this.brewContainer = React.createRef<HTMLDivElement>();
     this.nameInput = React.createRef<HTMLInputElement>();
@@ -57,6 +60,7 @@ class Brew extends React.Component<any, any> {
     this.props.loadUser();
     const brewId = Number(window.location.pathname.split('/')[2]);
     if (!isNaN(brewId)) {
+      this.setState({loading: true});
       this.props.getBrewfromDB(brewId)
         .then(() => {
           const {brew} = this.props;
@@ -64,8 +68,10 @@ class Brew extends React.Component<any, any> {
           this.setState({
             new: false,
             readOnly: readOnly,
+            loading: false
           }, () => document.title = `BeerForge | Viewing ${brew.name}`);
         }, (error: any) => {
+          this.setState({loading: false});
           if (isEmpty(this.props.currentUser)) {
             this.props.history.push('/');
           } else {
@@ -147,6 +153,7 @@ class Brew extends React.Component<any, any> {
   handleSave = (e: any) => {
     // double check current user hasn't expired
     this.props.loadUser();
+    this.setState({saving: true});
     this.state.new
       ? this.props.saveBrewToDB()
         .then(() => {
@@ -155,15 +162,19 @@ class Brew extends React.Component<any, any> {
           this.setState({
             new: false,
             readOnly: false,
+            saving: false
           });
           scrollToTop(300);
         }, (error: any) => {
+          this.setState({saving: false});
           console.log(error);
         })
       : this.props.updateBrewOnDB()
         .then(() => {
+          this.setState({saving: false});
           scrollToTop(300);
         }, (error: any) => {
+          this.setState({saving: false});
           console.log(error);
         });
   }
@@ -175,7 +186,7 @@ class Brew extends React.Component<any, any> {
       marginTop: this.state.topSpacing
     };
 
-    return (
+    return this.state.loading ? <Loader className={styles.loader} color="#000" /> : (
       <section
         className={`
           ${styles.brew}
@@ -552,9 +563,12 @@ class Brew extends React.Component<any, any> {
           {!this.state.readOnly
             ? <button
                 type="submit"
-                className={`button button--large ${styles.saveButton}`}
+                className={`button button--large ${styles.saveButton} ${this.state.saving ? styles.saving : null}`}
                 onClick={this.handleSave}
-              >{this.state.new ? <>Save &amp; Get Brewing!</> : <>Update Brew</>}</button>
+              >
+                {this.state.new ? <>Save &amp; Get Brewing!</> : <>Update Brew</>}
+                {this.state.saving ? <Loader className={styles.savingLoader} /> : null}
+              </button>
             : null}
         </div>
         <div className={styles.sideBar} role="complementary">

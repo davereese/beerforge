@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import styles from './LoginSignup.module.scss';
+import Loader from '../../components/Loader/Loader';
 
 class LoginSignup extends React.Component<any, any> {
   constructor(props: any) {
@@ -15,6 +16,7 @@ class LoginSignup extends React.Component<any, any> {
       newUsername: '',
       flip: '',
       error: '',
+      saving: false,
     }
   }
 
@@ -24,11 +26,13 @@ class LoginSignup extends React.Component<any, any> {
 
   async logInOrSignUpUser(url: string, body: Object) {
     try {
+      this.setState({saving: true});
       const response = await axios.post(url, body);
       this.props.saveUser({currentUser: response.data});
       this.props.history.push('/dashboard');
+      this.setState({saving: false});
     } catch (error) {
-      this.setState({error: error.response.status});
+      this.setState({error: error.response.status, saving: false});
     }
   }
 
@@ -114,18 +118,18 @@ class LoginSignup extends React.Component<any, any> {
                 />
               </label>
               <div className={styles.loginSignup__buttons}>
-                <input
+                <button
                   type="submit"
-                  value="Submit"
-                  className="button button--yellow"
-                />
+                  className={`button button--yellow ${styles.loginSignupButton}`}
+                >
+                  <span>Submit</span>
+                  {this.state.saving ? <Loader className={styles.savingLoader} color="#191919" /> : null}
+                </button>
                 <button
                   type="button"
                   className="button button--no-button"
                   onClick={this.flipStyles('back')}
-                >
-                Sign Up
-                </button>
+                >Sign Up</button>
               </div>
             </form>
           </div>
@@ -192,18 +196,18 @@ class LoginSignup extends React.Component<any, any> {
                   : null
               }
               <div className={styles.loginSignup__buttons}>
-                <input
+                <button
                   type="submit"
-                  value="Submit"
-                  className="button button--yellow"
-                />
+                  className={`button button--yellow ${styles.loginSignupButton}`}
+                >
+                  <span>Submit</span>
+                  {this.state.saving ? <Loader className={styles.savingLoader} color="#191919" /> : null}
+                </button>
                 <button
                   type="button"
                   className="button button--no-button"
                   onClick={this.flipStyles('front')}
-                >
-                Log In
-                </button>
+                >Log In</button>
               </div>
             </form>
           </div>

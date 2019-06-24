@@ -42,3 +42,16 @@
     margin-top: 23px;
   }
 }
+
+.updateButton {
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  line-height: 0;
+
+  &.saving {
+    svg {
+      margin-top: -3px;
+    }
+  }
+}

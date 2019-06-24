@@ -10,6 +10,7 @@ import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
+import Loader from '../../components/Loader/Loader';
 
 class Dashboard extends React.Component<any, any> {
   constructor(props: any) {
@@ -17,21 +18,23 @@ class Dashboard extends React.Component<any, any> {
 
     this.state = {
       brewLogPage: 1,
-      brewLog: []
+      brewLog: [],
+      loading: false,
     }
   }
 
   async listUserBrews() {
     try {
+      this.setState({loading: true});
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
       await axios.get('http://localhost:4000/api/brews', {
         headers: authHeaders,
       }).then(result => {
-        this.setState({brewLog: result.data});
+        this.setState({brewLog: result.data, loading: false});
       });
     } catch (error) {
-      this.setState({error: error.response.status});
+      this.setState({error: error.response.status, loading: false});
     }
   }
 
@@ -88,7 +91,7 @@ class Dashboard extends React.Component<any, any> {
           <Card>
             <h2 className={styles.dashboard__label}>Brew Log</h2>
             <List customClass={`${styles.brewLog} ${styles['page' + this.state.brewLogPage]}`}>
-              {brewLogItems}
+              {this.state.loading ? <Loader className={styles.brewLogLoader} /> : brewLogItems}
             </List>
             <div className={styles.brewLog__footer}>
                 <div>
@@ -111,7 +114,7 @@ class Dashboard extends React.Component<any, any> {
         <div className={styles.rightColumn}>
           <Card>
             <h2 className={styles.dashboard__label}>Weekly Activity</h2>
-            <ActivityPanel brews={this.state.brewLog} />
+            {this.state.loading ? <Loader className={styles.activityLoader} /> : <ActivityPanel brews={this.state.brewLog} />}
           </Card>
           <Card customClass={styles.flex}>
             <Link to="/calculators" className={styles.cardLink}>

@@ -299,5 +299,22 @@
     width: 280px;
     left: 50%;
     margin-left: -150px;
+    transition: padding 0.4s;
+
+    &.saving {
+      padding-right: 50px;
+    }
   }
+}
+
+.loader {
+  position: relative;
+  left: 50%;
+  margin-left: -23px;
+  transform: translateY(33vh);
+}
+
+.savingLoader {
+  position: absolute;
+  top: 4px;
 }

@@ -136,3 +136,13 @@
     }
   }
 }
+
+.brewLogLoader {
+  transform: translateY(40px);
+}
+
+.activityLoader {
+  display: flex;
+  padding-bottom: 25px;
+  transform: translateY(-5px);
+}
