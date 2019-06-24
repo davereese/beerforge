@@ -10,6 +10,7 @@ export interface ModalInterface {
   title: string;
   body: any;
   buttons: any;
+  classOverride: any;
 }
 
 export const ModalContext = React.createContext({
@@ -27,6 +28,7 @@ export default class ModalProvider extends React.Component {
       showModal: this.showModal,
       title: '',
       body: '',
+      classOverride: '',
       buttons: '',
       closing: false,
     };
@@ -43,6 +45,7 @@ export default class ModalProvider extends React.Component {
           body: '',
           buttons: '',
           closing: false,
+          classOverride: ''
         });
       }, 350);
     });
@@ -54,6 +57,7 @@ export default class ModalProvider extends React.Component {
       title: options.title,
       body: options.body,
       buttons: options.buttons,
+      classOverride: options.classOverride,
     });
   };
 

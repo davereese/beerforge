@@ -75,7 +75,7 @@ class App extends React.Component<any, Props> {
           </Switch>
         </main>
         <Modal modalProps={this.props.modalProps} />
-        <Footer />
+        <Footer {...this.props} />
       </Fade>
     );
   }
