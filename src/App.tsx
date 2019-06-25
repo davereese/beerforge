@@ -9,12 +9,13 @@ import LoginSignup from './views/LoginSignup/LoginSignup';
 import Brew from './views/Brew/Brew';
 import Modal from './components/Modal/Modal';
 import Profile from './views/Profile/Profile';
-import { BrewInterface } from './Store/BrewProvider';
-import { UserInterface } from './Store/UserProvider';
 import Brews from './views/Brews/Brews';
 import Calculators from './views/Calculators/Calculators';
 import NoMatch from './views/404/NoMatch';
 import PrivateRoute from './views/PrivateRoute';
+import Home from './views/Home/Home';
+import { BrewInterface } from './Store/BrewProvider';
+import { UserInterface } from './Store/UserProvider';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -40,7 +41,7 @@ class App extends React.Component<any, Props> {
         <Header {...this.props} />
         <main>
           <Switch>
-            {/* <Route path="/" exact component={Home} /> */}
+            <Route path="/" exact component={Home} />
             <Route path="/login" exact render={props => (
               <LoginSignup {...this.props} history={props.history} />
             )} />
