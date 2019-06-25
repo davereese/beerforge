@@ -29,8 +29,8 @@ class LoginSignup extends React.Component<any, any> {
       this.setState({saving: true});
       const response = await axios.post(url, body);
       this.props.saveUser({currentUser: response.data});
-      this.props.history.push('/dashboard');
       this.setState({saving: false});
+      this.props.history.push('/dashboard');
     } catch (error) {
       this.setState({error: error.response.status, saving: false});
     }

@@ -158,12 +158,12 @@ class Brew extends React.Component<any, any> {
       ? this.props.saveBrewToDB()
         .then(() => {
           const {brew} = this.props;
-          this.props.history.push(`/brew/${brew.id}`);
           this.setState({
             new: false,
             readOnly: false,
             saving: false
           });
+          this.props.history.push(`/brew/${brew.id}`);
           scrollToTop(300);
         }, (error: any) => {
           this.setState({saving: false});
