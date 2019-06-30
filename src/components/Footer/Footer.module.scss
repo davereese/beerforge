@@ -6,12 +6,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 5px 20px;
   height: $footer-height;
   background-color: $footer-bg;
   color: $text-light;
   font-size: px-to-rem(9px);
   z-index: 5;
+
+  @include for-tablet-portrait-up {
+    padding: 0 20px;
+  }
 
   @include for-tablet-landscape-up {
     font-size: px-to-rem(10px);
@@ -21,11 +25,36 @@
     margin: 0;
   }
 
+  p:last-of-type {
+    text-align: right;
+
+    @include for-tablet-portrait-up {
+      text-align: left;
+    }
+  }
+
+  span {
+    display: none;
+
+    @include for-tablet-portrait-up {
+      display: inline;
+    }
+  }
+
+  br {
+    display: inline;
+
+    @include for-tablet-portrait-up {
+      display: none;
+    }
+  }
+
   .link {
     text-transform: none;
     color: $white;
     font-weight: $weight-regular;
     font-size: px-to-rem(9.5px);
+    text-decoration: none;
   }
 }
 
