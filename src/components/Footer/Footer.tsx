@@ -122,7 +122,7 @@ function Footer({modalProps}: any) {
 
   return(
     <footer className={styles.footer}>
-      <p>&copy; Copyright {year} - BeerForge<span> &nbsp; | &nbsp; </span><br />Made with 🍺 by <a href="https://www.davidpreese.com/" target="_blank" className={styles.link}>Dave</a></p>
+      <p>&copy; Copyright {year} - BeerForge<span> &nbsp; | &nbsp; </span><br />Made with 🍺 by <a href="https://www.davidpreese.com/" target="_blank" rel="noopener noreferrer" className={styles.link}>Dave</a></p>
       <p>
         <button
           className={`button button--link ${styles.link}`}
