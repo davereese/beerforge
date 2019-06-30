@@ -30,7 +30,7 @@ class StrikeTemperature extends Component<any, any> {
 
     return (
       <div>
-        <h2>Strike Water<br />Temperature</h2>
+        <h2>Strike Water Temperature</h2>
         <div>
           <label htmlFor="ratio">Quarts per lb of grain</label><br />
           <input

@@ -28,7 +28,7 @@ class SpargeVolume extends Component<any, any> {
 
     return (
       <div>
-        <h2>Sparge Water<br />Volume</h2>
+        <h2>Sparge Water Volume</h2>
         <div>
           <label htmlFor="totalV">Total water volume</label><br />
           <input

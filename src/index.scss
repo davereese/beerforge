@@ -41,3 +41,18 @@ strong {
     border-bottom: 1px solid rgba($label-color, 0.5);
   }
 }
+
+canvas {
+  display: none;
+  position: absolute;
+  top: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  z-index: 2;
+  width: 100vw;
+  pointer-events: none;
+}

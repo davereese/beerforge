@@ -32,7 +32,7 @@ class Brews extends React.Component<any, any> {
         headers: authHeaders,
       }).then(result => {
         this.setState({brews: result.data, page: page, loading: false}, () => {
-            scrollToTop(300);
+          scrollToTop(300);
           });
       });
     } catch (error) {

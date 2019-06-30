@@ -28,7 +28,7 @@ class ApparentAttenuation extends Component<any, any> {
 
     return (
       <div>
-        <h2>Apparent<br />Attenuation</h2>
+        <h2>Apparent Attenuation</h2>
         <div>
           <label htmlFor="og">Original Gravity</label><br />
           <input

@@ -12,6 +12,15 @@
     box-sizing: border-box;
   }
 
+  &.default main {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    min-height: calc(100vh - #{$footer-height});
+    max-width: 100vw;
+    width: 100%;
+  }
+
   &::before,
   &::after {
     content: '';

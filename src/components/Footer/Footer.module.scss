@@ -2,6 +2,7 @@
 @import '../../styles/utilities';
 
 .footer {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -9,7 +10,12 @@
   height: $footer-height;
   background-color: $footer-bg;
   color: $text-light;
-  font-size: px-to-rem(10px);
+  font-size: px-to-rem(9px);
+  z-index: 5;
+
+  @include for-tablet-landscape-up {
+    font-size: px-to-rem(10px);
+  }
 
   p {
     margin: 0;

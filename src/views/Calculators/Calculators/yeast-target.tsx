@@ -31,7 +31,7 @@ class YeastTargetPitchingRate extends Component<any, any> {
 
     return (
       <div>
-        <h2>Target Yeast<br />Pitching Rate</h2>
+        <h2>Target Yeast Pitching Rate</h2>
         <div>
           <label htmlFor="og">Original Gravity</label><br />
           <input

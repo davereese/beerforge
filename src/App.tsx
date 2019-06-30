@@ -16,6 +16,7 @@ import PrivateRoute from './views/PrivateRoute';
 import Home from './views/Home/Home';
 import { BrewInterface } from './Store/BrewProvider';
 import { UserInterface } from './Store/UserProvider';
+import Test from './views/Test';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -38,10 +39,11 @@ class App extends React.Component<any, Props> {
   render() {
     return (
       <Fade>
-        <Header {...this.props} />
-        <main>
+        {window.location.pathname !== '/' ? <Header {...this.props} /> : null}
+        <main> 
           <Switch>
             <Route path="/" exact component={Home} />
+            <Route path="/test" exact component={Test} />
             <Route path="/login" exact render={props => (
               <LoginSignup {...this.props} history={props.history} />
             )} />

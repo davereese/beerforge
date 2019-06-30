@@ -1,0 +1,416 @@
+@import '../../styles/variables';
+@import '../../styles/utilities';
+
+.home {
+  position: relative;
+
+  p, ul {
+    position: relative;
+    margin: 15px 0 0 0;
+    font-weight: $weight-light;
+    font-size: px-to-rem(13px);
+    z-index: 4;
+
+    @include for-tablet-landscape-up {
+      font-size: px-to-rem(15px);
+    }
+  }
+
+  ul {
+    font-weight: $weight-medium;
+    list-style-type: none;
+
+    li {
+      position: relative;
+      margin-bottom: 3px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        display: block;
+        left: -20px;
+        top: 5px;
+        width: 10px;
+        height: 10px;
+        background: rgba($error-color, 0.6);
+        border-radius: 50%;
+      }
+    }
+  }
+
+  header {
+    position: relative;
+    width: 100%;
+    padding: 40px 5vw 70px;
+    box-sizing: border-box;
+    z-index: 4;
+
+    @include for-tablet-portrait-up {
+      padding: 40px 5vw 60px;
+    }
+
+    @include for-desktop-up {
+      padding: 70px;
+    }
+
+    img {
+      width: 250px;
+
+      @include for-tablet-landscape-up {
+        width: 330px;
+      }
+    }
+
+    .link {
+      color: $link;
+      text-decoration: none;
+      text-transform: uppercase;
+      font-weight: $weight-medium;
+      transition: color 0.5s;
+      font-size: px-to-rem(12px);
+  
+      &:hover,
+      &:focus {
+        color: $link-hover;
+      }
+    }
+
+    > div {
+      margin-bottom: 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 70px;
+
+      @include for-tablet-landscape-up {
+        margin-bottom: 100px;
+      }
+
+      &:not(:last-item) {
+        display: block;
+
+        @include for-tablet-portrait-up {
+          display: flex;
+        }
+      }
+    }
+
+    .introText {
+      position: relative;
+      margin: 0 auto;
+      max-width: 670px;
+      color: $text-light;
+      align-items: flex-end;
+
+      h1 {
+        font-weight: $weight-semibold;
+        font-size: px-to-rem(19px);
+        line-height: 1.2;
+
+        @include for-tablet-landscape-up {
+          font-size: px-to-rem(25px);
+        }
+      }
+
+      p {
+        width: calc(100% - 140px);
+
+        @include for-tablet-portrait-up {
+          width: 100%;
+        }
+      }
+
+      .featuresLink {
+        position: absolute;
+        right: 0;
+        margin-left: 20px;
+        padding-right: 18px;
+
+        @include for-tablet-portrait-up {
+          position: relative;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          display: block;
+          right: 0;
+          top: 1px;
+          width: 8px;
+          height: 8px;
+          border-bottom: 1px solid $error-color;
+          border-right: 1px solid $error-color;
+          transform: rotate(45deg);
+        }
+      }
+    }
+  }
+
+  .browser {
+    position: relative;
+    padding: 28px 6px 6px;
+    margin: 0 auto 75px;
+    width: calc(100% - 10vw);
+    max-width: 900px;
+    background: #191919;
+    box-shadow: 4px 0px 40px #58382A;
+    border-radius: 5px;
+    z-index: 4;
+    line-height: 0;
+
+    @include for-tablet-landscape-up {
+      margin: 0 auto 100px;
+    }
+
+    @include for-desktop-up {
+      margin: 0 auto 150px;
+    }
+
+    img {
+      width: 100%;
+    }
+
+    &::before {
+      $red: rgba($error-color, 0.99);
+      $yellow: rgba($brew-bg-1, 0.99);
+      $green: rgba($button-green-bg, 0.99);
+
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50px;
+      height: 28px;
+      background-image:
+        url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20'><circle cx='10' cy='10' r='4' fill='#{$red}' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20'><circle cx='10' cy='10' r='4' fill='#{$yellow}' /></svg>"),
+        url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='20' height='20'><circle cx='10' cy='10' r='4' fill='#{$green}' /></svg>");
+      background-repeat: no-repeat;
+      background-position: 2px 5px, 14px 5px, 26px 5px;
+    }
+
+    &::after {
+      content: 'BeerForge';
+      position: absolute;
+      top: 6px;
+      left: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 90px;
+      height: 21px;
+      background-color: #3B3B3B;
+      color: $text-light;
+      font-size: px-to-rem(7px);
+      border-radius: 4px 4px 0px 0px;
+      line-height: 0;
+    }
+  }
+
+  .topAngle {
+    position: absolute;
+    background: rgba($site-bg, 0.5);
+    width: 100%;
+    height: 60vh;
+    max-height: 650px;
+    top: 0;
+    transform: rotate(180deg);
+    clip-path: polygon(0 calc(.01% + 9vw),100% 0,100% 100%,0 100%);
+    z-index: 1;
+
+    @include for-tablet-landscape-up {
+      height: 80vh;
+    }
+  }
+
+  .features {
+    position: relative;
+    display: block;
+    justify-content: center;
+    align-items: top;
+    padding-bottom: 200px;
+    padding-top: 50px;
+
+    @include for-tablet-landscape-up {
+      display: flex;
+      padding-bottom: 300px;
+      padding-top: 100px;
+    }
+
+    .featuresText {
+      max-width: 850px;
+      padding: 0 5vw 0 5vw;
+      z-index: 4;
+      color: $text-light;
+
+      @include for-tablet-portrait-up {
+        padding: 0 8vw 0 5vw;
+      }
+
+      h2 {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: $label-color;
+        font-size: px-to-rem(10px);
+
+        @include for-tablet-landscape-up {
+          font-size: px-to-rem(11px);
+        }
+      }
+
+      .cta {
+        display: none;
+      }
+
+      @include for-tablet-landscape-up {
+        .cta {
+          display: block;
+        }
+      }
+    }
+
+    .calculators {
+      position: relative;
+      margin: 40px auto 0;
+      width: 370px;
+      z-index: 4;
+
+      .cta {
+        display: block;
+        margin-top: 0;
+        color: $text-light;
+      }
+
+      @include for-tablet-landscape-up {
+        display: block;
+        margin: 0 5vw 0 0;
+
+        .cta {
+          display: none;
+        }
+      }
+    }
+
+    .rotateBtn {
+      display: flex;
+      align-items: center;
+      color: $button-default-text;
+      text-transform: none;
+      font-weight: $weight-regular;
+      z-index: 4;
+      margin: 0 auto;
+
+      @media (min-width: 1100px) {
+        position: absolute;
+        top: 250px;
+        left: -230px;
+      }
+
+      img {
+        margin-left: 5px;
+      }
+
+      &:hover {
+        color: darken($button-default-text, 10%);
+      }
+    }
+
+    .cardOverride {
+      width: calc(100% - 30px);
+      box-sizing: border-box;
+      background-image: linear-gradient(125.4deg, rgba($default-bg-1, 0.7) 0%, rgba($default-bg-2, 0.7) 118.45%);
+      transition: opacity 0.3s;
+    }
+
+    .out {
+      opacity: 0;
+    }
+
+    .in {
+      animation-name: fadeIn;
+      animation-duration: 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from {transform: translateX(30px);}
+      to {transform: translateX(0);}
+    }
+
+    .featuresAngle {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 540px;
+      background: rgba($error-color, 0.3);
+      clip-path: polygon(0 calc(.01% + 12vw),100% 0,100% 100%,0 100%);
+      z-index: 1;
+
+      @include for-tablet-portrait-up {
+        top: 450px;
+      }
+
+      @include for-tablet-landscape-up {
+        top: 200px;
+        clip-path: polygon(0 calc(.01% + 23vw),100% 0,100% 100%,0 100%);
+      }
+
+      @include for-desktop-up {
+        height: 100vh;
+        top: 150px;
+      }
+    }
+  }
+
+  .cta {
+    position: relative;
+    margin-top: 30px;
+    padding-top: 10px;
+    text-align: center;
+    z-index: 4;
+
+    @include for-tablet-landscape-up {
+      margin-top: 30px;
+      padding-top: 30px;
+    }
+  }
+
+  .finalCta {
+    position: relative;
+    margin-bottom: -6px;
+
+    @include for-tablet-landscape-up {
+      margin-bottom: -60px;
+    }
+
+    .bottomLogo {
+      margin-left: -10px;
+      width: 250px;
+
+      @include for-tablet-landscape-up {
+        margin-left: -40px;
+        width: 338px;
+      }
+    }
+
+    .screenshot {
+      width: calc(100% - 10vw);
+      max-width: 900px;
+      margin: 40px 5vw 0;
+      box-shadow: 0px 10px 50px rgba(darken($default-bg-2, 5%), 0.4);
+    }
+
+    .bottomAngle {
+      position: absolute;
+      top: -100px;
+      left: -2vw;
+      width: 110vw;
+      height: 100vh;
+      box-shadow: 0px 4px 50px rgba(0, 0, 0, 0.25);
+
+      transform: rotate(1.5deg);
+      background-image: linear-gradient(113.55deg, rgba($site-bg, 0) 28.14%, rgba($site-bg, 0.101351) 47.12%, rgba($site-bg, 0.278716) 62.17%, $site-bg 96.85%), linear-gradient(113.55deg, $brew-bg-1 0%, $brew-bg-2 79.84%);
+      z-index: 3;
+    }
+  }
+}

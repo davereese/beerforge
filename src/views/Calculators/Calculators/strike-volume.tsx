@@ -28,7 +28,7 @@ class StrikeVolume extends Component<any, any> {
 
     return (
       <div>
-        <h2>Strike Water<br />Volume</h2>
+        <h2>Strike Water Volume</h2>
         <div>
           <label htmlFor="weight">Malt Weight (lbs)</label><br />
           <input

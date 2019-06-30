@@ -34,59 +34,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-
-    .card {
-      display: inline-block;
-      padding: 20px;
-      margin: 15px 15px;
-      width: 308px;
-      background-color: rgba(233,102,44,0.15);
-      box-sizing: border-box;
-      color: $white;
-      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
-
-      h2 {
-        margin-bottom: 20px;
-        text-transform: none;
-        font-weight: $weight-light;
-        font-size: px-to-rem(18px);
-        letter-spacing: 0;
-      }
-
-      h3 {
-        font-weight: $weight-regular;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: px-to-rem(10px);
-      }
-
-      label {
-        color: $label-color;
-      }
-
-      p {
-        font-size: px-to-rem(16px);
-
-        span {
-          font-size: px-to-rem(10px);
-        }
-      }
-
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
-      select,
-      textarea {
-        background-color: rgba($default-card-bg, 0.3);
-        font-size: px-to-rem(13px);
-        color: $text-light;
-
-        &::placeholder {
-          color: $text-dark;
-          font-weight: $weight-light;
-        }
-      }
-    }
   }
 
   .noResults {
@@ -94,5 +41,58 @@
     padding: 11px 30px;
     color: $text-light;
     border: 1px solid $text-dark;
+  }
+}
+
+.card {
+  display: inline-block;
+  padding: 20px;
+  margin: 15px 15px;
+  width: 308px;
+  background-color: rgba(233,102,44,0.15);
+  box-sizing: border-box;
+  color: $white;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+
+  h2 {
+    margin-bottom: 20px;
+    text-transform: none;
+    font-weight: $weight-light;
+    font-size: px-to-rem(18px);
+    letter-spacing: 0;
+  }
+
+  h3 {
+    font-weight: $weight-regular;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: px-to-rem(10px);
+  }
+
+  label {
+    color: $label-color;
+  }
+
+  p {
+    font-size: px-to-rem(16px);
+
+    span {
+      font-size: px-to-rem(10px);
+    }
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    background-color: rgba($default-card-bg, 0.3);
+    font-size: px-to-rem(13px);
+    color: $text-light;
+
+    &::placeholder {
+      color: $text-dark;
+      font-weight: $weight-light;
+    }
   }
 }

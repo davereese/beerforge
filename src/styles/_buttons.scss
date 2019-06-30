@@ -137,11 +137,16 @@
   }
 
   &--large {
-    padding: 15px 40px;
-    height: 52px;
+    padding: 11px 40px;
+    height: 45px;
     font-weight: $weight-medium;
     font-style: italic;
     font-size: px-to-rem(16px);
+
+    @include for-tablet-landscape-up {
+      padding: 15px 40px;
+      height: 52px;
+    }
   }
 
   &--page {
