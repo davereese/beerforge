@@ -17,15 +17,16 @@ function BrewSettingsForm(props: Props) {
   });
 
   const dataChanged = (type: string) => (event: any) => {
-    const data = event.currentTarget.value;
-    let dateSelected;
+    let data;
     if (type === 'dateBrewed') {
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
-      dateSelected = `${data}T${hours}:${minutes}`;
+      data = `${data}T${hours}:${minutes}`;
+    } else {
+      data = event.currentTarget.value;
     }
-    setFormData({...formData, [type]: dateSelected});
+    setFormData({...formData, [type]: data});
   };
 
   const getFormattedDate = (date: string | Date) => {
@@ -39,7 +40,7 @@ function BrewSettingsForm(props: Props) {
 
   useEffect(() => {
     props.dataUpdated(formData);
-  });
+  }, [formData]);
 
   return(
     <>
