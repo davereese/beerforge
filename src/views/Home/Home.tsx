@@ -180,7 +180,7 @@ class Home extends React.Component<any, any> {
         <section className={styles.finalCta}>
           <div className={styles.cta}>
             <img className={styles.bottomLogo} src={whiteLogoImage} alt="BeerForge - Modern homebrewing" />
-            <p>Tools for the today’s homebrewer.<br />Full-featured. Free.</p>
+            <p>Tools for today’s homebrewer.<br />Full-featured. Free.</p>
             <p><Link to="/login" className="button button--large">Sign Up</Link></p>
             <img className={styles.screenshot} src={newBrewImage} alt="BeerForge new brew screen" />
           </div>
