@@ -23,7 +23,7 @@ export const Particle = function() {
   // eslint-disable-next-line no-undef
   this.radius = (this.baseRadius = random(1, 2.5));
   this.maxRadius = 2.5;
-  this.threshold = 300;
+  this.threshold = 350;
   // eslint-disable-next-line no-undef
   return this.hue = random( 180, 240 );
 };
