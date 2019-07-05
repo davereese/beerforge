@@ -18,7 +18,7 @@ interface yeastResults extends YeastInterface {
 
 async function listAllYeast() {
   try {
-    return await axios.get('http://localhost:4000/api/ingredients/yeast')
+    return await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/ingredients/yeast`)
       .then(result => {
         return result.data;
       });

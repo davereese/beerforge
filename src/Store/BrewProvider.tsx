@@ -8,7 +8,7 @@ async function saveBrew(brew: BrewInterface) {
   const currentUser = ls.load('currentUser');
   const authHeaders = {'authorization': currentUser ? currentUser.token : null};
   try {
-    return await axios.post('http://localhost:4000/api/brew', {brew: brew}, {
+    return await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/brew`, {brew: brew}, {
       headers: authHeaders,
     });
   } catch (error) {
@@ -21,7 +21,7 @@ async function updateBrewDB(brew: BrewInterface) {
   const currentUser = ls.load('currentUser');
   const authHeaders = {'authorization': currentUser ? currentUser.token : null};
   try {
-    return await axios.put(`http://localhost:4000/api/brew/${brew.id}`, {brew: brew}, {
+    return await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brew.id}`, {brew: brew}, {
       headers: authHeaders,
     });
   } catch (error) {
@@ -33,7 +33,7 @@ async function getBrew(brewId: number) {
   const currentUser = ls.load('currentUser');
   const authHeaders = {'authorization': currentUser ? currentUser.token : null};
   try {
-    return await axios.get(`http://localhost:4000/api/brew/${brewId}`, {
+    return await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brewId}`, {
       headers: authHeaders,
     });
   } catch (error) {
@@ -46,7 +46,7 @@ async function deleteBrew(brewId: number) {
   const currentUser = ls.load('currentUser');
   const authHeaders = {'authorization': currentUser ? currentUser.token : null};
   try {
-    return await axios.delete(`http://localhost:4000/api/brew/${brewId}`, {
+    return await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brewId}`, {
       headers: authHeaders,
     });
   } catch (error) {

@@ -40,7 +40,7 @@ function BrewSettingsForm(props: Props) {
 
   useEffect(() => {
     props.dataUpdated(formData);
-  }, [formData]);
+  }, [formData, props]);
 
   return(
     <>

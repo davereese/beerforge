@@ -17,7 +17,7 @@ interface HopResults extends HopInterface {
 
 async function listAllHops() {
   try {
-    return await axios.get('http://localhost:4000/api/ingredients/hops')
+    return await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/ingredients/hops`)
       .then(result => {
         return result.data;
       });

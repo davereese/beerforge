@@ -54,7 +54,7 @@ class LoginSignup extends React.Component<any, any> {
 
   handleLogIn = (e: any): void => {
     e.preventDefault();
-    this.logInOrSignUpUser('http://localhost:4000/api/login', {
+    this.logInOrSignUpUser(`${process.env.REACT_APP_API_ENDPOINT}/login`, {
       username: this.state.username,
       password: this.state.password
     });
@@ -62,7 +62,7 @@ class LoginSignup extends React.Component<any, any> {
 
   handleSignUp = (e: any): void => {
     e.preventDefault();
-    this.logInOrSignUpUser('http://localhost:4000/api/users', {
+    this.logInOrSignUpUser(`${process.env.REACT_APP_API_ENDPOINT}/users`, {
       username: this.state.newUsername,
       password: this.state.password1,
       email: this.state.email,

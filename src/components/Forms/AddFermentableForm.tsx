@@ -11,7 +11,7 @@ interface Props {
 
 async function listAllFermentables() {
   try {
-    return await axios.get('http://localhost:4000/api/ingredients/fermentables')
+    return await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/ingredients/fermentables`)
       .then(result => {
         return result.data;
       });

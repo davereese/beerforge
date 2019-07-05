@@ -55,7 +55,7 @@ class Profile extends React.Component<any, any> {
       const currentUser = this.props.currentUser;
       const authHeaders = {'authorization': currentUser ? currentUser.token : null};
 
-      const response = await axios.put(`http://localhost:4000/api/users/${currentUser.id}`, body, {
+      const response = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${currentUser.id}`, body, {
         headers: authHeaders,
       });
 
@@ -71,7 +71,7 @@ class Profile extends React.Component<any, any> {
       const currentUser = this.props.currentUser;
       const authHeaders = {'authorization': currentUser ? currentUser.token : null};
 
-      await axios.delete(`http://localhost:4000/api/users/${currentUser.id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/users/${currentUser.id}`, {
         headers: authHeaders,
       });
 

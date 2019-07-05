@@ -28,7 +28,7 @@ class Brews extends React.Component<any, any> {
       this.setState({loading: true});
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
-      await axios.get(`http://localhost:4000/api/brews/${this.state.numToShow}/page/${page}`, {
+      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/${this.state.numToShow}/page/${page}`, {
         headers: authHeaders,
       }).then(result => {
         this.setState({brews: result.data, page: page, loading: false}, () => {
