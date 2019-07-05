@@ -10,6 +10,7 @@
   cursor: pointer;
   animation-name: fadeIn;
   animation-duration: 0.3s;
+  z-index: 10;
 
   &.close {
     animation-name: fadeOut;
