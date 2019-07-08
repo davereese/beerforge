@@ -79,6 +79,7 @@ export interface HopInterface {
 export interface YeastInterface {
   id?: number;
   name?: string;
+  manufacturer?: string;
   amount?: number;
   type?: string;
   mfgDate?: Date;

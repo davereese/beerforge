@@ -346,6 +346,7 @@ class Brew extends React.Component<any, any> {
                   <span>{hop.weight} oz</span>
                   <span>{hop.name}</span>
                   <span>{hop.alphaAcid}% AA</span>
+                  <span>{hop.lengthInBoil} min</span>
                   <span>{hop.ibu ? <>{hop.ibu} IBU</> : null}</span>
                 </ListItem>
               ))}
@@ -375,7 +376,7 @@ class Brew extends React.Component<any, any> {
                   key={`${item.id}${index}`}
                 >
                   <span>{item.amount} pack{item.amount && item.amount > 1 ? 's' : null}</span>
-                  <span>{item.name}</span>
+                  <span>{item.manufacturer} - {item.name}</span>
                   <span>{item.averageAttenuation}% average attenuation</span>
                 </ListItem>
               ))}

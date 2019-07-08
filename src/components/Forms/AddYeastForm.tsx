@@ -14,6 +14,7 @@ interface Props {
 interface yeastResults extends YeastInterface {
   cell_count: number;
   average_attenuation: number;
+  manufacturer: string;
 }
 
 async function listAllYeast() {
@@ -39,6 +40,7 @@ function AddYeastForm(props: Props) {
         ? {
           id: choice.id,
           name: choice.name,
+          manufacturer: choice.manufacturer,
           type: choice.type,
           cellCount: choice.cell_count,
           averageAttenuation: choice.average_attenuation,
@@ -122,7 +124,7 @@ function AddYeastForm(props: Props) {
         >
           <option value="0">Choose Yeast</option>
           {yeast.map(item => (
-            <option value={item.id} key={item.id}>{item.name}</option>
+            <option value={item.id} key={item.id}>{item.manufacturer} - {item.name}</option>
           ))}
         </select>
       </label>

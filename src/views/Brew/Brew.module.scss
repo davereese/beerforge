@@ -209,12 +209,12 @@
   &__ingredients {
     li {
       display: grid;
-      grid-template-columns: 16% 42% 14% 14% auto;
+      grid-template-columns: 14% 40% 14% 14% auto;
     }
 
     &.yeast {
       li {
-        grid-template-columns: 16% 42% auto;
+        grid-template-columns: 14% 48% auto;
       }
     }
   }
