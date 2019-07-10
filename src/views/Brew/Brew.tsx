@@ -410,9 +410,6 @@ class Brew extends React.Component<any, any> {
                       {brew.totalWater && brew.batchType === 'BIAB' && brew.strikeTemp
                         ? <>Strike with <strong>{brew.totalWater.toFixed(2)} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
                         : null}
-                      {brew.totalMashVolume && brew.batchType === 'BIAB'
-                        ? <><br />Total Mash Vol: <strong>{brew.totalMashVolume} gal</strong></>
-                        : null}
                     </span>
                     <span>
                       {brew.mashLength
@@ -425,12 +422,15 @@ class Brew extends React.Component<any, any> {
                         : null}
                     </span>
                     <span>
-                      {brew.spargeTemp
+                      {brew.batchType !== 'BIAB' && brew.spargeTemp
                         ? <>Sparge&nbsp;
                           {brew.spargeVolume
                             ? <>with <strong>{brew.spargeVolume} gal</strong> </>
                             : null}
                           at <strong>{brew.spargeTemp}° F</strong></>
+                        : null}
+                      {brew.totalMashVolume && brew.batchType === 'BIAB'
+                        ? <>Total Mash Vol: <strong>{brew.totalMashVolume} gal</strong></>
                         : null}
                     </span>
                   </div>
@@ -450,7 +450,7 @@ class Brew extends React.Component<any, any> {
               <div className={`${styles.section__values} ${styles.withStats}`}>
                 {brew.batchType === 'partialMash' && brew.preBoilVolume && brew.spargeVolume
                   ? <span>Top off with <strong>
-                      {brew.preBoilVolume - (brew.spargeVolume * 2)} gal
+                      {brew.topOff} gal
                     </strong></span>
                   : null}
                 <span>{brew.preBoilVolume
@@ -538,7 +538,8 @@ class Brew extends React.Component<any, any> {
                   ? <>Temp: <strong>{brew.beerTemp}° F</strong></>
                   : null}</span>
                 <span>{brew.amountForCO2
-                  ? <>Pressure: <strong>{brew.amountForCO2} {brew.packagingType === 'kegged' ? 'psi' : 'oz'}</strong></>
+                  ? <>{brew.carbonationMethod === 'forced' ? 'Pressure: ' : 'Amount: '}
+                  <strong>{brew.amountForCO2} {brew.carbonationMethod === 'forced' ? 'psi' : 'oz'}</strong></>
                   : null}
                 </span>
               </div>

@@ -160,6 +160,12 @@ export function preBoilVol(totalWaterVol, grainVol, batchType = 'allGrain') {
   return parseFloat(result).toFixed(2);
 };
 
+// Partial Mash Top-off
+export function partialMashTopOff(preBoilVolume, spargeVolume, grainVol) {
+  const result = preBoilVolume - ((spargeVolume * 2) - (grainVol * absorptionRate));
+  return parseFloat(result).toFixed(2);
+};
+
 // * Original Gravity
 export function OG(malts, efficiency, volume) {
   efficiency = parseFloat(efficiency);

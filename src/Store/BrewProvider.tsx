@@ -101,6 +101,7 @@ export interface BrewInterface {
   pitchCellCount?: number;
   fermentables: FermentableInterface[];
   totalFermentables?: number;
+  totalGrainFermentables?: number;
   hops: HopInterface[];
   totalHops?: number;
   yeast: YeastInterface[];
@@ -116,6 +117,7 @@ export interface BrewInterface {
   kettleSize?: number;
   spargeTemp?: number;
   spargeVolume?: number;
+  topOff?: number;
   boilLength?: number;
   preBoilVolume?: number;
   evaporationRate?: number;
@@ -193,12 +195,20 @@ export default class BrewProvider extends React.Component {
     // Run Calculations
     if (brew.fermentables.length > 0) {
       brew.totalFermentables = Calculator.totalFermentableWeight(brew.fermentables);
+      if (brew.batchType === 'partialMash') {
+        const nonExtractFermentablesArray = brew.fermentables.filter(fermentable => fermentable.extract !== true);
+        brew.totalGrainFermentables = Calculator.totalFermentableWeight(nonExtractFermentablesArray);
+      }
     }
     if (brew.fermentables && brew.batchSize) {
       brew.srm = Calculator.SRM(brew.fermentables, brew.batchSize);
     }
     if (brew.batchType !== 'BIAB' && brew.totalFermentables && brew.waterToGrain) {
-      brew.strikeVolume = Calculator.strikeVolume(brew.totalFermentables, brew.waterToGrain);
+      if (brew.batchType === 'partialMash' && brew.totalGrainFermentables) {
+        brew.strikeVolume = Calculator.strikeVolume(brew.totalGrainFermentables, brew.waterToGrain);
+      } else {
+        brew.strikeVolume = Calculator.strikeVolume(brew.totalFermentables, brew.waterToGrain);
+      }
     }
     if (brew.hops.length) {
       brew.totalHops = Calculator.totalHopWeight(brew.hops);
@@ -253,6 +263,9 @@ export default class BrewProvider extends React.Component {
       if (brew.batchType === 'BIAB') {
         brew.totalMashVolume = Calculator.totalMashVolume(brew.totalWater, brew.totalFermentables);
       }
+    }
+    if (brew.batchType === 'partialMash' && brew.preBoilVolume && brew.spargeVolume && brew.totalGrainFermentables) {
+      brew.topOff = Calculator.partialMashTopOff(brew.preBoilVolume, brew.spargeVolume, brew.totalGrainFermentables);
     }
     if (brew.yeast.length > 0 && brew.og) {
       let attenuationAdditions = 0;

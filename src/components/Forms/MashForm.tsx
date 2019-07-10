@@ -66,14 +66,16 @@ function MashForm(props: Props) {
           onChange={dataChanged('mashLength')}
         />
       </label>
-      <label>Sparge Temperature (°F)<br />
-        <input
-          type="number"
-          placeholder="168"
-          defaultValue={`${props.brew.spargeTemp}`}
-          onChange={dataChanged('spargeTemp')}
-        />
-      </label>
+      {props.brew.batchType !== 'BIAB'
+        ? <label>Sparge Temperature (°F)<br />
+            <input
+              type="number"
+              placeholder="168"
+              defaultValue={`${props.brew.spargeTemp}`}
+              onChange={dataChanged('spargeTemp')}
+            />
+          </label>
+        : null}
     </>
   );
 };
