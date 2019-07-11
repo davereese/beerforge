@@ -13,9 +13,12 @@ import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 import Loader from '../../components/Loader/Loader';
 
 class Dashboard extends React.Component<any, any> {
+  _isMounted: boolean;
+
   constructor(props: any) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       brewLogPage: 1,
       brewLog: [],
@@ -31,16 +34,21 @@ class Dashboard extends React.Component<any, any> {
       await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews`, {
         headers: authHeaders,
       }).then(result => {
-        this.setState({brewLog: result.data, loading: false});
+        this._isMounted && this.setState({brewLog: result.data, loading: false});
       });
     } catch (error) {
-      this.setState({error: error.response.status, loading: false});
+      this._isMounted && this.setState({error: error.response.status, loading: false});
     }
   }
 
   componentDidMount() {
     document.title = "BeerForge | Dashboard";
-    this.listUserBrews();
+    this._isMounted = true;
+    this._isMounted && this.listUserBrews();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   handleBrewClick = (brewId: number) => (event: any) => {
