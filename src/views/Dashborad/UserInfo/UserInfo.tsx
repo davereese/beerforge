@@ -11,10 +11,12 @@ interface Props {
     brewCount: number;
     badgeCount: number;
   },
+  brewsNum: number,
 }
 
 function UserInfo({
-  user
+  user,
+  brewsNum
 }: Props) {
 
   return(
@@ -27,7 +29,7 @@ function UserInfo({
           {user.username ? user.username : `${user.first_name} ${user.last_name}`}
         </h1>
         <p className={styles.infoContainer__stats}>
-          Beers Brewed: <span>{user.brewCount ? user.brewCount : 0}</span> 
+          Beers Brewed: <span>{brewsNum ? brewsNum : 0}</span> 
           {/* Badges Earned: <span>{user.badges ? user.badges : 0}</span> */}
         </p>
       </div>

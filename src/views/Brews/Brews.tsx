@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import debounce from 'lodash.debounce'
 
 import styles from './Brews.module.scss';
 import List from '../../components/List/List';
@@ -16,7 +17,9 @@ class Brews extends React.Component<any, any> {
     super(props);
 
     this.state = {
+      search: '',
       brews: [],
+      brewsCount: 0,
       page: 1,
       numToShow: 20,
       loading: false,
@@ -28,12 +31,11 @@ class Brews extends React.Component<any, any> {
       this.setState({loading: true});
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
-      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/${this.state.numToShow}/page/${page}`, {
+      await axios
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/?num=${this.state.numToShow}&page=${page}&search=${this.state.search}`, {
         headers: authHeaders,
       }).then(result => {
-        this.setState({brews: result.data, page: page, loading: false}, () => {
-          scrollToTop(300);
-          });
+        this.setState({brews: result.data.brews, brewsCount: result.data.count, page: page, loading: false}, () => scrollToTop(300) );
       });
     } catch (error) {
       this.setState({error: error.response.status, loading: false});
@@ -49,8 +51,12 @@ class Brews extends React.Component<any, any> {
     this.props.history.push(`brew/${brewId}`);
   }
 
+  onChange = debounce((value: string) => {
+    this.setState({search: value}, () => this.listUserBrews(1));
+  }, 300);
+
   render() {
-    const pagination = Array.from(Array(Math.ceil(this.props.currentUser.brewCount/this.state.numToShow)), (e, i) => {
+    const pagination = Array.from(Array(Math.ceil(this.state.brewsCount/this.state.numToShow)), (e, i) => {
       const page = i+1;
       return <button 
           className={`button button--page ${this.state.page === page ? 'on' : ''}`}
@@ -63,6 +69,13 @@ class Brews extends React.Component<any, any> {
       <section className={styles.allBrews}>
         <div className={styles.topRow}>
           <h1 className={styles.allBrews__header}>All Brews</h1>
+          <input
+            type="text"
+            name="search"
+            className={styles.search}
+            placeholder="Search brew names"
+            onChange={({ target: { value } }) => this.onChange(value)}
+          />
           <Link
             to="brew"
             className="button button--large button--yellow"
@@ -77,7 +90,7 @@ class Brews extends React.Component<any, any> {
         </div>
         <Card customClass={styles.allBrews__list}>
           <List customClass={styles.brewLog}>
-            {this.state.loading ? <Loader className={styles.loader} />
+            {this.state.loading && this.state.brews.length === 0 ? <Loader className={styles.loader} />
               : this.state.brews.length > 0
                 ? this.state.brews.map((brew: any, index: number) => {
                   return <ListItem

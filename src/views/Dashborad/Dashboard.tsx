@@ -20,8 +20,10 @@ class Dashboard extends React.Component<any, any> {
 
     this._isMounted = false;
     this.state = {
+      numToShow: 20,
       brewLogPage: 1,
       brewLog: [],
+      brewsNum: 0,
       loading: false,
     }
   }
@@ -31,10 +33,10 @@ class Dashboard extends React.Component<any, any> {
       this.setState({loading: true});
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
-      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews`, {
+      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/?num=${this.state.numToShow}`, {
         headers: authHeaders,
       }).then(result => {
-        this._isMounted && this.setState({brewLog: result.data, loading: false});
+        this._isMounted && this.setState({brewLog: result.data.brews, brewsNum: result.data.count, loading: false});
       });
     } catch (error) {
       this._isMounted && this.setState({error: error.response.status, loading: false});
@@ -89,7 +91,7 @@ class Dashboard extends React.Component<any, any> {
     return (
       <section className={styles.dashboard}>
         <div className={styles.topRow}>
-          <UserInfo user={this.props.currentUser} />
+          <UserInfo user={this.props.currentUser} brewsNum={this.state.brewsNum} />
           <Link
             to="brew"
             className="button button--large button--yellow"

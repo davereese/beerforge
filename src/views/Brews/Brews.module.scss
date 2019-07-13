@@ -10,6 +10,25 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    h1 {
+      margin: 0;
+    }
+
+    input.search {
+      width: 30%;
+      padding: 0 50px 0 15px;
+      margin: 0;
+      background-color: rgba($default-card-bg, 0.15);
+      color: $search-text;
+      background-image: url('../../resources/images/search.svg');
+      background-repeat: no-repeat;
+      background-position: calc(100% - 15px) 12px;
+
+      &::placeholder {
+        color: rgba($error-color, 0.5);
+      }
+    }
   }
 
   &__header {
