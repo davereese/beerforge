@@ -22,7 +22,7 @@ function BrewSettingsForm(props: Props) {
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
-      data = `${data}T${hours}:${minutes}`;
+      data = `${event.currentTarget.value}T${hours}:${minutes}`;
     } else {
       data = event.currentTarget.value;
     }

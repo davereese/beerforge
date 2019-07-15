@@ -20,9 +20,10 @@ class Dashboard extends React.Component<any, any> {
 
     this._isMounted = false;
     this.state = {
-      numToShow: 20,
       brewLogPage: 1,
+      numToShow: 20,
       brewLog: [],
+      brewActivity: [],
       brewsNum: 0,
       loading: false,
     }
@@ -33,10 +34,15 @@ class Dashboard extends React.Component<any, any> {
       this.setState({loading: true});
       this.props.loadUser();
       const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
-      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/?num=${this.state.numToShow}`, {
+      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/dashboard/?num=${this.state.numToShow}`, {
         headers: authHeaders,
       }).then(result => {
-        this._isMounted && this.setState({brewLog: result.data.brews, brewsNum: result.data.count, loading: false});
+        this._isMounted && this.setState({
+          brewLog: result.data.allBrews,
+          brewActivity: result.data.brews,
+          brewsNum: result.data.allBrews.length,
+          loading: false
+        });
       });
     } catch (error) {
       this._isMounted && this.setState({error: error.response.status, loading: false});
@@ -124,7 +130,7 @@ class Dashboard extends React.Component<any, any> {
         <div className={styles.rightColumn}>
           <Card>
             <h2 className={styles.dashboard__label}>Weekly Activity</h2>
-            {this.state.loading ? <Loader className={styles.activityLoader} /> : <ActivityPanel brews={this.state.brewLog} />}
+            {this.state.loading ? <Loader className={styles.activityLoader} /> : <ActivityPanel brews={this.state.brewActivity} />}
           </Card>
           <Card customClass={styles.flex}>
             <Link to="/calculators" className={styles.cardLink}>
