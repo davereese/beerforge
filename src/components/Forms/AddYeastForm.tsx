@@ -86,8 +86,9 @@ function AddYeastForm(props: Props) {
       dataToSet = [...yeastArray, formData];
     }
 
+    // this lastIndex stuff is a chack to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
-    if (dataToSet[lastIndex].id && dataToSet[lastIndex].id !== 0) {
+    if (dataToSet[lastIndex].id !== 0) {
       props.dataUpdated({...props.brew, yeast: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +121,7 @@ function AddYeastForm(props: Props) {
       <label>Yeast<br />
         <select
           onChange={dataChanged('yeast')}
-          value={formData.id}
+          value={formData.id ? formData.id : 0}
         >
           <option value="0">Choose Yeast</option>
           {yeast.map(item => (

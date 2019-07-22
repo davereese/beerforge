@@ -45,13 +45,13 @@ function PackagingForm(props: Props) {
         </select>
       </label>
       <div className={styles.row}>
-        <label>CO2 Volume Target<br />
+        <label>CO<sub>2</sub> Volume Target<br />
           <input
             type="number"
             step="0.1"
             placeholder="2.5"
-            defaultValue={`${props.brew.co2VolumeTarget}`}
-            onChange={dataChanged('co2VolumeTarget')}
+            defaultValue={`${props.brew.CO2VolumeTarget}`}
+            onChange={dataChanged('CO2VolumeTarget')}
            />
         </label>
         <label>Beer Temp (°F)<br />

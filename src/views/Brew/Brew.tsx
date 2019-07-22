@@ -531,8 +531,8 @@ class Brew extends React.Component<any, any> {
                   ? <strong>{this.parseStringValues(brew.packagingType)}/{this.parseStringValues(brew.carbonationMethod)}</strong>
                   : null}
                 </span>
-                <span>{brew.co2VolumeTarget
-                  ? <>CO2 Vol: <strong>{brew.co2VolumeTarget}</strong></>
+                <span>{brew.CO2VolumeTarget
+                  ? <>CO<sub>2</sub> Vol: <strong>{brew.CO2VolumeTarget}</strong></>
                   : null}</span>
                 <span>{brew.beerTemp
                   ? <>Temp: <strong>{brew.beerTemp}° F</strong></>

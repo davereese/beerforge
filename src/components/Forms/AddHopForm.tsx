@@ -72,8 +72,9 @@ function AddHopForm(props: Props) {
       dataToSet = [...hopsArray, formData];
     }
 
+    // this lastIndex stuff is a chack to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
-    if (dataToSet[lastIndex].id && dataToSet[lastIndex].id !== 0) {
+    if (dataToSet[lastIndex].id !== 0) {
       props.dataUpdated({...props.brew, hops: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,7 +107,7 @@ function AddHopForm(props: Props) {
       <label>Hop<br />
         <select
           onChange={dataChanged('hop')}
-          value={formData.id}
+          value={formData.id ? formData.id : 0}
         >
           <option value="0">Choose Hop</option>
           {hops.map(hop => (

@@ -10,6 +10,13 @@
   }
 }
 
+.rowOneThird {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-column-gap: 10px;
+  padding-top: 3px;
+}
+
 .extra {
   margin: 3px 0 13px 0;
   text-align: center;

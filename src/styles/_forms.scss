@@ -5,11 +5,26 @@ label {
   position: relative;
   font-size: px-to-rem(11px);
   transition: color 0.3s;
+
+  a {
+    color: $error-color;
+    transition: color 0.3s;
+
+    &:hover {
+      color: $white;
+    }
+  }
 }
 
 .error {
   color: $error-color;
 }
+
+.success {
+  color: $success-color;
+  font-weight: 500;
+}
+
 
 input[type="text"],
 input[type="number"],
@@ -139,5 +154,40 @@ input[type="checkbox"].toggle {
     +label .toggle::before {
       left: 24px;
     }
+  }
+}
+
+input[type="file"] {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+input[type="file"] + label {
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 0 0 10px;
+  padding: 0 15px;
+  width: 100%;
+  min-width: 250px;
+  height: 42px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  font-size: px-to-rem(14px);
+  font-family: $montserrat;
+  line-height: 2.6;
+
+  &.dark {
+    background-color: rgba($input-bg-dark, 0.3);
+    color: $placeholder-light;
+    font-weight: $weight-light;
+  }
+
+  &.filled {
+    color: $text-light;
   }
 }

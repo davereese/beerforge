@@ -29,6 +29,11 @@
     );
   }
 
+  &[disabled] {
+    opacity: 0.5;
+    cursor: default;
+  }
+
   // COLORS
   &--yellow {
     box-shadow: 0 10px 30px rgba($black, 0.15);

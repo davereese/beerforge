@@ -3,11 +3,14 @@ import React from 'react';
 import axios from 'axios';
 
 import styles from './Profile.module.scss';
+import formStyles from '../../components/Forms/Forms.module.scss';
 import Avatar from '../../components/Avatar/Avatar';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
 
 class Profile extends React.Component<any, any> {
+  fileInput: React.RefObject<HTMLInputElement>;
+
   constructor(props: any) {
     super(props);
 
@@ -19,8 +22,14 @@ class Profile extends React.Component<any, any> {
       firstName: this.props.currentUser.first_name,
       lastName: this.props.currentUser.last_name,
       error: null,
+      uploadSuccess: null,
+      uploadError: null,
       saving: false,
+      file: null,
+      uploading: false,
     }
+
+    this.fileInput = React.createRef();
   }
 
   componentDidMount() {
@@ -62,7 +71,7 @@ class Profile extends React.Component<any, any> {
       this.props.updateUser({currentUser: response.data[0]});
       this.setState({saving: false});
     } catch (error) {
-      this.setState({error: error.response.status, saving: false});
+      this.setState({error: error.response.data, saving: false});
     }
   }
 
@@ -77,7 +86,7 @@ class Profile extends React.Component<any, any> {
 
       this.props.logOutUser();
     } catch (error) {
-      this.setState({error: error.response.status});
+      this.setState({error: error.response.data});
     }
   }
 
@@ -99,6 +108,53 @@ class Profile extends React.Component<any, any> {
         </>
     });
   }
+
+  fileAdded = (e: any) => {
+    let name = null;
+    if (
+      this.fileInput.current &&
+      this.fileInput.current.files &&
+      this.fileInput.current.files.length > 0
+    ) {
+      name = this.fileInput.current.files[0].name;
+    }
+
+    this.setState({file: name});
+  };
+
+  uploadBrews = async (e: any) => {
+    // before we start using the current user, let's just make sure they haven't expired, shall we?
+    this.props.loadUser();
+    if (
+      this.fileInput.current &&
+      this.fileInput.current.files &&
+      this.fileInput.current.files.length > 0
+    ) {
+      try {
+        this.setState({uploading: true});
+
+        const formData = new FormData();
+        formData.append('beerxml', this.fileInput.current.files[0]);
+        const currentUser = this.props.currentUser;
+        const authHeaders = {
+          'authorization': currentUser ? currentUser.token : null,
+          'Content-Type': 'multipart/form-data'
+        };
+
+        const result = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/brew/upload`, formData, {
+          headers: authHeaders,
+        });
+
+        if (result.status === 202) {
+          this.setState({uploadSuccess: 'Upload success!', uploading: false, file: null});
+          this.fileInput.current.value = '';
+        }
+      } catch (error) {
+        this.setState({uploadError: error.response.data, uploading: false, file: null});
+        this.fileInput.current.value = '';
+      }
+    }
+  };
 
   render() {
     const { currentUser } = this.props;
@@ -158,13 +214,47 @@ class Profile extends React.Component<any, any> {
               onClick={this.handleDeleteUser}
             >Delete Account</button>
           </div>
+        </div>
+
+        <label className="divider"><span>Upload Brew (BeerXML)</span></label>
+        <div className={`${styles.form} ${formStyles.rowOneThird}`}>
+          <input
+            type="file"
+            id="beerxmlUpload"
+            accept=".xml"
+            ref={this.fileInput}
+            onChange={this.fileAdded}
+          />
+          <label
+            className={`dark ${this.state.file ? 'filled' : null}`}
+            htmlFor="beerxmlUpload"
+          >
+            {this.state.file ? this.state.file : 'Choose File'}
+          </label>
+          <button
+            className={`button button--green ${styles.uploadeButton} ${this.state.uploading ? styles.uploading : null}`}
+            onClick={this.uploadBrews}
+            disabled={!this.state.file}
+          >
+            <span>Upload File</span>
+            {this.state.uploading ? <Loader className={styles.savingLoader} /> : null}
+          </button>
+        </div>
+        {this.state.uploadSuccess !== null
+          ? <p className="success">{this.state.uploadSuccess}</p>
+          : null
+        }
+        {this.state.uploadError !== null
+          ? <p className="error">{this.state.uploadError}</p>
+          : null
+        }
+        <label>NOTE: This upload maps over everything it can form your beerXML files, but it is only as good as the data those files contain. Make sure your files are up to spec. <a href="http://www.beerxml.com/beerxml.htm" target="_blank" rel="noopener noreferrer">beerxml.com</a></label>
 
           {/* <label className="divider"><span>Brewhouse Settings</span></label>
           <button
             className="button button--yellow"
             // onClick={saveData}
           >Update Settings</button> */}
-        </div>
       </section>
     );
   }

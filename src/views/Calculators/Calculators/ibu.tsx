@@ -7,7 +7,7 @@ class IBU extends Component<any, any> {
       aa: '',
       weight: '',
       length: '',
-      type: 'whole',
+      type: 'leaf',
       og: '',
       vol: '',
       formula: 'tinseth',
@@ -70,7 +70,7 @@ class IBU extends Component<any, any> {
             value={this.state.type}
             onChange={handleInputChange}
           >
-            <option value="whole">Whole Leaf</option>
+            <option value="leaf">Whole Leaf</option>
             <option value="pellet">Pellet</option>
           </select><br />
           <label htmlFor="og">Original Gravity</label><br />

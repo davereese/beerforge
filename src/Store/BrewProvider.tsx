@@ -127,7 +127,7 @@ export interface BrewInterface {
   secondaryTemp?: number;
   packagingType?: string;
   carbonationMethod?: string;
-  co2VolumeTarget?: number;
+  CO2VolumeTarget?: number;
   beerTemp?: number;
   amountForCO2?: number;
   notes?: string;
@@ -276,8 +276,8 @@ export default class BrewProvider extends React.Component {
     if (brew.og && brew.fg) {
       brew.alcoholContent = Calculator.alcoholContent(brew.og, brew.fg, 'ABV');
     }
-    if (brew.beerTemp && brew.co2VolumeTarget && brew.carbonationMethod && brew.batchSize) {
-      brew.amountForCO2 = Calculator.CO2(brew.beerTemp, brew.co2VolumeTarget, brew.carbonationMethod, brew.batchSize);
+    if (brew.beerTemp && brew.CO2VolumeTarget && brew.carbonationMethod && brew.batchSize) {
+      brew.amountForCO2 = Calculator.CO2(brew.beerTemp, brew.CO2VolumeTarget, brew.carbonationMethod, brew.batchSize);
     }
 
     this.setState({brew});

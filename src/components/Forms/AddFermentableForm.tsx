@@ -51,8 +51,9 @@ function AddFermentableForm(props: Props) {
       dataToSet = [...fermentablesArray, formData];
     }
 
+    // this lastIndex stuff is a chack to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
-    if (dataToSet[lastIndex].id && dataToSet[lastIndex].id !== 0) {
+    if (dataToSet[lastIndex].id !== 0) {
       props.dataUpdated({...props.brew, fermentables: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +86,7 @@ function AddFermentableForm(props: Props) {
       <label>Fermentable<br />
         <select
           onChange={dataChanged('fermentable')}
-          value={formData.id}
+          value={formData.id ? formData.id : 0}
         >
           <option value="0">Choose Malt</option>
           {fermentables.map(fermentable => (
