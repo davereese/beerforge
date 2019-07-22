@@ -55,3 +55,14 @@
     }
   }
 }
+
+.uploadButton {
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  line-height: 0;
+
+  svg {
+    margin: -3px -5px 0 0;
+  }
+}

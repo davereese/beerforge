@@ -232,7 +232,7 @@ class Profile extends React.Component<any, any> {
             {this.state.file ? this.state.file : 'Choose File'}
           </label>
           <button
-            className={`button button--green ${styles.uploadeButton} ${this.state.uploading ? styles.uploading : null}`}
+            className={`button button--green ${styles.uploadButton} ${this.state.uploading ? styles.uploading : null}`}
             onClick={this.uploadBrews}
             disabled={!this.state.file}
           >
