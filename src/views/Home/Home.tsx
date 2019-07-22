@@ -144,8 +144,8 @@ class Home extends React.Component<any, any> {
               <li>Recipe formulation for four brewing methods</li>
               <li>Automatic calculations for brew day</li>
               <li>Standalone calculators</li>
-              <li>Massive ingredient database</li>
               <li>Searchable Brew Logs</li>
+              <li>Import recipes from other platforms via BeerXML</li>
             </ul>
             <div className={styles.cta}>
               <p>BeerForge is free, no freemium here.</p>
