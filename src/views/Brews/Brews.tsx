@@ -11,6 +11,8 @@ import Card from '../../components/Card/Card';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import Loader from '../../components/Loader/Loader';
+import Tooltip from "../../components/Tooltip/Tooltip";
+import { BrewInterface } from '../../Store/BrewProvider';
 
 class Brews extends React.Component<any, any> {
   constructor(props: any) {
@@ -23,6 +25,7 @@ class Brews extends React.Component<any, any> {
       page: 1,
       numToShow: 20,
       loading: false,
+      showTooltip: '',
     }
   }
 
@@ -39,6 +42,40 @@ class Brews extends React.Component<any, any> {
       });
     } catch (error) {
       this.setState({error: error.response.status, loading: false});
+    }
+  }
+
+  openMoreMenu = (index: number) => (event: any) => {
+    event.stopPropagation();
+    this.setState({showTooltip: index});
+  }
+
+  closeMoreMenu = (index: number) => {
+    if (this.state.showTooltip === index) {
+      this.setState({showTooltip: ''});
+    }
+  }
+
+  export = (brew: BrewInterface) => async (event: any) => {
+    event.stopPropagation();
+    try {
+      this.props.loadUser();
+      const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
+      await axios
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/export/?brews=${brew.id}`, {
+        headers: authHeaders,
+        responseType: 'blob',
+      }).then(result => {
+        const downloadUrl = window.URL.createObjectURL(new Blob([result.data]));
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.setAttribute('download', `beerforge_export-${brew.name ? brew.name.replace(' ', '_') : ''}.xml`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+    } catch (error) {
+      this.setState({error: error.response.status});
     }
   }
 
@@ -114,6 +151,22 @@ class Brews extends React.Component<any, any> {
                         : '--'}
                     </span>
                     <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
+                    <div className={styles.moreMenuWrapper}>
+                      <div className={styles.kebab} onClick={this.openMoreMenu(index)}>
+                        <span></span><span></span><span></span>
+                      </div>
+                      <Tooltip
+                        show={this.state.showTooltip === index}
+                        placement="left-center"
+                        onClose={() => this.closeMoreMenu(index)}
+                        className={styles.moreMenu}
+                      >
+                        <button
+                          className={`button button--link button--small ${styles.moreButton}`}
+                          onClick={this.export(brew)}
+                        >Export</button>
+                      </Tooltip>
+                    </div>
                   </ListItem>
                 })
                 : <li className={styles.noBrews}>

@@ -141,7 +141,7 @@ class Profile extends React.Component<any, any> {
           'Content-Type': 'multipart/form-data'
         };
 
-        const result = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/brew/upload`, formData, {
+        const result = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/brews/upload`, formData, {
           headers: authHeaders,
         });
 

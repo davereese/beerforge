@@ -100,6 +100,23 @@
       right: 7px;
     }
   }
+
+  &.left-center {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &::after {
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 6px solid rgba($site-bg, 0.9);
+    }
+  }
 }
 
 @keyframes fadeIn {

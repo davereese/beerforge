@@ -4,7 +4,7 @@ import styles from './Tooltip.module.scss';
 
 interface Props {
   show: boolean;
-  placement: 'bottom' | 'bottom-center' | 'bottom-right' | 'bottom-left' | 'top' | 'top-center' | 'top-right' | 'top-left';
+  placement: 'bottom' | 'bottom-center' | 'bottom-right' | 'bottom-left' | 'top' | 'top-center' | 'top-right' | 'top-left' | 'left-center';
   onClose: Function;
   children?: any;
   className?: any;
