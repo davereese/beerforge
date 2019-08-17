@@ -15,6 +15,8 @@ import Tooltip from "../../components/Tooltip/Tooltip";
 import { BrewInterface } from '../../Store/BrewProvider';
 
 class Brews extends React.Component<any, any> {
+  logHeader: React.RefObject<HTMLDivElement>;
+
   constructor(props: any) {
     super(props);
 
@@ -27,6 +29,8 @@ class Brews extends React.Component<any, any> {
       loading: false,
       showTooltip: '',
     }
+
+    this.logHeader = React.createRef<HTMLDivElement>();
   }
 
   async listUserBrews(page: number) {
@@ -42,17 +46,6 @@ class Brews extends React.Component<any, any> {
       });
     } catch (error) {
       this.setState({error: error.response.status, loading: false});
-    }
-  }
-
-  openMoreMenu = (index: number) => (event: any) => {
-    event.stopPropagation();
-    this.setState({showTooltip: index});
-  }
-
-  closeMoreMenu = (index: number) => {
-    if (this.state.showTooltip === index) {
-      this.setState({showTooltip: ''});
     }
   }
 
@@ -82,10 +75,57 @@ class Brews extends React.Component<any, any> {
   componentDidMount() {
     document.title = "BeerForge | All Brews";
     this.listUserBrews(1);
+    window.addEventListener('scroll', this.handleScroll, { passive: true });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
+
+  handleScroll = (event: Event) => {
+    const rect = this.logHeader.current
+      ? this.logHeader.current.getBoundingClientRect()
+      : new DOMRect();
+    if (this.state.headerClass === null && rect.top > 49) {
+      this.setState({
+        headerClass: null,
+        placeholderClass: {
+          height: 0,
+          width: 0,
+        }
+      });
+    } else if (this.state.headerClass !== null && rect.top > -20) {
+      this.setState({
+        headerClass: null,
+        placeholderClass: {
+          height: 0,
+          width: 0,
+        }
+      });
+    } else if (rect.top <= 49) {
+      this.setState({
+        headerClass: styles.fixedHeader,
+        placeholderClass: {
+          width: '100%',
+          height: '69px'
+        }
+      });
+    }
   }
 
   handleBrewClick = (brewId: number) => (event: any) => {
     this.props.history.push(`brew/${brewId}`);
+  }
+
+  openMoreMenu = (index: number) => (event: any) => {
+    event.stopPropagation();
+    this.setState({showTooltip: index});
+  }
+
+  closeMoreMenu = (index: number) => {
+    if (this.state.showTooltip === index) {
+      this.setState({showTooltip: ''});
+    }
   }
 
   onChange = debounce((value: string) => {
@@ -118,13 +158,14 @@ class Brews extends React.Component<any, any> {
             className="button button--large button--yellow"
           >New Brew</Link>
         </div>
-        <div className={styles.brewLogHeader}>
+        <div className={`${styles.brewLogHeader} ${this.state.headerClass}`}>
           <label className={styles.nameCol}>Name</label>
           <label>ABV %</label>
           <label>IBU</label>
           <label>SRM</label>
           <label>Date Brewed</label>
         </div>
+        <div ref={this.logHeader} style={this.state.placeholderClass} />
         <Card customClass={styles.allBrews__list}>
           <List customClass={styles.brewLog}>
             {this.state.loading && this.state.brews.length === 0 ? <Loader className={styles.loader} />
@@ -137,9 +178,9 @@ class Brews extends React.Component<any, any> {
                     label="Click to see brew details"
                   >
                     <div className={styles.nameCol}>{brew.name}</div>
-                    <span>{brew.abv ? brew.abv : '--'}</span>
-                    <span>{brew.ibu ? brew.ibu : '--'}</span>
-                    <span>
+                    <span className={styles.abvCol}>{brew.abv ? brew.abv : '--'}</span>
+                    <span className={styles.ibuCol}>{brew.ibu ? brew.ibu : '--'}</span>
+                    <span className={styles.srmCol}>
                       {brew.srm
                         ? <>
                             <div
@@ -150,7 +191,7 @@ class Brews extends React.Component<any, any> {
                           </>
                         : '--'}
                     </span>
-                    <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
+                    <span className={styles.dateCol}><FormattedDate>{brew.date_brewed}</FormattedDate></span>
                     <div className={styles.moreMenuWrapper}>
                       <div className={styles.kebab} onClick={this.openMoreMenu(index)}>
                         <span></span><span></span><span></span>

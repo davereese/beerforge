@@ -8,6 +8,12 @@
   height: 12px;
   background-color: rgba($default-card-bg, 0.25);
 
+  @include for-phone-only {
+    width: 7px;
+    height: 7px;
+    margin: 1px 1px 2px;
+  }
+
   &.active {
     background-color: $canary;
   }

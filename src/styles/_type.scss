@@ -8,9 +8,13 @@ h1,
 .h1 {
   margin: 0;
   font-weight: $weight-light;
-  font-size: px-to-rem(28px);
+  font-size: px-to-rem(25px);
   text-transform: none;
   letter-spacing: 0;
+
+  @include for-tablet-landscape-up () {
+    font-size: px-to-rem(28px);
+  }
 }
 
 h2,

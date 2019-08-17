@@ -9,6 +9,7 @@ export interface ModalProviderInterface {
 export interface ModalInterface {
   title: string;
   body: any;
+  node: any;
   buttons: any;
   classOverride: any;
 }
@@ -28,6 +29,7 @@ export default class ModalProvider extends React.Component {
       showModal: this.showModal,
       title: '',
       body: '',
+      node: '',
       classOverride: '',
       buttons: '',
       closing: false,
@@ -43,6 +45,7 @@ export default class ModalProvider extends React.Component {
           show: false,
           title: '',
           body: '',
+          node: '',
           buttons: '',
           closing: false,
           classOverride: ''
@@ -56,6 +59,7 @@ export default class ModalProvider extends React.Component {
       show: true,
       title: options.title,
       body: options.body,
+      node: options.node,
       buttons: options.buttons,
       classOverride: options.classOverride,
     });

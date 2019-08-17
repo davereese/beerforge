@@ -37,8 +37,13 @@ class Modal extends React.Component<any, any> {
     return modalProps && modalProps.show ? (
       <div className={`${styles.modalOverlay} ${modalProps.classOverride} ${modalProps.closing ? styles.close : null}`}>
         <div className={styles.modal} ref={this.modalRef}>
-          <header dangerouslySetInnerHTML={{__html: modalProps.title}} />
+          {modalProps.title
+            ? <header dangerouslySetInnerHTML={{__html: modalProps.title}} />
+            : null}
           {modalProps.body}
+          {modalProps.node
+            ? modalProps.node
+            : null}
           {modalProps.buttons
             ? <div className={styles.modalButtons}>
                 {modalProps.buttons}

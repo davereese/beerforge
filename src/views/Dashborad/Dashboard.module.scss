@@ -5,27 +5,58 @@
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: 1fr;
-  grid-gap: 20px;
+  grid-gap: 0;
   grid-template-areas:
-    'topRow topRow'
-    'leftColumn rightColumn';
+    'topRow'
+    'topRow'
+    'leftColumn'
+    'rightColumn';
+  margin-bottom: 60px;
 
-  @include for-tablet-landscape-up () {
+  @include for-tablet-portrait-up () {
     grid-template-areas:
       'topRow topRow'
       'leftColumn rightColumn';
     grid-template-columns: 0.5fr 0.5fr;
+    margin-bottom: 0;
+    grid-gap: 20px;
   }
 
   .topRow {
     grid-area: topRow;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 20px;
+
+    @include for-tablet-portrait-up () {
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 0;
+    }
+
+    a {
+      @include for-phone-only () {
+        position: fixed;
+        bottom: 80px;
+        right: 10px;
+        width: 90px;
+        height: 90px;
+        padding: 22px 0 0;
+        border-radius: 50%;
+        text-align: center;
+        z-index: 10;
+        box-shadow: 0 5px 15px 2px darken($text-dark, 3%);
+        font-weight: $weight-regular;
+      }
+    }
   }
 
   .leftColumn {
     grid-area: leftColumn;
+    width: 100%;
   }
 
   .rightColumn {
@@ -119,7 +150,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 15px;
+      padding: 10px 15px 20px;
+
+      @include for-tablet-portrait-up () {
+        padding: 20px 15px;
+      }
 
       a {
         color: $dashboard-link;

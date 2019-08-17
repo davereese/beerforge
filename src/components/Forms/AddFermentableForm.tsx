@@ -53,7 +53,8 @@ function AddFermentableForm(props: Props) {
 
     // this lastIndex stuff is a chack to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
-    if (dataToSet[lastIndex].id !== 0) {
+    const entryId = dataToSet[lastIndex].id;
+    if (entryId && entryId > 0) {
       props.dataUpdated({...props.brew, fermentables: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

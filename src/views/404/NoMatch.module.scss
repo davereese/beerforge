@@ -2,9 +2,13 @@
 @import '../../styles/utilities';
 
 .noMatch {
-  margin-top: 25vh;
+  margin-top: 5vh;
   text-align: center;
   color: $text-light;
+
+  @include for-tablet-portrait-up () {
+    margin-top: 25vh;
+  }
 
   .header {
     margin-bottom: 8px;

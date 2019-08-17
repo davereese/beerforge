@@ -3,6 +3,7 @@
 
 
 .ActivityPanel {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -15,6 +16,12 @@
     margin: 0 5px;
     width: 144px;
     height: 234px;
+
+    @include for-phone-only {
+      width: 260px;
+      height: 41px;
+      margin-bottom: 20px;
+    }
 
     @include for-tablet-landscape-up {
       width: 234px;
@@ -31,5 +38,18 @@
     padding-bottom: 1px;
     color: $label-color;
     font-size: px-to-rem(10px);
+
+    @include for-phone-only {
+      position: absolute;
+      font-size: px-to-rem(9px);
+
+      &:first-child {
+        left: 10%;
+      }
+
+      &:last-child {
+        right: 10%;
+      }
+    }
   }
 }

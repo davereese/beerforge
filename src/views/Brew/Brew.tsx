@@ -36,6 +36,7 @@ interface Props extends RouteComponentProps {
 class Brew extends React.Component<any, any> {
   brewContainer: React.RefObject<HTMLDivElement>;
   nameInput: React.RefObject<HTMLInputElement>;
+  formContainer: React.RefObject<HTMLDivElement>;
 
   constructor(props: Props) {
     super(props);
@@ -52,6 +53,7 @@ class Brew extends React.Component<any, any> {
     }
     this.brewContainer = React.createRef<HTMLDivElement>();
     this.nameInput = React.createRef<HTMLInputElement>();
+    this.formContainer = React.createRef<HTMLDivElement>();
   }
 
   componentDidMount() {
@@ -80,7 +82,7 @@ class Brew extends React.Component<any, any> {
         });
     }
 
-    window.addEventListener('scroll', this.handleScroll, { passive: true })
+    window.addEventListener('scroll', this.handleScroll, { passive: true });
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -104,26 +106,66 @@ class Brew extends React.Component<any, any> {
     const rect = this.brewContainer.current
       ? this.brewContainer.current.getBoundingClientRect()
       : new DOMRect();
-    if (rect.top < -30) {
-      this.setState({topSpacing: (rect.top * -1) - 30});
-    } else if (rect.top > -30 && rect.top < 0) {
-      this.setState({topSpacing: (rect.top * -1) + rect.top});
-    } else if (rect.top < 0) {
-      this.setState({topSpacing: 0});
+    const sideBarMode = this.formContainer.current ? window.getComputedStyle(this.formContainer.current).position : 'relative';
+    if (sideBarMode === 'relative') {
+      if (rect.top < -30) {
+        this.setState({topSpacing: (rect.top * -1) - 30});
+      } else if (rect.top > -30 && rect.top < 0) {
+        this.setState({topSpacing: (rect.top * -1) + rect.top});
+      } else if (rect.top < 0) {
+        this.setState({topSpacing: 0});
+      }
     }
   }
 
-  openSideBar = (choice: string | null = null, editingData: any | null = null) => (event: any) => {
-    if (!this.state.sideBarOpen) {
-      this.setState({sideBarOpen: !this.state.sideBarOpen});
-    }
-    this.setState({form: choice, editingData: editingData});
+  openModal() {
+    const { modalProps } = this.props;
+    modalProps.showModal({
+      node: (
+        <FormHandler
+          {...this.props as Props}
+          form={this.state.form}
+          nextForm={this.nextForm}
+          editingData={this.state.editingData}
+          closeSidebar={this.closeSidebar}
+        />
+      ),
+      classOverride: styles.mobileFormHandler
+    });
   }
+
+  openSideBar = (
+    choice: string | null = null,
+    editingData: any | null = null
+  ) => (event: any) => {
+    const sideBarMode = this.formContainer.current
+      ? window.getComputedStyle(this.formContainer.current).position
+      : "relative";
+    this.setState({ form: choice, editingData: editingData }, () => {
+      if (sideBarMode === "fixed") {
+        this.openModal();
+      } else {
+        if (!this.state.sideBarOpen) {
+          this.setState({ sideBarOpen: !this.state.sideBarOpen });
+        }
+      }
+    });
+  };
 
   closeSidebar = () => {
-    this.setState({sideBarOpen: false});
-    window.setTimeout(() => {this.setState({form: null, editingData: null})}, 500);
-  }
+    const { modalProps } = this.props;
+    const sideBarMode = this.formContainer.current
+      ? window.getComputedStyle(this.formContainer.current).position
+      : "relative";
+    if (sideBarMode === "fixed") {
+      modalProps.hideModal();
+    } else {
+      this.setState({ sideBarOpen: false });
+    }
+    window.setTimeout(() => {
+      this.setState({ form: null, editingData: null });
+    }, 500);
+  };
 
   nextForm = (event: any) => {
     const formOrder = [
@@ -134,7 +176,14 @@ class Brew extends React.Component<any, any> {
     }
     const position = formOrder.indexOf(this.state.form);
     if (position < formOrder.length -1) {
-      this.setState({form: formOrder[position + 1]});
+      this.setState({form: formOrder[position + 1]}, () => {
+        const sideBarMode = this.formContainer.current
+          ? window.getComputedStyle(this.formContainer.current).position
+          : "relative";
+        if (sideBarMode === "fixed") {
+          this.openModal();
+        }
+      });
     }
   }
 
@@ -267,30 +316,38 @@ class Brew extends React.Component<any, any> {
               </ul>
               <div className={styles.brew__stats}>
                 <div className={styles.brew__stat}>
-                  <span className={styles.value}>{brew.alcoholContent ? `${brew.alcoholContent}%` : null}</span>
-                  <label className={styles.label}>ABV</label>
+                  <div>
+                    <span className={styles.value}>{brew.alcoholContent ? `${brew.alcoholContent}%` : null}</span>
+                    <label className={styles.label}>ABV</label>
+                  </div>
                 </div>
                 <div className={styles.brew__stat}>
-                  <span className={styles.value}>{brew.attenuation ? `${brew.attenuation}%` : null}</span>
-                  <label className={styles.label}>ATTEN</label>
+                  <div>
+                    <span className={styles.value}>{brew.attenuation ? `${brew.attenuation}%` : null}</span>
+                    <label className={styles.label}>ATTEN</label>
+                  </div>
                 </div>
                 <div className={styles.brew__stat}>
-                  <span className={styles.value}>{brew.ibu}</span>
-                  <label className={styles.label}>IBU</label>
+                  <div>
+                    <span className={styles.value}>{brew.ibu}</span>
+                    <label className={styles.label}>IBU</label>
+                  </div>
                 </div>
                 <div className={styles.brew__stat}>
-                  <span className={styles.value}>
-                    {brew.srm
-                      ? <>
-                          <div
-                            className={styles.srmSwatch}
-                            style={{backgroundColor: getSrmToRgb(brew.srm)}}
-                          />
-                          {brew.srm}
-                        </>
-                      : null }
-                  </span>
-                  <label className={styles.label}>SRM</label>
+                  <div>
+                    <span className={styles.value}>
+                      {brew.srm
+                        ? <>
+                            <div
+                              className={styles.srmSwatch}
+                              style={{backgroundColor: getSrmToRgb(brew.srm)}}
+                            />
+                            {brew.srm}
+                          </>
+                        : null }
+                    </span>
+                    <label className={styles.label}>SRM</label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -308,16 +365,18 @@ class Brew extends React.Component<any, any> {
                   ><span>Edit</span></button>
                 : null}
             </div>
-            <List customClass={styles.brew__ingredients}>
+            <List customClass={`${styles.brew__ingredients} ${styles.fermentables}`}>
               {brew.fermentables.map((fermentable: FermentableInterface, index: number) => (
                 <ListItem
                   color="brew"
                   clicked={!this.state.readOnly ? this.openSideBar('fermentables', fermentable) : null}
                   key={`${fermentable.id}${index}`}
                 >
-                  <span>{fermentable.weight} lb{fermentable.weight && fermentable.weight > 1 ? 's' : null}</span>
-                  <span>{fermentable.name}</span>
-                  <span>{fermentable.lovibond} °L</span>
+                  <span className={styles.firstCol}>
+                    {fermentable.weight} lb{fermentable.weight && fermentable.weight > 1 ? 's' : null}
+                  </span>
+                  <span className={styles.secondCol}>{fermentable.name}</span>
+                  <span className={styles.thirdCol}>{fermentable.lovibond} °L</span>
                 </ListItem>
               ))}
             </List>
@@ -336,18 +395,18 @@ class Brew extends React.Component<any, any> {
                   ><span>Edit</span></button>
                 : null}
             </div>
-            <List customClass={styles.brew__ingredients}>
+            <List customClass={`${styles.brew__ingredients} ${styles.hops}`}>
               {brew.hops.map((hop: HopInterface, index: number) => (
                 <ListItem
                   color="brew"
                   clicked={!this.state.readOnly ? this.openSideBar('hops', hop) : null}
                   key={`${hop.id}${index}`}
                 >
-                  <span>{hop.weight} oz</span>
-                  <span>{hop.name}</span>
-                  <span>{hop.alphaAcid}% AA</span>
-                  <span>{hop.lengthInBoil} min</span>
-                  <span>{hop.ibu ? <>{hop.ibu} IBU</> : null}</span>
+                  <span className={styles.firstCol}>{hop.weight} oz</span>
+                  <span className={styles.secondCol}>{hop.name}</span>
+                  <span className={styles.thirdCol}>{hop.alphaAcid}% AA</span>
+                  <span className={styles.fourthCol}>{hop.lengthInBoil} min</span>
+                  <span className={styles.fifthCol}>{hop.ibu ? <>{hop.ibu} IBU</> : null}</span>
                 </ListItem>
               ))}
             </List>
@@ -375,9 +434,11 @@ class Brew extends React.Component<any, any> {
                   clicked={!this.state.readOnly ? this.openSideBar('yeast', item) : null}
                   key={`${item.id}${index}`}
                 >
-                  <span>{item.amount} pack{item.amount && item.amount > 1 ? 's' : null}</span>
-                  <span>{item.manufacturer} - {item.name}</span>
-                  <span>{item.averageAttenuation}% average attenuation</span>
+                  <span className={styles.firstCol}>
+                    {item.amount} pack{item.amount && item.amount > 1 ? 's' : null}
+                  </span>
+                  <span className={styles.secondCol}>{item.manufacturer} - {item.name}</span>
+                  <span className={styles.thirdCol}>{item.averageAttenuation}% average attenuation</span>
                 </ListItem>
               ))}
             </List>
@@ -385,7 +446,7 @@ class Brew extends React.Component<any, any> {
           <Card color="brew" customClass={this.state.new ? styles.new : styles.view}>
             {brew.batchType !== 'extract'
               ? <>
-                <div className={styles.brew__section}>
+                <div className={`${styles.brew__section} ${styles.mash}`}>
                   <div className={styles.brew__header}>
                     <h2>Mash</h2>
                     <span>{brew.batchType === 'BIAB' &&
@@ -464,18 +525,22 @@ class Brew extends React.Component<any, any> {
                   : null}
                 <div className={styles.section__stats}>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}>{brew.preBoilG}</span>
-                    <label className={styles.label}>PRE</label>
+                    <div>
+                      <span className={styles.value}>{brew.preBoilG}</span>
+                      <label className={styles.label}>PRE</label>
+                    </div>
                   </div>
                   <span className={styles.arrow}></span>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}>{brew.og}</span>
-                    <label className={styles.label}>OG</label>
+                    <div>
+                      <span className={styles.value}>{brew.og}</span>
+                      <label className={styles.label}>OG</label>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className={styles.brew__section}>
+            <div className={`${styles.brew__section} ${styles.fermentation}`}>
               <div className={styles.brew__header}>
                 <h2>Fermentation</h2>
                 {!this.state.readOnly
@@ -488,30 +553,38 @@ class Brew extends React.Component<any, any> {
               <div className={`${styles.section__values} ${styles.withStats}`}>
                 <span>
                   {brew.primaryLength
-                    ? <>Primary Length: <strong>{brew.primaryLength} days</strong></>
-                    : null}
-                  {brew.secondaryLength
-                    ? <><br />Secondary Length: <strong>{brew.secondaryLength} days</strong></>
+                    ? <>Primary: <strong>{brew.primaryLength} days</strong></>
                     : null}
                 </span>
                 <span>
                   {brew.primaryTemp
                     ? <>Temp: <strong>{brew.primaryTemp}° F</strong></>
                     : null}
+                </span>
+                <span>
+                  {brew.secondaryLength
+                    ? <>Secondary: <strong>{brew.secondaryLength} days</strong></>
+                    : null}
+                </span>
+                <span>
                   {brew.secondaryTemp
-                    ? <><br />Temp: <strong>{brew.secondaryTemp}° F</strong></>
+                    ? <>Temp: <strong>{brew.secondaryTemp}° F</strong></>
                     : null}
                 </span>
                 <span></span>
                 <div className={styles.section__stats}>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}>{brew.og}</span>
-                    <label className={styles.label}>OG</label>
+                    <div>
+                      <span className={styles.value}>{brew.og}</span>
+                      <label className={styles.label}>OG</label>
+                    </div>
                   </div>
                   <span className={styles.arrow}></span>
                   <div className={styles.brew__stat}>
-                    <span className={styles.value}>{brew.fg}</span>
-                    <label className={styles.label}>FG</label>
+                    <div>
+                      <span className={styles.value}>{brew.fg}</span>
+                      <label className={styles.label}>FG</label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -573,7 +646,7 @@ class Brew extends React.Component<any, any> {
               </button>
             : null}
         </div>
-        <div className={styles.sideBar} role="complementary">
+        <div className={styles.sideBar} role="complementary" ref={this.formContainer}>
           <Card color="brew" customStyle={top} customClass={`${styles.formsContainer}`}>
             <FormHandler
               {...this.props as Props}

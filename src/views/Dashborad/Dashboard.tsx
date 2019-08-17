@@ -11,6 +11,7 @@ import ListItem from '../../components/ListItem/ListItem';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 import Loader from '../../components/Loader/Loader';
+import { scrollToTop } from '../../resources/javascript/scrollToTop';
 
 class Dashboard extends React.Component<any, any> {
   _isMounted: boolean;
@@ -64,7 +65,7 @@ class Dashboard extends React.Component<any, any> {
   }
 
   togglePage = (page: number) => (event: any) => {
-    this.setState({brewLogPage: page});
+    this.setState({brewLogPage: page}, () => scrollToTop(400));
   }
 
   render() {

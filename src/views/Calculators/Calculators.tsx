@@ -2,6 +2,7 @@ import React from 'react';
 
 import styles from './Calculators.module.scss';
 import Card from '../../components/Card/Card';
+import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import * as Calculator from '../../resources/javascript/calculator';
 import TotalWater from './Calculators/total-water';
 import StrikeVolume from './Calculators/strike-volume';
@@ -50,6 +51,7 @@ class Calculators extends React.Component<any, any> {
 
   componentDidMount() {
     document.title = "BeerForge | Calculators";
+    scrollToTop(0);
   }
 
   render() {

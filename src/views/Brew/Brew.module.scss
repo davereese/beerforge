@@ -4,41 +4,67 @@
 
 .brew {
   display: grid;
-  grid-template-columns: 66.7% calc(33.3% - 20px);
+  grid-template-columns: 100% 100%;
   grid-template-areas: 'main aside';
   grid-column-gap: 20px;
   padding-bottom: 50px;
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
-  transform: translateX(16.65%);
-  transition: transform 0.5s;
+  transition: transform 0.5s, grid-template-columns 0.5s;
   perspective: 1000px;
+
+  @include for-tablet-landscape-up () {
+    grid-template-columns: minmax(66.7%, 66.7%) minmax(calc(33.3% - 20px), calc(33.3% - 20px));
+    transform: translateX(16.65%);
+  }
 
   .mainContent {
     grid-area: main;
-    max-width: 800px;
+    max-width: 1200px;
+
+    @include for-tablet-landscape-up () {
+      max-width: 800px;
+    }
   }
 
   .sideBar {
-    box-sizing: border-box;
-    grid-area: aside;
-    padding-top: 54px;
-    max-width: 380px;
+    position: fixed;
     opacity: 0;
-    transform-style: preserve-3d;
-    transform: rotate3d(0, 1, 0, -115deg) rotateZ(5deg) rotateX(-0.6deg);
-    transform-origin: bottom center 100px;
-    transition: opacity 0.5s, transform 0.5s cubic-bezier(.53,.01,.4,.99);
+    pointer-events: none;
+    transition: opacity 0.5s;
+
+    @include for-tablet-landscape-up () {
+      position: relative;
+      box-sizing: border-box;
+      padding-top: 54px;
+      max-width: 380px;
+      min-width: 341px;
+      grid-area: aside;
+      transform-style: preserve-3d;
+      transform: rotate3d(0, 1, 0, -115deg) rotateZ(5deg) rotateX(-0.6deg);
+      transform-origin: bottom center 100px;
+      transition: opacity 0.5s, transform 0.5s cubic-bezier(.53,.01,.4,.99);
+      pointer-events: auto;
+    }
   }
 
   &.open {
-    transform: translateX(0);
+    @include for-tablet-landscape-up () {
+      grid-template-columns: minmax(490px, 66.7%) minmax(341px, 380px);
+      transform: translateX(0);
+    }
 
     .sideBar {
-      opacity: 1;
-      transform: rotate3d(0, 1, 0, 0deg) rotateZ(0deg);
-      transition: opacity 0.5s, transform 0.5s cubic-bezier(.19,.19,.04,.99);
+      pointer-events: none;
+      opacity: 0;
+
+      @include for-tablet-landscape-up () {
+        pointer-events: auto;
+        opacity: 1;
+        transform: rotate3d(0, 1, 0, 0deg) rotateZ(0deg);
+        transition: opacity 0.5s, transform 0.5s cubic-bezier(.19,.19,.04,.99);
+      }
     }
   }
 
@@ -59,6 +85,7 @@
     color: $text-dark;
     font-weight: $weight-medium;
     font-size: px-to-rem(12px);
+    padding-top: 10px;
 
     &:hover {
       color: $link-hover;
@@ -72,10 +99,19 @@
   &__pageHeading {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
     margin-bottom: 15px;
+    flex-direction: column;
+
+    @include for-tablet-landscape-up () {
+      flex-direction: row;
+      align-items: flex-end;
+    }
 
     h1 {
+      @include for-tablet-landscape-up () {
+        padding-bottom: 0;
+      }
+
       button {
         opacity: 0;
         transition: opacity 0.3s;
@@ -94,22 +130,36 @@
     border: 0;
     background: transparent;
     outline: none;
-    padding: 0;
     @extend h1;
+    padding: 0;
     font-family: $montserrat;
+
+    @include for-tablet-landscape-up () {
+      padding-bottom: 10px;
+    }
   }
 
   &__numbers {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
     padding: 0 15px;
+
+    @media (min-width: 725px) {
+      flex-direction: row;
+      align-items: center;
+    }
   }
 
   &__numbersList {
     padding: 0;
     margin: 0;
     list-style-type: none;
+
+    @include for-tablet-landscape-up () {
+      display: block;
+      padding: 0;
+    }
 
     li {
       margin: 12px 0;
@@ -145,30 +195,81 @@
 
   &__stats {
     display: flex;
-    margin: 20px 0;
+    margin: 0 0 20px;
+
+    @include for-tablet-portrait-up () {
+      justify-content: center;
+      margin: 10px 0 20px;
+    }
+
+    @include for-tablet-landscape-up () {
+      justify-content: flex-end;
+      margin: 20px 0;
+    }
   }
 
   &__stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 12px;
-    width: 100px;
-    height: 100px;
+    position: relative;
+    margin: 0 6px;
+    width: calc(25% - 12px);
+    height: auto;
+    padding-bottom: 21%;
     border-radius: 50%;
     border: 1px solid rgba($stat-border, 0.5);
     background-color: rgba($stat-background, 0.4);
     text-align: center;
 
+    @media (min-width: 725px) {
+      margin: 0 6px;
+      width: 75px;
+      height: 75px;
+      padding-bottom: 0;
+    }
+
+    @media (min-width: 1000px) {
+      margin: 0 12px;
+    }
+
+    @media (min-width: 1050px) {
+      margin: 0 10px;
+      width: 100px;
+      height: 100px;
+    }
+
+    & > div {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+    }
+
     .value {
-      min-height: 35px;
-      font-size: px-to-rem(24px);
+      font-size: px-to-rem(14px);
       font-weight: $weight-light;
+
+      @include for-tablet-portrait-up () {
+        font-size: px-to-rem(15px);
+      }
+
+      @include for-tablet-landscape-up () {
+        font-size: px-to-rem(17px);
+      }
+
+      @media (min-width: 1050px) {
+        font-size: px-to-rem(24px);
+      }
     }
 
     .label {
       font-weight: $weight-semibold;
+      font-size: px-to-rem(9px);
+
+      @include for-tablet-landscape-up () {
+        font-size: px-to-rem(11px);
+      }
     }
 
     .srmSwatch {
@@ -183,14 +284,16 @@
   }
 
   &__header {
-    display: flex;
     position: relative;
+
+    @include for-tablet-landscape-up () {
+      display: flex;
+    }
 
     h2,
     span {
       display: block;
       box-sizing: border-box;
-      padding: 15px;
       margin: 0;
       width: 29%;
       font-weight: $weight-medium;
@@ -198,23 +301,126 @@
       text-transform: uppercase;
     }
 
+    h2 {
+      padding: 15px 15px 5px;
+
+      @include for-tablet-landscape-up () {
+        padding: 15px;
+      }
+    }
+
     span {
-      width: 42%;
-      text-align: center;
+      width: 100%;
+      padding: 0 15px 10px;
       text-transform: none;
       color: $brew-callout;
+      font-size: px-to-rem(12px);
+
+      @include for-tablet-landscape-up () {
+        width: 42%;
+        padding: 15px;
+        text-align: center;
+        font-size: px-to-rem(15px);
+      }
     }
   }
 
   &__ingredients {
     li {
-      display: grid;
-      grid-template-columns: 14% 40% 14% 14% auto;
+      display: flex;
+      flex-wrap: wrap;
+
+      span {
+        &.firstCol {
+          order: 2;
+          width: 25%;
+        }
+
+        &.secondCol {
+          order: 1;
+          width: 100%;
+          font-weight: $weight-semibold;
+        }
+
+        &.thirdCol {
+          order: 3;
+          width: 25%;
+        }
+
+        &.fourthCol {
+          order: 4;
+          width: 25%;
+        }
+
+        &.fifthCol {
+          order: 5;
+          width: auto;
+        }
+      }
+
+      @include for-tablet-landscape-up () {
+        span {
+          &.firstCol {
+            order: 1;
+            width: 14%;
+          }
+  
+          &.secondCol {
+            order: 2;
+            width: 40%;
+          }
+  
+          &.thirdCol {
+            order: 3;
+            width: 14%;
+          }
+  
+          &.fourthCol {
+            order: 4;
+            width: 14%;
+          }
+  
+          &.fifthCol {
+            order: 5;
+            width: auto;
+          }
+        }
+      }
+    }
+
+    &.fermentables {
+      li {
+        span {
+          &.firstCol {
+            width: 50%;
+          }
+
+          @include for-tablet-landscape-up () {
+            &.firstCol {
+              width: 14%;
+            }
+          }
+        }
+      }
     }
 
     &.yeast {
       li {
-        grid-template-columns: 14% 48% auto;
+        span {
+          &.thirdCol {
+            width: auto;
+          }
+
+          @include for-tablet-landscape-up () {
+            &.secondCol {
+              width: 48%;
+            }
+
+            &.thirdCol {
+              width: auto;
+            }
+          }
+        }
       }
     }
   }
@@ -222,8 +428,12 @@
   &__editingSection,
   &__section {
     button.editButton {
-      opacity: 0;
+      opacity: 1;
       transition: opacity 0.3s;
+
+      @include for-tablet-landscape-up () {
+        opacity: 0;
+      }
     }
 
     &:hover {
@@ -239,9 +449,33 @@
 
     .section__values {
       display: grid;
-      grid-template-columns: 30% 20% 20% 30%;
+      grid-template-columns: 100%;
       padding: 15px 15px 25px;
       line-height: 1.5;
+
+      @include for-tablet-landscape-up () {
+        grid-template-columns: 30% 20% 20% 30%;
+      }
+    }
+
+    &.mash {
+      .section__values {
+        @include for-tablet-landscape-up () {
+          grid-template-columns: 50% 50%;
+        }
+
+        @media (min-width: 1150px) {
+          grid-template-columns: 30% 20% 20% 30%;
+        }
+      }
+    }
+
+    &.fermentation {
+      .section__values {
+        @include for-tablet-landscape-up () {
+          grid-template-columns: 30% 30%;
+        }
+      }
     }
 
     .withStats {
@@ -252,19 +486,44 @@
       display: flex;
       align-items: center;
       position: absolute;
-      left: 69%;
-      transform: translateY(-50px);
+      left: 54%;
+      transform: translateY(-5px);
+
+      @include for-tablet-portrait-up () {
+        left: 60%;
+        transform: translateY(-35px);
+      }
+
+      @include for-tablet-landscape-up () {
+        left: 60%;
+        transform: translateY(-45px);
+      }
+
+      @media (min-width: 1000px) {
+        left: 65%;
+        transform: translateY(-45px);
+      }
 
       .brew__stat {
-        width: 78px;
-        height: 78px;
+        width: 60px;
+        height: 60px;
         margin: 0;
+
+        @include for-tablet-portrait-up () {
+          width: 78px;
+          height: 78px;
+        }
 
         .value {
           margin-top: 4px;
-          min-height: 25px;
-          font-size: px-to-rem(17px);
-          font-weight: $weight-regular;
+          font-size: px-to-rem(13px);
+          font-weight: $weight-light;
+          line-height: 1;
+
+          @include for-tablet-portrait-up () {
+            font-size: px-to-rem(17px);
+            font-weight: $weight-regular;
+          }
         }
       }
 

@@ -5,17 +5,51 @@
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: 1fr;
+  margin-bottom: 90px;
 
   .topRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-direction: column;
+
+    @include for-tablet-portrait-up () {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+
+      &::before {
+        content: '';
+        width: 100%;
+        order: 2;
+      }
+    }
+
+    @include for-tablet-landscape-up () {
+      justify-content: space-between;
+
+      &::before {
+        content: none;
+      }
+    }
 
     h1 {
-      margin: 0;
+      margin: 0 0 5px 0;
+      order: 1;
+
+      @include for-tablet-portrait-up () {
+        width: 100%;
+        text-align: center;
+      }
+
+      @include for-tablet-landscape-up () {
+        width: auto;
+        text-align: left;
+      }
     }
 
     input.search {
+      order: 2;
       width: 30%;
       padding: 0 50px 0 15px;
       margin: 0;
@@ -29,6 +63,25 @@
         color: rgba($error-color, 0.5);
       }
     }
+    
+    a {
+      order: 3;
+      margin-left: 20px;
+
+      @include for-phone-only () {
+        position: fixed;
+        bottom: 80px;
+        right: 10px;
+        width: 90px;
+        height: 90px;
+        padding: 22px 0 0;
+        border-radius: 50%;
+        text-align: center;
+        z-index: 10;
+        box-shadow: 0 5px 15px 2px darken($text-dark, 3%);
+        font-weight: $weight-regular;
+      }
+    }
   }
 
   &__header {
@@ -38,20 +91,52 @@
 
   .brewLogHeader {
     display: grid;
-    grid-template-columns: 57% 10% 10% 10% 11% auto;
+    grid-template-columns: 22% 22% 22% 27% 10%;
     padding: 17px 15px;
     margin-top: 20px;
+    transition: background-color 0.3s;
+
+    @include for-tablet-portrait-up () {
+      grid-template-columns: 53% 10% 10% 10% 13% auto;
+    }
+
+    @include for-tablet-landscape-up () {
+      grid-template-columns: 57% 10% 10% 10% 11% auto;
+    }
+
+    .nameCol {
+      @include for-phone-only () {
+        display: none;
+      }
+    }
 
     label {
       color: $error-color;
       text-transform: uppercase;
       font-weight: $weight-medium;
       white-space: nowrap;
+      font-size: px-to-rem(9px);
+
+      @include for-tablet-portrait-up () {
+        font-size: px-to-rem(11px);
+      }
 
       &.nameCol {
         width: 55%;
       }
     }
+  }
+
+  .fixedHeader {
+    position: fixed;
+    top: 0;
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: calc(100% - 40px);
+    max-width: 1400px;
+    background-color: desaturate(darken($default-bg-1, 9%), 13%);
+    z-index: 10;;
   }
 
   .brewLog {
@@ -65,18 +150,48 @@
     &__item {
       position: relative;
       display: grid;
-      grid-template-columns: 57% 10% 10% 10% 11% auto;
+      grid-template-areas:
+        'nameCol nameCol nameCol nameCol nameCol'
+        'abvCol ibuCol srmCol dateCol moreCol';
+      grid-template-columns: 22% 22% 22% 27% 10%;
+      align-items: center;
       cursor: pointer;
       color: $text-light;
 
+      @include for-tablet-portrait-up () {
+        grid-template-areas:
+          'nameCol abvCol ibuCol srmCol dateCol moreCol';
+        grid-template-columns: 53% 10% 10% 10% 13% auto;
+      }
+
+      @include for-tablet-landscape-up () {
+        grid-template-columns: 57% 10% 10% 10% 11% auto;
+      }
+
       .nameCol {
-        width: 55%;
+        grid-area: nameCol;
+      }
+
+      .abvCol {
+        grid-area: abvCol;
+      }
+
+      .ibuCol {
+        grid-area: ibuCol;
+      }
+
+      .srmCol {
+        grid-area: srmCol;
+      }
+
+      .dateCol {
+        grid-area: dateCol;
       }
 
       > span {
         padding-top: 2px;
         color: $label-color;
-        font-size: px-to-rem(11px);
+        font-size: px-to-rem(10px);
         letter-spacing: 0.03em;
 
         &:last-child {
@@ -118,6 +233,7 @@
 }
 
 .moreMenuWrapper {
+  grid-area: moreCol;
   position: relative;
   width: 25px;
 }
@@ -126,7 +242,7 @@
   position: absolute;
   width: 25px;
   right: -3px;
-  top: 0;
+  top: -9px;
 
   &:hover {
     span {

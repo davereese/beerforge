@@ -7,7 +7,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import UserProvider from './Store/UserProvider';
 import BrewProvider from './Store/BrewProvider';
-import ContentConsumer from './Store/ContextConsumer';
+import ContextConsumer from './Store/ContextConsumer';
 import ModalProvider from './Store/ModalProvider';
 
 ReactDOM.render(
@@ -15,9 +15,9 @@ ReactDOM.render(
     <UserProvider>
       <ModalProvider>
         <BrewProvider>
-          <ContentConsumer>
+          <ContextConsumer>
             <App />
-          </ContentConsumer>
+          </ContextConsumer>
         </BrewProvider>
       </ModalProvider>
     </UserProvider>

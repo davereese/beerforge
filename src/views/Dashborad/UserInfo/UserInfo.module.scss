@@ -3,15 +3,24 @@
 
 .user {
   display: grid;
-  grid-template-columns: 80px auto;
+  grid-template-columns: 50px auto;
   grid-template-rows: auto;
   grid-template-areas: 'avatar info';
-  grid-gap: 20px;
+  grid-gap: 10px;
   align-items: center;
+
+  @include for-tablet-portrait-up () {
+    grid-template-columns: 80px auto;
+    grid-gap: 20px;
+  }
 
   .avatarContainer {
     grid-area: avatar;
-    height: 80px;
+    height: 50px;
+
+    @include for-tablet-portrait-up () {
+      height: 80px;
+    }
   }
 
   .infoContainer {
