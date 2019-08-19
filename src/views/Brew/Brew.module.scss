@@ -443,6 +443,10 @@
     }
   }
 
+  &__editingSection {
+    min-height: 56px;
+  }
+
   &__section {
     position: relative;
     border-bottom: 1px solid rgba($stat-border, 0.5);
@@ -479,14 +483,18 @@
     }
 
     .withStats {
-      min-height: 60px;
+      min-height: 85px;
+
+      @include for-tablet-landscape-up () {
+        min-height: 60px;
+      }
     }
 
     .section__stats {
       display: flex;
       align-items: center;
       position: absolute;
-      left: 54%;
+      left: 50%;
       transform: translateY(-5px);
 
       @include for-tablet-portrait-up () {
@@ -550,6 +558,8 @@
     position: absolute;
     top: 12px;
     right: 15px;
+    background-color: $button-default-bg;
+    box-shadow: 0 2px 10px rgba($button-shadow, 0.3);
   }
 
   .saveButton {

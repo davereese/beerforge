@@ -58,6 +58,8 @@ class Brew extends React.Component<any, any> {
 
   componentDidMount() {
     document.title = "BeerForge | New Brew";
+    scrollToTop(0);
+
     // before we start using the current user, let's just make sure they haven't expired, shall we?
     this.props.loadUser();
     const brewId = Number(window.location.pathname.split('/')[2]);
@@ -384,10 +386,9 @@ class Brew extends React.Component<any, any> {
           <Card color="brew" customClass={`${this.state.new ? styles.new : styles.view} ${styles.brew__editingSection}`}>
             <div className={styles.brew__header}>
               <h2>Hops</h2>
-              <span>{brew.hops.length > 0
-                ? <>Total: {brew.totalHops} oz</>
+              {brew.hops.length > 0
+                ? <span>Total: {brew.totalHops} oz</span>
                 : null}
-              </span>
               {!this.state.readOnly
                 ? <button
                     className={`button button--icon plus ${styles.editButton}`}
