@@ -146,9 +146,52 @@
     }
   }
 
+  .phone {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 33%;
+    margin-top: 34%;
+    padding: 10px 4px 6px;
+    width: calc(100% - 80vw);
+    max-width: 200px;
+    background: #191919;
+    border-radius: 8px;
+    z-index: 5;
+    line-height: 0;
+
+    @include for-tablet-portrait-up {
+      border-radius: 11px;
+      padding: 20px 6px 13px;
+      margin-top: 30%;
+      width: calc(100% - 82vw);
+    }
+
+    @include for-tablet-landscape-up {
+      margin-left: 38%;
+      margin-top: 220px;
+    }
+
+    @include for-desktop-up {
+      left: 50%;
+      transform: translateX(-50%);
+      margin-left: 390px;
+      margin-top: 210px;
+    }
+
+    img {
+      width: 100%;
+      border-radius: 3px;
+
+      @include for-tablet-portrait-up {
+        border-radius: 5px;
+      }
+    }
+  }
+
   .browser {
     position: relative;
-    padding: 28px 6px 6px;
+    padding: 28px 4px 4px;
     margin: 0 auto 75px;
     width: calc(100% - 10vw);
     max-width: 900px;
@@ -159,6 +202,7 @@
     line-height: 0;
 
     @include for-tablet-landscape-up {
+      padding: 28px 6px 6px;
       margin: 0 auto 100px;
     }
 

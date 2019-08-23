@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import styles from './Home.module.scss';
 import calcStyles from '../Calculators/Calculators.module.scss';
@@ -7,15 +8,15 @@ import whiteLogoImage from "../../resources/images/beerforge_logo_white.svg";
 import dashboardImage from "../../resources/images/dashboard.png";
 import rotate from "../../resources/images/rotate.svg";
 import newBrewImage from "../../resources/images/new_brew.png";
-import * as Calculator from '../../resources/javascript/calculator';
-import sketch from '../../resources/javascript/bubbles';
+import mobileBrewImage from "../../resources/images/mobile_brew.png";
 import Card from '../../components/Card/Card';
 import YeastTargetPitchingRate from '../Calculators/Calculators/yeast-target';
 import AlcoholContent from '../Calculators/Calculators/alcohol-content';
 import SRM from '../Calculators/Calculators/srm';
 import CO2 from '../Calculators/Calculators/co2';
+import sketch from '../../resources/javascript/bubbles';
+import * as Calculator from '../../resources/javascript/calculator';
 
-import { Link } from 'react-router-dom';
 const calculatorArray = [
   {calculator: <AlcoholContent calculator={Calculator.alcoholContent} />},
   {calculator: <YeastTargetPitchingRate calculator={Calculator.targetPitchingRate} />},
@@ -131,10 +132,13 @@ class Home extends React.Component<any, any> {
         </header>
         <div className={styles.topAngle}></div>
 
+        <div className={styles.phone}>
+          <img src={mobileBrewImage} alt="View Brew Screen" />
+        </div>
         <div className={styles.browser}>
           <img src={dashboardImage} alt="BeerForge dashboard" />
         </div>
-        
+
         <section className={styles.features} ref={this.featuresRef}>
           <div className={styles.featuresText}>
             <h2>Features</h2>
@@ -145,7 +149,8 @@ class Home extends React.Component<any, any> {
               <li>Automatic calculations for brew day</li>
               <li>Standalone calculators</li>
               <li>Searchable Brew Logs</li>
-              <li>Import recipes from other platforms via BeerXML</li>
+              <li>Import/Export brews via BeerXML</li>
+              <li>Fully mobile-responsive</li>
             </ul>
             <div className={styles.cta}>
               <p>BeerForge is free, no freemium here.</p>
