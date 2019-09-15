@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 
 import styles from './FormHandler.module.scss';
-import { BrewInterface } from '../../../Store/BrewProvider';
 import BrewSettingsForm from '../../../components/Forms/BrewSettingsForm';
 import AddFermentableForm from '../../../components/Forms/AddFermentableForm';
 import AddHopForm from '../../../components/Forms/AddHopForm';
@@ -11,7 +10,9 @@ import BoilForm from '../../../components/Forms/BoilForm';
 import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
+import { BrewInterface } from '../../../Store/BrewProvider';
 import { ModalProviderInterface } from '../../../Store/ModalProvider';
+import { SnackbarProviderInterface } from '../../../Store/SnackbarProvider';
 
 interface Props {
   form: string;
@@ -22,6 +23,7 @@ interface Props {
   deleteBrewFromDB: Function
   brew: BrewInterface;
   modalProps: ModalProviderInterface;
+  snackbarProps: SnackbarProviderInterface;
 }
 
 function FormHandler({
@@ -33,6 +35,7 @@ function FormHandler({
   updateBrew,
   deleteBrewFromDB,
   modalProps,
+  snackbarProps,
 }: Props) {
 
   let title: string,
@@ -90,8 +93,19 @@ function FormHandler({
           >No, cancel</button>
           <button
             className="button"
-            onClick={() => {
-              deleteBrewFromDB(brew.id);
+            onClick={async () => {
+              const deleteBrew = await deleteBrewFromDB(brew.id);
+              if (deleteBrew.isAxiosError) {
+                snackbarProps.showSnackbar({
+                  status: 'error',
+                  message: deleteBrew.message,
+                });
+              } else {
+                snackbarProps.showSnackbar({
+                  status: 'success',
+                  message: `Sucessfully removed: ${brew.name}`
+                });
+              }
               modalProps.hideModal();
             }}
           >Yes, remove</button>

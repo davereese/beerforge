@@ -10,6 +10,14 @@ class Modal extends React.Component<any, any> {
     this.modalRef = React.createRef<HTMLDivElement>();
   };
 
+  componentDidMount() {
+    document.addEventListener("mousedown", this.closeModal, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.closeModal, false);
+  }
+
   closeModal = (e: any) => {
     const { modalProps } = this.props;
     const node = this.modalRef.current;
@@ -22,14 +30,6 @@ class Modal extends React.Component<any, any> {
       modalProps.hideModal();
     }
   };
-
-  componentDidMount() {
-    document.addEventListener("mousedown", this.closeModal, false);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.closeModal, false);
-  }
 
   render() {
     const { modalProps } = this.props;

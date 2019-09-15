@@ -7,6 +7,7 @@ import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
 import FormHandler from './FormHandler/FormHandler';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
+import Loader from '../../components/Loader/Loader';
 import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } from '../../Store/BrewProvider';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
@@ -14,7 +15,7 @@ import { pen } from '../../resources/javascript/penSvg.js';
 import { UserInterface } from '../../Store/UserProvider';
 import { ModalProviderInterface } from '../../Store/ModalProvider';
 import { isEmpty } from '../../resources/javascript/isEmpty';
-import Loader from '../../components/Loader/Loader';
+import { SnackbarProviderInterface } from '../../Store/SnackbarProvider';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -31,6 +32,7 @@ interface Props extends RouteComponentProps {
   deleteBrewFromDB: Function;
   history: any;
   modalProps: ModalProviderInterface;
+  snackbarProps: SnackbarProviderInterface;
 }
 
 class Brew extends React.Component<any, any> {
@@ -66,24 +68,29 @@ class Brew extends React.Component<any, any> {
     if (!isNaN(brewId)) {
       this.setState({loading: true});
       this.props.getBrewfromDB(brewId)
-        .then(() => {
-          const {brew} = this.props;
-          const readOnly = brew.userId !== this.props.currentUser.id ? true : false;
-          this.setState({
-            new: false,
-            readOnly: readOnly,
-            loading: false
-          }, () => document.title = `BeerForge | Viewing ${brew.name}`);
-        }, (error: any) => {
-          this.setState({loading: false});
-          if (isEmpty(this.props.currentUser)) {
-            this.props.history.push('/');
+        .then((res: any) => {
+          if (!res.isAxiosError) {
+            const {brew} = this.props;
+            const readOnly = brew.userId !== this.props.currentUser.id ? true : false;
+            this.setState({
+              new: false,
+              readOnly: readOnly,
+              loading: false
+            }, () => document.title = `BeerForge | Viewing ${brew.name}`);
           } else {
-            this.props.history.push('/dashboard');
+            this.setState({loading: false});
+            this.props.snackbarProps.showSnackbar({
+              status: 'error',
+              message: res.message,
+            });
+            if (isEmpty(this.props.currentUser)) {
+              this.props.history.push('/');
+            } else {
+              this.props.history.push('/dashboard');
+            }
           }
         });
     }
-
     window.addEventListener('scroll', this.handleScroll, { passive: true });
   }
 
@@ -207,27 +214,46 @@ class Brew extends React.Component<any, any> {
     this.setState({saving: true});
     this.state.new
       ? this.props.saveBrewToDB()
-        .then(() => {
-          const {brew} = this.props;
-          this.setState({
-            new: false,
-            readOnly: false,
-            saving: false
-          });
-          this.props.history.push(`/brew/${brew.id}`);
-          scrollToTop(300);
-        }, (error: any) => {
-          this.setState({saving: false});
-          console.log(error);
+        .then((res: any) => {
+          if (!res.isAxiosError) {
+            const {brew} = this.props;
+            this.setState({
+              new: false,
+              readOnly: false,
+              saving: false
+            });
+            this.props.history.push(`/brew/${brew.id}`);
+            this.props.snackbarProps.showSnackbar({
+              status: 'success',
+              message: `Successfully saved: ${this.props.brew.name}!`
+            });
+            scrollToTop(300);
+          } else {
+            this.setState({saving: false});
+            this.props.snackbarProps.showSnackbar({
+              status: 'error',
+              message: res.message,
+            });
+          }
         })
       : this.props.updateBrewOnDB()
-        .then(() => {
-          this.setState({saving: false});
-          scrollToTop(300);
-        }, (error: any) => {
-          this.setState({saving: false});
-          console.log(error);
-        });
+        .then((res: any) => {
+          if (!res.isAxiosError) {
+            this.setState({saving: false});
+            this.props.snackbarProps.showSnackbar({
+              status: 'success',
+              message: `Successfully updated: ${this.props.brew.name}!`
+            });
+            scrollToTop(300);
+          } else {
+            this.setState({saving: false});
+            this.props.snackbarProps.showSnackbar({
+              status: 'error',
+              message: res.message,
+            });
+          }
+        })
+      ;
   }
 
   render() {

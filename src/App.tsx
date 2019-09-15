@@ -14,9 +14,9 @@ import Calculators from './views/Calculators/Calculators';
 import NoMatch from './views/404/NoMatch';
 import PrivateRoute from './views/PrivateRoute';
 import Home from './views/Home/Home';
+import Snackbar from './components/Snackbar/Snackbar';
 import { BrewInterface } from './Store/BrewProvider';
 import { UserInterface } from './Store/UserProvider';
-import Test from './views/Test';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -43,7 +43,6 @@ class App extends React.Component<any, Props> {
         <main> 
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/test" exact component={Test} />
             <Route path="/login" exact render={props => (
               <LoginSignup {...this.props} history={props.history} />
             )} />
@@ -74,6 +73,7 @@ class App extends React.Component<any, Props> {
           </Switch>
         </main>
         <Modal modalProps={this.props.modalProps} />
+        <Snackbar snackbarProps={this.props.snackbarProps} />
         <Footer {...this.props} />
       </Fade>
     );

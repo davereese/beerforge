@@ -45,7 +45,11 @@ class Brews extends React.Component<any, any> {
         this.setState({brews: result.data.brews, brewsCount: result.data.count, page: page, loading: false}, () => scrollToTop(300) );
       });
     } catch (error) {
-      this.setState({error: error.response.status, loading: false});
+      this.setState({loading: false});
+      this.props.snackbarProps.showSnackbar({
+        status: 'error',
+        message: error.message,
+      });
     }
   }
 
@@ -68,7 +72,10 @@ class Brews extends React.Component<any, any> {
         link.remove();
       });
     } catch (error) {
-      this.setState({error: error.response.status});
+      this.props.snackbarProps.showSnackbar({
+        status: 'error',
+        message: error.message,
+      });
     }
   }
 

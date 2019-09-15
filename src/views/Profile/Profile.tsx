@@ -21,9 +21,6 @@ class Profile extends React.Component<any, any> {
       email: this.props.currentUser.email,
       firstName: this.props.currentUser.first_name,
       lastName: this.props.currentUser.last_name,
-      error: null,
-      uploadSuccess: null,
-      uploadError: null,
       saving: false,
       file: null,
       uploading: false,
@@ -38,18 +35,7 @@ class Profile extends React.Component<any, any> {
 
   dataChanged = (e: any) => {
     const type = e.target.id;
-    this.setState({[type]: e.target.value}, () => {
-      // Password matching validation for sign up
-      if (
-        (type === 'password1' || type === 'password2') &&
-        this.state.password2 !== '' &&
-        this.state.password1 !== this.state.password2
-      ) {
-        this.setState({error: 'noMatch'});
-      } else {
-        this.setState({error: null});
-      }
-    });
+    this.setState({[type]: e.target.value});
   };
 
   updateUser = async () => {
@@ -64,14 +50,22 @@ class Profile extends React.Component<any, any> {
       const currentUser = this.props.currentUser;
       const authHeaders = {'authorization': currentUser ? currentUser.token : null};
 
-      const response = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${currentUser.id}`, body, {
+      const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${currentUser.id}`, body, {
         headers: authHeaders,
       });
 
-      this.props.updateUser({currentUser: response.data[0]});
+      this.props.updateUser({currentUser: res.data[0]});
       this.setState({saving: false});
+      this.props.snackbarProps.showSnackbar({
+        status: 'success',
+        message: 'Profile updated',
+      });
     } catch (error) {
-      this.setState({error: error.response.data, saving: false});
+      this.setState({saving: false});
+      this.props.snackbarProps.showSnackbar({
+        status: 'error',
+        message: error.message,
+      });
     }
   }
 
@@ -83,10 +77,16 @@ class Profile extends React.Component<any, any> {
       await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/users/${currentUser.id}`, {
         headers: authHeaders,
       });
-
+      this.props.snackbarProps.showSnackbar({
+        status: 'success',
+        message: 'Account deleted',
+      });
       this.props.logOutUser();
     } catch (error) {
-      this.setState({error: error.response.data});
+      this.props.snackbarProps.showSnackbar({
+        status: 'error',
+        message: error.message,
+      });
     }
   }
 
@@ -146,12 +146,20 @@ class Profile extends React.Component<any, any> {
         });
 
         if (result.status === 202) {
-          this.setState({uploadSuccess: 'Upload success!', uploading: false, file: null});
+          this.setState({uploading: false, file: null});
           this.fileInput.current.value = '';
+          this.props.snackbarProps.showSnackbar({
+            status: 'success',
+            message: 'Upload success!',
+          });
         }
       } catch (error) {
-        this.setState({uploadError: error.response.data, uploading: false, file: null});
+        this.setState({uploading: false, file: null});
         this.fileInput.current.value = '';
+        this.props.snackbarProps.showSnackbar({
+          status: 'error',
+          message: error.message,
+        });
       }
     }
   };
@@ -240,14 +248,6 @@ class Profile extends React.Component<any, any> {
             {this.state.uploading ? <Loader className={styles.savingLoader} /> : null}
           </button>
         </div>
-        {this.state.uploadSuccess !== null
-          ? <p className="success">{this.state.uploadSuccess}</p>
-          : null
-        }
-        {this.state.uploadError !== null
-          ? <p className="error">{this.state.uploadError}</p>
-          : null
-        }
         <label>NOTE: This upload maps over everything it can form your beerXML files, but it is only as good as the data those files contain. Make sure your files are up to spec. <a href="http://www.beerxml.com/beerxml.htm" target="_blank" rel="noopener noreferrer">beerxml.com</a></label>
 
           {/* <label className="divider"><span>Brewhouse Settings</span></label>

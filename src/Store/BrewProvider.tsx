@@ -10,10 +10,14 @@ async function saveBrew(brew: BrewInterface) {
   try {
     return await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/brew`, {brew: brew}, {
       headers: authHeaders,
+    }).then(res => {
+      return res;
+    })
+    .catch(error => {
+      throw error;
     });
   } catch (error) {
-    console.log(error);
-    throw error;
+    return error;
   }
 }
 
@@ -23,9 +27,14 @@ async function updateBrewDB(brew: BrewInterface) {
   try {
     return await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brew.id}`, {brew: brew}, {
       headers: authHeaders,
+    }).then(res => {
+      return res;
+    })
+    .catch(error => {
+      throw error;
     });
   } catch (error) {
-    console.log(error);
+    return error;
   }
 }
 
@@ -35,10 +44,14 @@ async function getBrew(brewId: number) {
   try {
     return await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brewId}`, {
       headers: authHeaders,
+    }).then(res => {
+      return res;
+    })
+    .catch(error => {
+      throw error;
     });
   } catch (error) {
-    console.log(error);
-    throw error;
+    return error;
   }
 }
 
@@ -48,9 +61,14 @@ async function deleteBrew(brewId: number) {
   try {
     return await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brewId}`, {
       headers: authHeaders,
+    }).then(res => {
+      return res;
+    })
+    .catch(error => {
+      throw error;
     });
   } catch (error) {
-    console.log(error);
+    return error;
   }
 }
 export interface FermentableInterface {
@@ -289,11 +307,14 @@ export default class BrewProvider extends React.Component {
         const brew = {...res.data.brew};
         this.updateBrew(brew);
       }
+      return res;
     });
   };
 
   updateBrewOnDB = (): Promise<any> => {
-    return updateBrewDB(this.state.brew).then();
+    return updateBrewDB(this.state.brew).then(res => {
+      return res;
+    });
   };
 
   getBrewfromDB = (id: number): Promise<any> => {
@@ -302,12 +323,16 @@ export default class BrewProvider extends React.Component {
         const brew = {...res.data.brew};
         this.updateBrew(brew);
       }
+      return res;
     });
   };
 
-  deleteBrewFromDB = (id: number): void => {
-    deleteBrew(id).then(() => {
-      this.clearBrew();
+  deleteBrewFromDB = (id: number): Promise<any> => {
+    return deleteBrew(id).then(res => {
+      if (!res.isAxiosError) {
+        this.clearBrew();
+      }
+      return res;
     });
   };
 

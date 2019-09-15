@@ -1,13 +1,13 @@
 import React from 'react';
 
 export const ls = {
-	save : function(key: string, jsonData: any, expirationMin: number){
+	save : function(key: string, jsonData: any, expirationMin: number) {
 		var expirationMS = expirationMin * 60 * 1000;
 		var record = {value: JSON.stringify(jsonData), timestamp: new Date().getTime() + expirationMS}
 		localStorage.setItem(key, JSON.stringify(record));
 		return jsonData;
 	},
-	load : function(key: string){
+	load : function(key: string) {
     var record = JSON.parse(localStorage.getItem(key) || '{}');
     if (!record) {
       return false;
