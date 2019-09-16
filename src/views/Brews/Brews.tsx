@@ -8,13 +8,16 @@ import List from '../../components/List/List';
 import ListItem from '../../components/ListItem/ListItem';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Card from '../../components/Card/Card';
-import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
-import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import Loader from '../../components/Loader/Loader';
 import Tooltip from "../../components/Tooltip/Tooltip";
 import { BrewInterface } from '../../Store/BrewProvider';
+import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
+import { scrollToTop } from '../../resources/javascript/scrollToTop';
+import { UserContext } from '../../Store/UserContext';
 
 class Brews extends React.Component<any, any> {
+  static contextType = UserContext;
+
   logHeader: React.RefObject<HTMLDivElement>;
 
   constructor(props: any) {
@@ -34,10 +37,12 @@ class Brews extends React.Component<any, any> {
   }
 
   async listUserBrews(page: number) {
+    const [user, userDispatch] = this.context;
     try {
+      // double check current user hasn't expired
+      userDispatch({type: 'load'});
       this.setState({loading: true});
-      this.props.loadUser();
-      const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
+      const authHeaders = {'authorization': user ? user.token : null};
       await axios
         .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/?num=${this.state.numToShow}&page=${page}&search=${this.state.search}`, {
         headers: authHeaders,
@@ -54,10 +59,11 @@ class Brews extends React.Component<any, any> {
   }
 
   export = (brew: BrewInterface) => async (event: any) => {
+    const [user, userDispatch] = this.context;
     event.stopPropagation();
     try {
-      this.props.loadUser();
-      const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
+      userDispatch({type: 'load'});
+      const authHeaders = {'authorization': user ? user.token : null};
       await axios
         .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/export/?brews=${brew.id}`, {
         headers: authHeaders,

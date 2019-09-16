@@ -1,17 +1,19 @@
 import React, { useState } from "react";
+import { Link, withRouter } from "react-router-dom";
 
 import styles from "./Header.module.scss";
 import logoImage from "../../resources/images/beerforge_logo.svg";
-import { Link, withRouter } from "react-router-dom";
 import Avatar from "../Avatar/Avatar";
 import Tooltip from "../Tooltip/Tooltip";
+import { useUser } from '../../Store/UserContext';
 
-function Header({ currentUser, logOutUser, history }: any) {
+function Header({ history }: any) {
+  const [user, userDispatch] = useUser();
   const [showTooltip, setTooltip] = useState(false);
 
   const logOut = (e: any) => {
     setTooltip(false);
-    logOutUser();
+    userDispatch({type: 'logout'});
   }
 
   const goToProfile = (e: any) => {
@@ -21,18 +23,18 @@ function Header({ currentUser, logOutUser, history }: any) {
 
   return (
     <header className={styles.header}>
-      <Link to={!currentUser ? "/" : "/dashboard"} className={styles.logoLink}>
+      <Link to={!user ? "/" : "/dashboard"} className={styles.logoLink}>
         <img src={logoImage} alt="BeerForge - Modern homebrewing" />
       </Link>
-      {window.location.pathname !== "/login" && !currentUser ? (
+      {window.location.pathname !== "/login" && !user ? (
         <Link to="/login" className={styles.loginLink}>
           Log In
         </Link>
       ) : null}
-      {window.location.pathname !== "/profile" && currentUser ? (
-        <div title={currentUser.username} className={styles.header__user}>
+      {window.location.pathname !== "/profile" && user ? (
+        <div title={user.username} className={styles.header__user}>
           <div className={styles.avatar} onClick={() => setTooltip(true)}>
-            <Avatar user={currentUser} />
+            <Avatar user={user} />
           </div>
           <Tooltip
             show={showTooltip}
@@ -41,7 +43,7 @@ function Header({ currentUser, logOutUser, history }: any) {
             className={styles.userMenu}
           >
             <>
-              <h2 className={styles.userMenu__header}>{currentUser.username}</h2>
+              <h2 className={styles.userMenu__header}>{user.username}</h2>
               <div className={styles.userMenu__buttons}>
                 <button
                   className="button button--small button--green button--no-shadow"
@@ -60,8 +62,11 @@ function Header({ currentUser, logOutUser, history }: any) {
           </Tooltip>
         </div>
       ) : null}
-      {window.location.pathname === "/profile" && currentUser ? (
-        <button className={`button button--link ${styles.loginLink}`} onClick={logOutUser}>
+      {window.location.pathname === "/profile" && user ? (
+        <button
+          className={`button button--link ${styles.loginLink}`}
+          onClick={() => userDispatch({type: 'logout'})}
+        >
           Log Out
         </button>
       ) : null}

@@ -5,11 +5,11 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import UserProvider from './Store/UserProvider';
 import BrewProvider from './Store/BrewProvider';
 import ContextConsumer from './Store/ContextConsumer';
 import ModalProvider from './Store/ModalProvider';
 import SnackberProvider from './Store/SnackbarProvider';
+import UserProvider from './Store/UserContext';
 
 ReactDOM.render(
   <BrowserRouter>

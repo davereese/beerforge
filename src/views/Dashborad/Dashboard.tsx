@@ -12,8 +12,10 @@ import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 import Loader from '../../components/Loader/Loader';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
+import { UserContext } from '../../Store/UserContext';
 
 class Dashboard extends React.Component<any, any> {
+  static contextType = UserContext;
   _isMounted: boolean;
 
   constructor(props: any) {
@@ -31,10 +33,12 @@ class Dashboard extends React.Component<any, any> {
   }
 
   async listUserBrews() {
+    const [user, userDispatch] = this.context;
+
     try {
       this.setState({loading: true});
-      this.props.loadUser();
-      const authHeaders = {'authorization': this.props.currentUser ? this.props.currentUser.token : null};
+      userDispatch({type: 'load'});
+      const authHeaders = {'authorization': user ? user.token : null};
       await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/dashboard/?num=${this.state.numToShow}`, {
         headers: authHeaders,
       }).then(result => {
@@ -98,7 +102,7 @@ class Dashboard extends React.Component<any, any> {
     return (
       <section className={styles.dashboard}>
         <div className={styles.topRow}>
-          <UserInfo user={this.props.currentUser} brewsNum={this.state.brewsNum} />
+          <UserInfo user={this.context[0]} brewsNum={this.state.brewsNum} />
           <Link
             to="brew"
             className="button button--large button--yellow"

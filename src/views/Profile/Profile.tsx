@@ -7,20 +7,22 @@ import formStyles from '../../components/Forms/Forms.module.scss';
 import Avatar from '../../components/Avatar/Avatar';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
+import { UserContext } from '../../Store/UserContext';
 
 class Profile extends React.Component<any, any> {
+  static contextType = UserContext;
+
   fileInput: React.RefObject<HTMLInputElement>;
 
   constructor(props: any) {
     super(props);
 
     this.state = {
-      username: this.props.currentUser.username,
       password1: '',
       password2: '',
-      email: this.props.currentUser.email,
-      firstName: this.props.currentUser.first_name,
-      lastName: this.props.currentUser.last_name,
+      email: '',
+      firstName: '',
+      lastName: '',
       saving: false,
       file: null,
       uploading: false,
@@ -31,6 +33,12 @@ class Profile extends React.Component<any, any> {
 
   componentDidMount() {
     document.title = "BeerForge | Profile";
+    const user = this.context[0];
+    this.setState({
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+    });
   }
 
   dataChanged = (e: any) => {
@@ -39,6 +47,8 @@ class Profile extends React.Component<any, any> {
   };
 
   updateUser = async () => {
+    const [user, userDispatch] = this.context;
+
     try {
       this.setState({saving: true});
       // build our body for the request
@@ -47,14 +57,13 @@ class Profile extends React.Component<any, any> {
         lastName: this.state.lastName,
         email: this.state.email,
       };
-      const currentUser = this.props.currentUser;
-      const authHeaders = {'authorization': currentUser ? currentUser.token : null};
+      const authHeaders = {'authorization': user ? user.token : null};
 
-      const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${currentUser.id}`, body, {
+      const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${user.id}`, body, {
         headers: authHeaders,
       });
 
-      this.props.updateUser({currentUser: res.data[0]});
+      userDispatch({type: 'update', payload: res.data[0]});
       this.setState({saving: false});
       this.props.snackbarProps.showSnackbar({
         status: 'success',
@@ -70,18 +79,19 @@ class Profile extends React.Component<any, any> {
   }
 
   deleteUser = async () => {
-    try {
-      const currentUser = this.props.currentUser;
-      const authHeaders = {'authorization': currentUser ? currentUser.token : null};
+    const [user, userDispatch] = this.context;
 
-      await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/users/${currentUser.id}`, {
+    try {
+      const authHeaders = {'authorization': user ? user.token : null};
+
+      await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/users/${user.id}`, {
         headers: authHeaders,
       });
       this.props.snackbarProps.showSnackbar({
         status: 'success',
         message: 'Account deleted',
       });
-      this.props.logOutUser();
+      userDispatch({type: 'logout'});
     } catch (error) {
       this.props.snackbarProps.showSnackbar({
         status: 'error',
@@ -123,8 +133,9 @@ class Profile extends React.Component<any, any> {
   };
 
   uploadBrews = async (e: any) => {
+    const [user, userDispatch] = this.context;
     // before we start using the current user, let's just make sure they haven't expired, shall we?
-    this.props.loadUser();
+    userDispatch({type: 'load'});
     if (
       this.fileInput.current &&
       this.fileInput.current.files &&
@@ -135,9 +146,8 @@ class Profile extends React.Component<any, any> {
 
         const formData = new FormData();
         formData.append('beerxml', this.fileInput.current.files[0]);
-        const currentUser = this.props.currentUser;
         const authHeaders = {
-          'authorization': currentUser ? currentUser.token : null,
+          'authorization': user ? user.token : null,
           'Content-Type': 'multipart/form-data'
         };
 
@@ -165,17 +175,17 @@ class Profile extends React.Component<any, any> {
   };
 
   render() {
-    const { currentUser } = this.props;
+    const user = this.context[0];
 
     return (
       <section className={styles.profile}>
         <header>
           <div className={styles.profilePic}>
-            <Avatar user={currentUser} />
+            <Avatar user={user} />
           </div>
           <h1 className={styles.infoContainer__header}>
-            {currentUser.username ? currentUser.username : `${currentUser.first_name} ${currentUser.last_name}`}
-            <span>Joined <FormattedDate>{currentUser.date_joined}</FormattedDate></span>
+            {user.username ? user.username : `${user.first_name} ${user.last_name}`}
+            <span>Joined <FormattedDate>{user.date_joined}</FormattedDate></span>
           </h1>
         </header>
         <div className={styles.form}>

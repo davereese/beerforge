@@ -16,7 +16,7 @@ import PrivateRoute from './views/PrivateRoute';
 import Home from './views/Home/Home';
 import Snackbar from './components/Snackbar/Snackbar';
 import { BrewInterface } from './Store/BrewProvider';
-import { UserInterface } from './Store/UserProvider';
+import { UserInterface } from './Store/UserContext';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;

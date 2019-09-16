@@ -12,10 +12,11 @@ import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } fro
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { pen } from '../../resources/javascript/penSvg.js';
-import { UserInterface } from '../../Store/UserProvider';
+import { UserInterface } from '../../Store/UserContext';
 import { ModalProviderInterface } from '../../Store/ModalProvider';
 import { isEmpty } from '../../resources/javascript/isEmpty';
 import { SnackbarProviderInterface } from '../../Store/SnackbarProvider';
+import { UserContext } from '../../Store/UserContext';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -36,6 +37,8 @@ interface Props extends RouteComponentProps {
 }
 
 class Brew extends React.Component<any, any> {
+  static contextType = UserContext;
+
   brewContainer: React.RefObject<HTMLDivElement>;
   nameInput: React.RefObject<HTMLInputElement>;
   formContainer: React.RefObject<HTMLDivElement>;
@@ -62,8 +65,9 @@ class Brew extends React.Component<any, any> {
     document.title = "BeerForge | New Brew";
     scrollToTop(0);
 
+    const [user, userDispatch] = this.context;
     // before we start using the current user, let's just make sure they haven't expired, shall we?
-    this.props.loadUser();
+    userDispatch({type: 'load'});
     const brewId = Number(window.location.pathname.split('/')[2]);
     if (!isNaN(brewId)) {
       this.setState({loading: true});
@@ -71,7 +75,7 @@ class Brew extends React.Component<any, any> {
         .then((res: any) => {
           if (!res.isAxiosError) {
             const {brew} = this.props;
-            const readOnly = brew.userId !== this.props.currentUser.id ? true : false;
+            const readOnly = brew.userId !== user.id ? true : false;
             this.setState({
               new: false,
               readOnly: readOnly,
@@ -83,7 +87,7 @@ class Brew extends React.Component<any, any> {
               status: 'error',
               message: res.message,
             });
-            if (isEmpty(this.props.currentUser)) {
+            if (isEmpty(user)) {
               this.props.history.push('/');
             } else {
               this.props.history.push('/dashboard');
@@ -209,8 +213,10 @@ class Brew extends React.Component<any, any> {
   }
 
   handleSave = (e: any) => {
+    // eslint-disable-next-line
+    const [user, userDispatch] = this.context;
     // double check current user hasn't expired
-    this.props.loadUser();
+    userDispatch({type: 'load'});
     this.setState({saving: true});
     this.state.new
       ? this.props.saveBrewToDB()

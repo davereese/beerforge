@@ -3,8 +3,11 @@ import axios from 'axios';
 
 import styles from './LoginSignup.module.scss';
 import Loader from '../../components/Loader/Loader';
+import { UserContext } from '../../Store/UserContext';
 
 class LoginSignup extends React.Component<any, any> {
+  static contextType = UserContext;
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -25,10 +28,13 @@ class LoginSignup extends React.Component<any, any> {
   }
 
   async logInOrSignUpUser(url: string, body: Object) {
+    // eslint-disable-next-line
+    const [user, userDispatch] = this.context;
+
     try {
       this.setState({saving: true});
       const response = await axios.post(url, body);
-      this.props.saveUser({currentUser: response.data});
+      userDispatch({type: 'save', payload: response.data});
       this.setState({saving: false});
       this.props.history.push('/dashboard');
     } catch (error) {
