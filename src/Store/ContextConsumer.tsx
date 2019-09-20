@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { BrewContext } from './BrewProvider';
-import { ModalContext } from './ModalProvider';
 import { SnackbarContext } from './SnackbarProvider';
 
 export default class ContextConsumer extends React.Component {
@@ -9,39 +8,32 @@ export default class ContextConsumer extends React.Component {
     const {children} = this.props;
 
     return (
-      <ModalContext.Consumer>
+      <SnackbarContext.Consumer>
         {
-          (modalProps) => (
-            <SnackbarContext.Consumer>
+          (snackbarProps) => (
+            <BrewContext.Consumer>
               {
-                (snackbarProps) => (
-                  <BrewContext.Consumer>
-                    {
-                      // @ts-ignore-line
-                      ({brew, updateBrew, saveBrewToDB, updateBrewOnDB, getBrewfromDB, deleteBrewFromDB, clearBrew}) => {
-                        return React.Children.map(children, child =>
-                          // @ts-ignore-line
-                          React.cloneElement(child, {
-                            brew,
-                            updateBrew,
-                            saveBrewToDB,
-                            updateBrewOnDB,
-                            getBrewfromDB,
-                            deleteBrewFromDB,
-                            clearBrew,
-                            modalProps,
-                            snackbarProps
-                          })
-                        );
-                      }
-                    }
-                  </BrewContext.Consumer>
-                )
+                // @ts-ignore-line
+                ({brew, updateBrew, saveBrewToDB, updateBrewOnDB, getBrewfromDB, deleteBrewFromDB, clearBrew}) => {
+                  return React.Children.map(children, child =>
+                    // @ts-ignore-line
+                    React.cloneElement(child, {
+                      brew,
+                      updateBrew,
+                      saveBrewToDB,
+                      updateBrewOnDB,
+                      getBrewfromDB,
+                      deleteBrewFromDB,
+                      clearBrew,
+                      snackbarProps
+                    })
+                  );
+                }
               }
-            </SnackbarContext.Consumer>
+            </BrewContext.Consumer>
           )
         }
-      </ModalContext.Consumer>
+      </SnackbarContext.Consumer>
     );
   }
 }

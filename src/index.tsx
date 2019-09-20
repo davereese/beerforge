@@ -7,25 +7,22 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import BrewProvider from './Store/BrewProvider';
 import ContextConsumer from './Store/ContextConsumer';
-import ModalProvider from './Store/ModalProvider';
 import SnackberProvider from './Store/SnackbarProvider';
 import UserProvider from './Store/UserContext';
-import ModalProvider2 from './Store/ModalContext';
+import ModalProvider from './Store/ModalContext';
 
 ReactDOM.render(
   <BrowserRouter>
     <UserProvider>
-      <ModalProvider2>
-        <ModalProvider>
-          <SnackberProvider>
-            <BrewProvider>
-              <ContextConsumer>
-                <App />
-              </ContextConsumer>
-            </BrewProvider>
-          </SnackberProvider>
-        </ModalProvider>
-      </ModalProvider2>
+      <ModalProvider>
+        <SnackberProvider>
+          <BrewProvider>
+            <ContextConsumer>
+              <App />
+            </ContextConsumer>
+          </BrewProvider>
+        </SnackberProvider>
+      </ModalProvider>
     </UserProvider>
   </BrowserRouter>,
   document.getElementById('root')
