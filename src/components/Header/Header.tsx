@@ -7,7 +7,7 @@ import Avatar from "../Avatar/Avatar";
 import Tooltip from "../Tooltip/Tooltip";
 import { useUser } from '../../Store/UserContext';
 
-function Header({ history }: any) {
+const Header = ({ history }: any) => {
   const [user, userDispatch] = useUser();
   const [showTooltip, setTooltip] = useState(false);
 

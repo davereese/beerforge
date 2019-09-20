@@ -11,8 +11,8 @@ import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
 import { BrewInterface } from '../../../Store/BrewProvider';
-import { ModalProviderInterface } from '../../../Store/ModalProvider';
 import { SnackbarProviderInterface } from '../../../Store/SnackbarProvider';
+import { useModal } from '../../../Store/ModalContext';
 
 interface Props {
   form: string;
@@ -22,7 +22,6 @@ interface Props {
   updateBrew: Function;
   deleteBrewFromDB: Function
   brew: BrewInterface;
-  modalProps: ModalProviderInterface;
   snackbarProps: SnackbarProviderInterface;
 }
 
@@ -34,7 +33,6 @@ function FormHandler({
   closeSidebar,
   updateBrew,
   deleteBrewFromDB,
-  modalProps,
   snackbarProps,
 }: Props) {
 
@@ -42,6 +40,9 @@ function FormHandler({
       component: ReactElement | null,
       submitText: string;
   const [formData, setFormData] = useState<BrewInterface | null>(null);
+
+  // eslint-disable-next-line
+  const [modal, modalDispatch] = useModal();
 
   // Stuff that isn't supposed to be part of the brew
   const [optionData, setOptionData] = useState<any | null>({});
@@ -84,32 +85,35 @@ function FormHandler({
   };
 
   const handleDeleteBrew = () => {
-    modalProps.showModal({
-      title: `Are you sure you want to permanently remove <strong>${brew.name}</strong>?`,
-      buttons: <>
-          <button
-            className="button button--brown"
-            onClick={() => modalProps.hideModal()}
-          >No, cancel</button>
-          <button
-            className="button"
-            onClick={async () => {
-              const deleteBrew = await deleteBrewFromDB(brew.id);
-              if (deleteBrew.isAxiosError) {
-                snackbarProps.showSnackbar({
-                  status: 'error',
-                  message: deleteBrew.message,
-                });
-              } else {
-                snackbarProps.showSnackbar({
-                  status: 'success',
-                  message: `Sucessfully removed: ${brew.name}`
-                });
-              }
-              modalProps.hideModal();
-            }}
-          >Yes, remove</button>
-        </>
+    modalDispatch({
+      type: 'show',
+      payload: {
+        title: `Are you sure you want to permanently remove <strong>${brew.name}</strong>?`,
+        buttons: <>
+            <button
+              className="button button--brown"
+              onClick={() => modalDispatch({type: 'hide'})}
+            >No, cancel</button>
+            <button
+              className="button"
+              onClick={async () => {
+                const deleteBrew = await deleteBrewFromDB(brew.id);
+                if (deleteBrew.isAxiosError) {
+                  snackbarProps.showSnackbar({
+                    status: 'error',
+                    message: deleteBrew.message,
+                  });
+                } else {
+                  snackbarProps.showSnackbar({
+                    status: 'success',
+                    message: `Sucessfully removed: ${brew.name}`
+                  });
+                }
+                modalDispatch({type: 'hide'})
+              }}
+            >Yes, remove</button>
+          </>
+      }
     });
   };
 

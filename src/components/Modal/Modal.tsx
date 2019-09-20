@@ -1,58 +1,53 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import styles from './Modal.module.scss';
+import { useModal } from '../../Store/ModalContext';
 
-class Modal extends React.Component<any, any> {
-  modalRef: React.RefObject<HTMLDivElement>;
+const Modal = () => {
+  const modalRef = React.createRef<HTMLDivElement>();
+  const [modal, modalDispatch] = useModal();
 
-  constructor(props: any) {
-    super(props);
-    this.modalRef = React.createRef<HTMLDivElement>();
-  };
+  useEffect(() => {
+    if (modal.closing === true) {
+      window.setTimeout(() => {
+        modalDispatch({type: 'close'});
+      }, 350);
+    }
+  }, [modal, modalDispatch]);
 
-  componentDidMount() {
-    document.addEventListener("mousedown", this.closeModal, false);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.closeModal, false);
-  }
-
-  closeModal = (e: any) => {
-    const { modalProps } = this.props;
-    const node = this.modalRef.current;
+  const closeModal = (e: any) => {
+    const node = modalRef.current;
     // ignore if click is inside the modal
     if (node && node.contains(e.target)) {
       return;
     }
 
-    if (modalProps.show) {
-      modalProps.hideModal();
+    if (modal.show) {
+      modalDispatch({type: 'hide'});
     }
   };
 
-  render() {
-    const { modalProps } = this.props;
-
-    return modalProps && modalProps.show ? (
-      <div className={`${styles.modalOverlay} ${modalProps.classOverride} ${modalProps.closing ? styles.close : null}`}>
-        <div className={styles.modal} ref={this.modalRef}>
-          {modalProps.title
-            ? <header dangerouslySetInnerHTML={{__html: modalProps.title}} />
-            : null}
-          {modalProps.body}
-          {modalProps.node
-            ? modalProps.node
-            : null}
-          {modalProps.buttons
-            ? <div className={styles.modalButtons}>
-                {modalProps.buttons}
-              </div>
-            : null}
-        </div>
+  return modal && modal.show ? (
+    <div
+      className={`${styles.modalOverlay} ${modal.classOverride} ${modal.closing ? styles.close : null}`}
+      onMouseDown={closeModal}
+    >
+      <div className={styles.modal} ref={modalRef}>
+        {modal.title
+          ? <header dangerouslySetInnerHTML={{__html: modal.title}} />
+          : null}
+        {modal.body}
+        {modal.node
+          ? modal.node
+          : null}
+        {modal.buttons
+          ? <div className={styles.modalButtons}>
+              {modal.buttons}
+            </div>
+          : null}
       </div>
-    ) : null;
-  }
+    </div>
+  ) : null;
 }
 
 export default Modal;

@@ -32,7 +32,6 @@ interface Props extends RouteComponentProps {
   updateBrewOnDB: Function;
   deleteBrewFromDB: Function;
   history: any;
-  modalProps: any;
 }
 
 class App extends React.Component<any, Props> {
@@ -72,9 +71,9 @@ class App extends React.Component<any, Props> {
             <Route component={NoMatch} />
           </Switch>
         </main>
-        <Modal modalProps={this.props.modalProps} />
+        <Modal />
         <Snackbar snackbarProps={this.props.snackbarProps} />
-        <Footer {...this.props} />
+        <Footer />
       </Fade>
     );
   }
