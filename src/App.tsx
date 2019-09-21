@@ -15,22 +15,8 @@ import NoMatch from './views/404/NoMatch';
 import PrivateRoute from './views/PrivateRoute';
 import Home from './views/Home/Home';
 import Snackbar from './components/Snackbar/Snackbar';
-import { BrewInterface } from './Store/BrewProvider';
-import { UserInterface } from './Store/UserContext';
 
 interface Props extends RouteComponentProps {
-  currentUser: UserInterface;
-  loadUser: Function;
-  updateUser: Function;
-  saveUser: Function;
-  logOutUser: Function;
-  brew: BrewInterface;
-  clearBrew: Function;
-  getBrewfromDB: Function;
-  saveBrewToDB: Function;
-  updateBrew: Function;
-  updateBrewOnDB: Function;
-  deleteBrewFromDB: Function;
   history: any;
 }
 

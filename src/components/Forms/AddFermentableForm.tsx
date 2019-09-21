@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import { BrewInterface, FermentableInterface } from '../../Store/BrewProvider';
+import { BrewInterface, FermentableInterface } from '../../Store/BrewContext';
 
 interface Props {
   brew: BrewInterface;

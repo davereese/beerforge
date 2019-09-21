@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import styles from "./Forms.module.scss"
-import { BrewInterface } from '../../Store/BrewProvider';
+import { BrewInterface } from '../../Store/BrewContext';
 
 interface Props {
   brew: BrewInterface;

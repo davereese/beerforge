@@ -8,36 +8,26 @@ import ListItem from '../../components/ListItem/ListItem';
 import FormHandler from './FormHandler/FormHandler';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
-import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } from '../../Store/BrewProvider';
+import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } from '../../Store/BrewContext';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { pen } from '../../resources/javascript/penSvg.js';
-import { UserInterface } from '../../Store/UserContext';
 import { isEmpty } from '../../resources/javascript/isEmpty';
 import { usePrevious } from '../../resources/javascript/usePreviousHook';
 import { useUser } from '../../Store/UserContext';
+import { useBrew } from '../../Store/BrewContext';
 import { useModal } from '../../Store/ModalContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
+import * as brewService from '../../Store/BrewService';
 
 interface Props extends RouteComponentProps {
-  currentUser: UserInterface;
-  loadUser: Function;
-  updateUser: Function;
-  saveUser: Function;
-  logOutUser: Function;
-  brew: BrewInterface;
-  clearBrew: Function;
-  getBrewfromDB: Function;
-  saveBrewToDB: Function;
-  updateBrew: Function;
-  updateBrewOnDB: Function;
-  deleteBrewFromDB: Function;
   history: any;
 }
 
 const Brew = (props: Props) => {
   // CONTEXT
   const [user, userDispatch] = useUser();
+  const [brew, brewDispatch] = useBrew();
   // eslint-disable-next-line
   const [modal, modalDispatch] = useModal();
   // eslint-disable-next-line
@@ -59,53 +49,60 @@ const Brew = (props: Props) => {
   const nameInput = useRef<HTMLInputElement>(null);
   const formContainer = useRef<HTMLDivElement>(null);
 
-  const {brew, updateBrew} = props;
   const top = {marginTop: topSpacing};
   const prevBrew: BrewInterface = usePrevious(brew) as unknown as BrewInterface;
 
   // mount
   useEffect(() => {
-    document.title = "BeerForge | newBrewBrew";
+    document.title = "BeerForge | New Brew";
     window.addEventListener('scroll', handleScroll, { passive: true });
     scrollToTop(0);
+
+    const getBrew = async (brewId: number) => {
+      setLoading(true);
+      await brewService.getBrew(brewId, user)
+        .then((res: any) => {
+          setLoading(false);
+          brewDispatch({type: 'process', payload: res.data.brew});
+          return res;
+        })
+        .catch((error) => {
+          snackbarDispatch({type: 'show', payload: {
+            status: 'error',
+            message: error.message,
+          }});
+          if (isEmpty(user)) {
+            props.history.push('/');
+          } else {
+            props.history.push('/dashboard');
+          }
+        });
+    }
 
     // before we start using the current user, let's just make sure they haven't expired, shall we?
     userDispatch({type: 'load'});
     const brewId = Number(window.location.pathname.split('/')[2]);
     if (!isNaN(brewId)) {
-      setLoading(true);
-      props.getBrewfromDB(brewId)
-        .then((res: any) => {
-          if (res.isAxiosError) {
-            snackbarDispatch({type: 'show', payload: {
-              status: 'error',
-              message: res.message,
-            }});
-            if (isEmpty(user)) {
-              props.history.push('/');
-            } else {
-              props.history.push('/dashboard');
-            }
-          }
-          setLoading(false);
-        });
+      getBrew(brewId);
     }
 
     // unmount
     return function cleanup() {
       window.removeEventListener('scroll', handleScroll);
-      props.clearBrew();
+      brewDispatch({type: 'clear'});
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // update
   useEffect(() => {
-    const readOnly = brew.userId !== user.id ? true : false;
-    document.title = `BeerForge | Viewing ${brew.name}`;
-    setNewBrew(false);
-    setReadOnly(readOnly);
-    setEditingData(null);
+    if (brew.id) {
+      const readOnly = brew.userId !== user.id ? true : false;
+      document.title = `BeerForge | Viewing ${brew.name}`;
+      setNewBrew(false);
+      setReadOnly(readOnly);
+      setEditingData(null);
+    }
 
     if (prevBrew && prevBrew.id && !brew.id) {
       // if we had a brew with an id, and all of a sudden we don't, we must
@@ -122,7 +119,7 @@ const Brew = (props: Props) => {
       : 'relative';
     if (editingData !== null) {
       if (sideBarMode === "fixed") {
-        openModal();
+        openModalForm();
       } else {
         if (!sideBarOpen) {
           setSideBarOpen(!sideBarOpen);
@@ -139,7 +136,7 @@ const Brew = (props: Props) => {
       : 'relative';
     if (form !== '') {
       if (sideBarMode === "fixed") {
-        openModal();
+        openModalForm();
       } else {
         if (!sideBarOpen) {
           setSideBarOpen(!sideBarOpen);
@@ -155,24 +152,6 @@ const Brew = (props: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingName]);
-
-  const handleScroll = (event: Event) => {
-    const rect = brewContainer.current
-      ? brewContainer.current.getBoundingClientRect()
-      : new DOMRect();
-      const sideBarMode = formContainer.current
-        ? window.getComputedStyle(formContainer.current).position
-        : 'relative';
-    if (sideBarMode === 'relative') {
-      if (rect.top < -30) {
-        setTopSpacing((rect.top * -1) - 30);
-      } else if (rect.top > -30 && rect.top < 0) {
-        setTopSpacing((rect.top * -1) + rect.top);
-      } else if (rect.top < 0) {
-        setTopSpacing(0);
-      }
-    }
-  }
 
   const openSideBar = (
     choice: string = '',
@@ -197,6 +176,43 @@ const Brew = (props: Props) => {
     }, 500);
   };
 
+  const openModalForm = () => {
+    modalDispatch({
+      type: 'show',
+      payload: {
+        node:
+          <FormHandler
+            brew={brew}
+            form={form}
+            nextForm={nextForm}
+            editingData={editingData}
+            closeSidebar={closeSidebar}
+            updateBrew={handleUpdateBrew}
+            deleteBrew={handleDeleteBrew}
+          />,
+        classOverride: styles.mobileFormHandler
+      }
+    });
+  }
+
+  const handleScroll = (event: Event) => {
+    const rect = brewContainer.current
+      ? brewContainer.current.getBoundingClientRect()
+      : new DOMRect();
+      const sideBarMode = formContainer.current
+        ? window.getComputedStyle(formContainer.current).position
+        : 'relative';
+    if (sideBarMode === 'relative') {
+      if (rect.top < -30) {
+        setTopSpacing((rect.top * -1) - 30);
+      } else if (rect.top > -30 && rect.top < 0) {
+        setTopSpacing((rect.top * -1) + rect.top);
+      } else if (rect.top < 0) {
+        setTopSpacing(0);
+      }
+    }
+  }
+
   const nextForm = (event: any) => {
     const formOrder = [
       'settings', 'fermentables', 'hops', 'yeast', 'mash',
@@ -211,23 +227,6 @@ const Brew = (props: Props) => {
     }
   }
 
-  const openModal = () => {
-    modalDispatch({
-      type: 'show',
-      payload: {
-        node:
-          <FormHandler
-            {...props as Props}
-            form={form}
-            nextForm={nextForm}
-            editingData={editingData}
-            closeSidebar={closeSidebar}
-          />,
-        classOverride: styles.mobileFormHandler
-      }
-    });
-  }
-
   const transformNotes = () => {
     if (brew.notes) {
       return {__html: brew.notes.replace(/\n/g, '<br>')};
@@ -240,48 +239,87 @@ const Brew = (props: Props) => {
     return newString.replace(/([a-z])([A-Z])/g, '$1 $2')
   }
 
-  const handleSave = (e: any) => {
+  const handleSaveBrew = async (e: any) => {
     // double check current user hasn't expired
     userDispatch({type: 'load'});
     setSaving(true);
     newBrew
-      ? props.saveBrewToDB()
+      ? await brewService.saveBrew(brew, user)
         .then((res: any) => {
-          if (!res.isAxiosError) {
-            const {brew} = props;
-            setNewBrew(false);
-            setReadOnly(false);
-            props.history.push(`/brew/${brew.id}`);
-            snackbarDispatch({type: 'show', payload: {
-              status: 'success',
-              message: `Successfully saved: ${brew.name}!`
-            }});
-            scrollToTop(300);
-          } else {
-            snackbarDispatch({type: 'show', payload: {
-              status: 'error',
-              message: res.message,
-            }});
-          }
+          setNewBrew(false);
+          setReadOnly(false);
+          props.history.push(`/brew/${brew.id}`);
+          snackbarDispatch({type: 'show', payload: {
+            status: 'success',
+            message: `Successfully saved: ${brew.name}!`
+          }});
+          scrollToTop(300);
           setSaving(false);
         })
-      : props.updateBrewOnDB()
+        .catch((error) => {
+          snackbarDispatch({type: 'show', payload: {
+            status: 'error',
+            message: error.message,
+          }});
+          setSaving(false);
+        })
+      : await brewService.updateBrew(brew, user)
         .then((res: any) => {
-          if (!res.isAxiosError) {
-            snackbarDispatch({type: 'show', payload: {
-              status: 'success',
-              message: `Successfully updated: ${brew.name}!`
-            }});
-            scrollToTop(300);
-          } else {
-            snackbarDispatch({type: 'show', payload: {
-              status: 'error',
-              message: res.message,
-            }});
-          }
+          snackbarDispatch({type: 'show', payload: {
+            status: 'success',
+            message: `Successfully updated: ${brew.name}!`
+          }});
+          scrollToTop(300);
+          setSaving(false);
+        })
+        .catch((error) => {
+          snackbarDispatch({type: 'show', payload: {
+            status: 'error',
+            message: error.message,
+          }});
           setSaving(false);
         })
       ;
+  }
+
+  const handleUpdateBrew = (brew: BrewInterface) => {
+    brewDispatch({type: 'update', payload: brew});
+  }
+
+  const handleDeleteBrew = () => {
+    modalDispatch({
+      type: 'show',
+      payload: {
+        title: `Are you sure you want to permanently remove <strong>${brew.name}</strong>?`,
+        buttons: <>
+            <button
+              className="button button--brown"
+              onClick={() => modalDispatch({type: 'hide'})}
+            >No, cancel</button>
+            <button
+              className="button"
+              onClick={async () => {
+                await brewService.deleteBrew(brew.id, user)
+                .then((res: any) => {
+                  snackbarDispatch({type: 'show', payload: {
+                    status: 'success',
+                    message: `Sucessfully removed: ${brew.name}`
+                  }});
+                  modalDispatch({type: 'hide'});
+                  brewDispatch({type: 'clear'});
+                })
+                .catch((error) => {
+                  snackbarDispatch({type: 'show', payload: {
+                    status: 'error',
+                    message: error.message,
+                  }});
+                  modalDispatch({type: 'hide'});
+                });
+              }}
+            >Yes, remove</button>
+          </>
+      }
+    });
   }
 
   return loading ? <Loader className={styles.loader} color="#000" /> : (
@@ -311,7 +349,7 @@ const Brew = (props: Props) => {
                   className={styles.nameInput}
                   value={brew.name}
                   ref={nameInput}
-                  onChange={(e) => updateBrew({...brew, name: e.currentTarget.value})}
+                  onChange={(e) => brewDispatch({type: 'update', payload: {name: e.currentTarget.value}})}
                   onBlur={() => setEditingName(false)}
                 />
             }
@@ -401,7 +439,7 @@ const Brew = (props: Props) => {
         <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
           <div className={styles.brew__header}>
             <h2>Fermentables</h2>
-            {brew.fermentables.length > 0
+            {brew && brew.fermentables.length > 0
               ? <span>Total: {brew.totalFermentables} lbs</span>
               : null}
             {!readOnly
@@ -412,7 +450,7 @@ const Brew = (props: Props) => {
               : null}
           </div>
           <List customClass={`${styles.brew__ingredients} ${styles.fermentables}`}>
-            {brew.fermentables.map((fermentable: FermentableInterface, index: number) => (
+            {brew && brew.fermentables.map((fermentable: FermentableInterface, index: number) => (
               <ListItem
                 color="brew"
                 clicked={!readOnly ? openSideBar('fermentables', fermentable) : null}
@@ -430,7 +468,7 @@ const Brew = (props: Props) => {
         <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
           <div className={styles.brew__header}>
             <h2>Hops</h2>
-            {brew.hops.length > 0
+            {brew && brew.hops.length > 0
               ? <span>Total: {brew.totalHops} oz</span>
               : null}
             {!readOnly
@@ -441,7 +479,7 @@ const Brew = (props: Props) => {
               : null}
           </div>
           <List customClass={`${styles.brew__ingredients} ${styles.hops}`}>
-            {brew.hops.map((hop: HopInterface, index: number) => (
+            {brew && brew.hops.map((hop: HopInterface, index: number) => (
               <ListItem
                 color="brew"
                 clicked={!readOnly ? openSideBar('hops', hop) : null}
@@ -459,7 +497,7 @@ const Brew = (props: Props) => {
         <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
           <div className={styles.brew__header}>
             <h2>Yeast</h2>
-            {brew.yeast.length > 0
+            {brew && brew.yeast.length > 0
               ? <span>{brew.pitchCellCount} bn cells {brew.targetPitchingCellCount
                   ? <>of {brew.targetPitchingCellCount} bn target</>
                   : null}
@@ -473,7 +511,7 @@ const Brew = (props: Props) => {
               : null}
           </div>
           <List customClass={`${styles.brew__ingredients} ${styles.yeast}`}>
-            {brew.yeast.map((item: YeastInterface, index: number) => (
+            {brew && brew.yeast.map((item: YeastInterface, index: number) => (
               <ListItem
                 color="brew"
                 clicked={!readOnly ? openSideBar('yeast', item) : null}
@@ -684,7 +722,7 @@ const Brew = (props: Props) => {
           ? <button
               type="submit"
               className={`button button--large ${styles.saveButton} ${saving ? styles.saving : null}`}
-              onClick={handleSave}
+              onClick={handleSaveBrew}
             >
               {newBrew? <>Save &amp; Get Brewing!</> : <>Update Brew</>}
               {saving ? <Loader className={styles.savingLoader} /> : null}
@@ -694,11 +732,13 @@ const Brew = (props: Props) => {
       <div className={styles.sideBar} role="complementary" ref={formContainer}>
         <Card color="brew" customStyle={top} customClass={`${styles.formsContainer}`}>
           <FormHandler
-            {...props as Props}
+            brew={brew}
             form={form}
             nextForm={nextForm}
             editingData={editingData}
             closeSidebar={closeSidebar}
+            updateBrew={handleUpdateBrew}
+            deleteBrew={handleDeleteBrew}
           />
         </Card>
       </div>

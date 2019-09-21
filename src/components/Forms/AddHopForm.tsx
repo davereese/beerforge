@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import styles from "./Forms.module.scss"
-import { BrewInterface, HopInterface } from '../../Store/BrewProvider';
+import { BrewInterface, HopInterface } from '../../Store/BrewContext';
 import { IBU } from "../../resources/javascript/calculator";
 
 interface Props {

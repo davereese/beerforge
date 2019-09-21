@@ -12,7 +12,7 @@ import Loader from '../../components/Loader/Loader';
 import Tooltip from "../../components/Tooltip/Tooltip";
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
-import { BrewInterface } from '../../Store/BrewProvider';
+import { BrewInterface } from '../../Store/BrewContext';
 import { useUser } from '../../Store/UserContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 

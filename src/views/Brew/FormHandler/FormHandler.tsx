@@ -10,7 +10,7 @@ import BoilForm from '../../../components/Forms/BoilForm';
 import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
-import { BrewInterface } from '../../../Store/BrewProvider';
+import { BrewInterface } from '../../../Store/BrewContext';
 import { useModal } from '../../../Store/ModalContext';
 import { useSnackbar } from '../../../Store/SnackbarContext';
 
@@ -19,8 +19,8 @@ interface Props {
   nextForm: any;
   editingData: any;
   closeSidebar: any;
+  deleteBrew: Function;
   updateBrew: Function;
-  deleteBrewFromDB: Function
   brew: BrewInterface;
 }
 
@@ -31,7 +31,7 @@ function FormHandler({
   editingData,
   closeSidebar,
   updateBrew,
-  deleteBrewFromDB,
+  deleteBrew,
 }: Props) {
 
   let title: string,
@@ -84,43 +84,10 @@ function FormHandler({
     updateBrew({...formData, [form]: dataToSet});
   };
 
-  const handleDeleteBrew = () => {
-    modalDispatch({
-      type: 'show',
-      payload: {
-        title: `Are you sure you want to permanently remove <strong>${brew.name}</strong>?`,
-        buttons: <>
-            <button
-              className="button button--brown"
-              onClick={() => modalDispatch({type: 'hide'})}
-            >No, cancel</button>
-            <button
-              className="button"
-              onClick={async () => {
-                const deleteBrew = await deleteBrewFromDB(brew.id);
-                if (deleteBrew.isAxiosError) {
-                  snackbarDispatch({type: 'show', payload: {
-                    status: 'error',
-                    message: deleteBrew.message,
-                  }});
-                } else {
-                  snackbarDispatch({type: 'show', payload: {
-                    status: 'success',
-                    message: `Sucessfully removed: ${brew.name}`
-                  }});
-                }
-                modalDispatch({type: 'hide'})
-              }}
-            >Yes, remove</button>
-          </>
-      }
-    });
-  };
-
   switch (form) {
     case 'settings':
       title = 'Settings';
-      component = <BrewSettingsForm brew={brew} dataUpdated={setData} delete={handleDeleteBrew} />
+      component = <BrewSettingsForm brew={brew} dataUpdated={setData} delete={deleteBrew} />
       submitText = 'Submit';
       break;
     case 'fermentables':

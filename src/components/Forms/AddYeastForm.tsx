@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import styles from "./Forms.module.scss"
 import { pitchingRate } from '../../resources/javascript/calculator';
-import { BrewInterface, YeastInterface } from '../../Store/BrewProvider';
+import { BrewInterface, YeastInterface } from '../../Store/BrewContext';
 
 interface Props {
   brew: BrewInterface;

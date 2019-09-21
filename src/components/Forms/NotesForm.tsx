@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { BrewInterface } from '../../Store/BrewProvider';
+import { BrewInterface } from '../../Store/BrewContext';
 import Textarea from '../Textarea/Textarea';
 
 interface Props {
