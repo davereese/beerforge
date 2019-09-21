@@ -11,8 +11,8 @@ import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
 import { BrewInterface } from '../../../Store/BrewProvider';
-import { SnackbarProviderInterface } from '../../../Store/SnackbarProvider';
 import { useModal } from '../../../Store/ModalContext';
+import { useSnackbar } from '../../../Store/SnackbarContext';
 
 interface Props {
   form: string;
@@ -22,7 +22,6 @@ interface Props {
   updateBrew: Function;
   deleteBrewFromDB: Function
   brew: BrewInterface;
-  snackbarProps: SnackbarProviderInterface;
 }
 
 function FormHandler({
@@ -33,7 +32,6 @@ function FormHandler({
   closeSidebar,
   updateBrew,
   deleteBrewFromDB,
-  snackbarProps,
 }: Props) {
 
   let title: string,
@@ -43,6 +41,8 @@ function FormHandler({
 
   // eslint-disable-next-line
   const [modal, modalDispatch] = useModal();
+  // eslint-disable-next-line
+  const [snackbar, snackbarDispatch] = useSnackbar();
 
   // Stuff that isn't supposed to be part of the brew
   const [optionData, setOptionData] = useState<any | null>({});
@@ -99,15 +99,15 @@ function FormHandler({
               onClick={async () => {
                 const deleteBrew = await deleteBrewFromDB(brew.id);
                 if (deleteBrew.isAxiosError) {
-                  snackbarProps.showSnackbar({
+                  snackbarDispatch({type: 'show', payload: {
                     status: 'error',
                     message: deleteBrew.message,
-                  });
+                  }});
                 } else {
-                  snackbarProps.showSnackbar({
+                  snackbarDispatch({type: 'show', payload: {
                     status: 'success',
                     message: `Sucessfully removed: ${brew.name}`
-                  });
+                  }});
                 }
                 modalDispatch({type: 'hide'})
               }}

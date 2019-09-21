@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './Brew.module.scss';
@@ -14,10 +14,10 @@ import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { pen } from '../../resources/javascript/penSvg.js';
 import { UserInterface } from '../../Store/UserContext';
 import { isEmpty } from '../../resources/javascript/isEmpty';
-import { SnackbarProviderInterface } from '../../Store/SnackbarProvider';
 import { usePrevious } from '../../resources/javascript/usePreviousHook';
 import { useUser } from '../../Store/UserContext';
 import { useModal } from '../../Store/ModalContext';
+import { useSnackbar } from '../../Store/SnackbarContext';
 
 interface Props extends RouteComponentProps {
   currentUser: UserInterface;
@@ -33,7 +33,6 @@ interface Props extends RouteComponentProps {
   updateBrewOnDB: Function;
   deleteBrewFromDB: Function;
   history: any;
-  snackbarProps: SnackbarProviderInterface;
 }
 
 const Brew = (props: Props) => {
@@ -41,6 +40,8 @@ const Brew = (props: Props) => {
   const [user, userDispatch] = useUser();
   // eslint-disable-next-line
   const [modal, modalDispatch] = useModal();
+  // eslint-disable-next-line
+  const [snackbar, snackbarDispatch] = useSnackbar();
 
   // STATE
   const [newBrew, setNewBrew] = useState(true);
@@ -54,9 +55,9 @@ const Brew = (props: Props) => {
   const [saving, setSaving] = useState(false);
 
   // REFS
-  const brewContainer = React.createRef<HTMLDivElement>();
-  const nameInput = React.createRef<HTMLInputElement>();
-  const formContainer = React.createRef<HTMLDivElement>();
+  const brewContainer = useRef<HTMLDivElement>(null);
+  const nameInput = useRef<HTMLInputElement>(null);
+  const formContainer = useRef<HTMLDivElement>(null);
 
   const {brew, updateBrew} = props;
   const top = {marginTop: topSpacing};
@@ -76,10 +77,10 @@ const Brew = (props: Props) => {
       props.getBrewfromDB(brewId)
         .then((res: any) => {
           if (res.isAxiosError) {
-            props.snackbarProps.showSnackbar({
+            snackbarDispatch({type: 'show', payload: {
               status: 'error',
               message: res.message,
-            });
+            }});
             if (isEmpty(user)) {
               props.history.push('/');
             } else {
@@ -147,6 +148,13 @@ const Brew = (props: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
+
+  useEffect(() => {
+    if (nameInput.current !== null) {
+      nameInput.current.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingName]);
 
   const handleScroll = (event: Event) => {
     const rect = brewContainer.current
@@ -244,32 +252,32 @@ const Brew = (props: Props) => {
             setNewBrew(false);
             setReadOnly(false);
             props.history.push(`/brew/${brew.id}`);
-            props.snackbarProps.showSnackbar({
+            snackbarDispatch({type: 'show', payload: {
               status: 'success',
               message: `Successfully saved: ${brew.name}!`
-            });
+            }});
             scrollToTop(300);
           } else {
-            props.snackbarProps.showSnackbar({
+            snackbarDispatch({type: 'show', payload: {
               status: 'error',
               message: res.message,
-            });
+            }});
           }
           setSaving(false);
         })
       : props.updateBrewOnDB()
         .then((res: any) => {
           if (!res.isAxiosError) {
-            props.snackbarProps.showSnackbar({
+            snackbarDispatch({type: 'show', payload: {
               status: 'success',
               message: `Successfully updated: ${brew.name}!`
-            });
+            }});
             scrollToTop(300);
           } else {
-            props.snackbarProps.showSnackbar({
+            snackbarDispatch({type: 'show', payload: {
               status: 'error',
               message: res.message,
-            });
+            }});
           }
           setSaving(false);
         })
@@ -295,9 +303,6 @@ const Brew = (props: Props) => {
                         className={`button button--link ${styles.edit}`}
                         onClick={() => {
                           setEditingName(true);
-                          if (nameInput.current !== null) {
-                            nameInput.current.focus();
-                          }
                         }}
                       >{pen}</button>
                     : null}

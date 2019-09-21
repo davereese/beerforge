@@ -10,18 +10,21 @@ import ContextConsumer from './Store/ContextConsumer';
 import SnackberProvider from './Store/SnackbarProvider';
 import UserProvider from './Store/UserContext';
 import ModalProvider from './Store/ModalContext';
+import SnackbarProvider2 from './Store/SnackbarContext';
 
 ReactDOM.render(
   <BrowserRouter>
     <UserProvider>
       <ModalProvider>
-        <SnackberProvider>
-          <BrewProvider>
-            <ContextConsumer>
-              <App />
-            </ContextConsumer>
-          </BrewProvider>
-        </SnackberProvider>
+        <SnackbarProvider2>
+          <SnackberProvider>
+            <BrewProvider>
+              <ContextConsumer>
+                <App />
+              </ContextConsumer>
+            </BrewProvider>
+          </SnackberProvider>
+        </SnackbarProvider2>
       </ModalProvider>
     </UserProvider>
   </BrowserRouter>,

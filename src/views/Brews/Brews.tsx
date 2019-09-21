@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, CSSProperties, useRef } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash.debounce'
@@ -10,56 +10,80 @@ import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Card from '../../components/Card/Card';
 import Loader from '../../components/Loader/Loader';
 import Tooltip from "../../components/Tooltip/Tooltip";
-import { BrewInterface } from '../../Store/BrewProvider';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
-import { UserContext } from '../../Store/UserContext';
+import { BrewInterface } from '../../Store/BrewProvider';
+import { useUser } from '../../Store/UserContext';
+import { useSnackbar } from '../../Store/SnackbarContext';
 
-class Brews extends React.Component<any, any> {
-  static contextType = UserContext;
+const Brews = (props: any) => {
+  // CONTEXT
+  const [user, userDispatch] = useUser();
+  // eslint-disable-next-line
+  const [snackbar, snackbarDispatch] = useSnackbar();
 
-  logHeader: React.RefObject<HTMLDivElement>;
+  // STATE
+  const [search, setSearch] = useState('');
+  const [brews, setBrews] = useState([]);
+  const [brewsCount, setBrewsCount] = useState(0);
+  const [page, setPage] = useState(1);
+  // eslint-disable-next-line
+  const [numToShow, setNumToShow] = useState(20);
+  const [loading, setLoading] = useState(false);
+  const [showTooltip, setShowTooltip] = useState<null | number>(null);
+  // const [headerClass, setHeaderClass] = useState<null | string>(null);
+  const [placeholderClass, setPlaceholderClass] = useState<undefined | CSSProperties>(undefined);
 
-  constructor(props: any) {
-    super(props);
+  // REFS
+  // const logHeader = React.createRef<HTMLDivElement>();
+  const logHeader = useRef<HTMLDivElement>(null);
+  const headerClass = useRef('');
 
-    this.state = {
-      search: '',
-      brews: [],
-      brewsCount: 0,
-      page: 1,
-      numToShow: 20,
-      loading: false,
-      showTooltip: '',
-    }
+  // mount
+  useEffect(() => {
+    document.title = "BeerForge | All Brews";
+    listUserBrews(1);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    this.logHeader = React.createRef<HTMLDivElement>();
-  }
+    // unmount
+    return function cleanup() {
+      window.removeEventListener('scroll', handleScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  async listUserBrews(page: number) {
-    const [user, userDispatch] = this.context;
+  useEffect(() => {
+    listUserBrews(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  const listUserBrews = async (page: number) => {
     try {
       // double check current user hasn't expired
       userDispatch({type: 'load'});
-      this.setState({loading: true});
+      setLoading(true);
       const authHeaders = {'authorization': user ? user.token : null};
       await axios
-        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/?num=${this.state.numToShow}&page=${page}&search=${this.state.search}`, {
-        headers: authHeaders,
-      }).then(result => {
-        this.setState({brews: result.data.brews, brewsCount: result.data.count, page: page, loading: false}, () => scrollToTop(300) );
-      });
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/?num=${numToShow}&page=${page}&search=${search}`, {
+          headers: authHeaders,
+        }).then(result => {
+          setBrews(result.data.brews);
+          setBrewsCount(result.data.count);
+          setPage(page);
+          setLoading(false);
+        }).then(() => {
+          scrollToTop(300);
+        });
     } catch (error) {
-      this.setState({loading: false});
-      this.props.snackbarProps.showSnackbar({
+      setLoading(false);
+      snackbarDispatch({type: 'show', payload: {
         status: 'error',
         message: error.message,
-      });
+      }});
     }
-  }
+  };
 
-  export = (brew: BrewInterface) => async (event: any) => {
-    const [user, userDispatch] = this.context;
+  const exportBrew = (brew: BrewInterface) => async (event: any) => {
     event.stopPropagation();
     try {
       userDispatch({type: 'load'});
@@ -78,166 +102,153 @@ class Brews extends React.Component<any, any> {
         link.remove();
       });
     } catch (error) {
-      this.props.snackbarProps.showSnackbar({
+      snackbarDispatch({type: 'show', payload: {
         status: 'error',
         message: error.message,
-      });
+      }});
     }
   }
 
-  componentDidMount() {
-    document.title = "BeerForge | All Brews";
-    this.listUserBrews(1);
-    window.addEventListener('scroll', this.handleScroll, { passive: true });
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
-  }
-
-  handleScroll = (event: Event) => {
-    const rect = this.logHeader.current
-      ? this.logHeader.current.getBoundingClientRect()
+  const handleScroll = (event: Event) => {
+    // @ts-ignore-line
+    const rect = logHeader.current
+      ? logHeader.current.getBoundingClientRect()
       : new DOMRect();
-    if (this.state.headerClass === null && rect.top > 49) {
-      this.setState({
-        headerClass: null,
-        placeholderClass: {
-          height: 0,
-          width: 0,
-        }
+    if (headerClass.current === '' && rect.top > 49) {
+      // setHeaderClass(null);
+      // @ts-ignore-line
+      headerClass.current = '';
+      setPlaceholderClass({
+        height: 0,
+        width: 0,
       });
-    } else if (this.state.headerClass !== null && rect.top > -20) {
-      this.setState({
-        headerClass: null,
-        placeholderClass: {
-          height: 0,
-          width: 0,
-        }
+    } else if (headerClass.current !== '' && rect.top > -20) {
+      // setHeaderClass(null);
+      headerClass.current = '';
+      setPlaceholderClass({
+        height: 0,
+        width: 0,
       });
     } else if (rect.top <= 49) {
-      this.setState({
-        headerClass: styles.fixedHeader,
-        placeholderClass: {
-          width: '100%',
-          height: '69px'
-        }
+      // setHeaderClass(styles.fixedHeader);
+      headerClass.current = styles.fixedHeader;
+      setPlaceholderClass({
+        width: '100%',
+        height: '69px'
       });
     }
   }
 
-  handleBrewClick = (brewId: number) => (event: any) => {
-    this.props.history.push(`brew/${brewId}`);
+  const handleBrewClick = (brewId: number) => (event: any) => {
+    props.history.push(`brew/${brewId}`);
   }
 
-  openMoreMenu = (index: number) => (event: any) => {
+  const openMoreMenu = (index: number) => (event: any) => {
     event.stopPropagation();
-    this.setState({showTooltip: index});
+    setShowTooltip(index);
   }
 
-  closeMoreMenu = (index: number) => {
-    if (this.state.showTooltip === index) {
-      this.setState({showTooltip: ''});
+  const closeMoreMenu = (index: number) => {
+    if (showTooltip === index) {
+      setShowTooltip(null);
     }
   }
 
-  onChange = debounce((value: string) => {
-    this.setState({search: value}, () => this.listUserBrews(1));
+  const onChange = debounce((value: string) => {
+    setSearch(value);
   }, 300);
 
-  render() {
-    const pagination = Array.from(Array(Math.ceil(this.state.brewsCount/this.state.numToShow)), (e, i) => {
-      const page = i+1;
-      return <button 
-          className={`button button--page ${this.state.page === page ? 'on' : ''}`}
-          key={page}
-          onClick={() => this.state.page !== page ? this.listUserBrews(page) : null}
-        >{page}</button>;
-    });
+  const pagination = Array.from(Array(Math.ceil(brewsCount/numToShow)), (e, i) => {
+    const currentPage = i+1;
+    return <button 
+        className={`button button--page ${page === currentPage ? 'on' : ''}`}
+        key={currentPage}
+        onClick={() => page !== currentPage ? listUserBrews(currentPage) : null}
+      >{currentPage}</button>;
+  });
 
-    return (
-      <section className={styles.allBrews}>
-        <div className={styles.topRow}>
-          <h1 className={styles.allBrews__header}>All Brews</h1>
-          <input
-            type="text"
-            name="search"
-            className={styles.search}
-            placeholder="Search brew names"
-            onChange={({ target: { value } }) => this.onChange(value)}
-          />
-          <Link
-            to="brew"
-            className="button button--large button--yellow"
-          >New Brew</Link>
-        </div>
-        <div className={`${styles.brewLogHeader} ${this.state.headerClass}`}>
-          <label className={styles.nameCol}>Name</label>
-          <label>ABV %</label>
-          <label>IBU</label>
-          <label>SRM</label>
-          <label>Date Brewed</label>
-        </div>
-        <div ref={this.logHeader} style={this.state.placeholderClass} />
-        <Card customClass={styles.allBrews__list}>
-          <List customClass={styles.brewLog}>
-            {this.state.loading && this.state.brews.length === 0 ? <Loader className={styles.loader} />
-              : this.state.brews.length > 0
-                ? this.state.brews.map((brew: any, index: number) => {
-                  return <ListItem
-                    key={brew.id}
-                    customClass={styles.brewLog__item}
-                    clicked={this.handleBrewClick(brew.id)}
-                    label="Click to see brew details"
-                  >
-                    <div className={styles.nameCol}>{brew.name}</div>
-                    <span className={styles.abvCol}>{brew.abv ? brew.abv : '--'}</span>
-                    <span className={styles.ibuCol}>{brew.ibu ? brew.ibu : '--'}</span>
-                    <span className={styles.srmCol}>
-                      {brew.srm
-                        ? <>
-                            <div
-                              className={styles.srmSwatch}
-                              style={{backgroundColor: getSrmToRgb(brew.srm)}}
-                            />
-                            {brew.srm}
-                          </>
-                        : '--'}
-                    </span>
-                    <span className={styles.dateCol}><FormattedDate>{brew.date_brewed}</FormattedDate></span>
-                    <div className={styles.moreMenuWrapper}>
-                      <div className={styles.kebab} onClick={this.openMoreMenu(index)}>
-                        <span></span><span></span><span></span>
-                      </div>
-                      <Tooltip
-                        show={this.state.showTooltip === index}
-                        placement="left-center"
-                        onClose={() => this.closeMoreMenu(index)}
-                        className={styles.moreMenu}
-                      >
-                        <button
-                          className={`button button--link button--small ${styles.moreButton}`}
-                          onClick={this.export(brew)}
-                        >Export</button>
-                      </Tooltip>
+  return (
+    <section className={styles.allBrews}>
+      <div className={styles.topRow}>
+        <h1 className={styles.allBrews__header}>All Brews</h1>
+        <input
+          type="text"
+          name="search"
+          className={styles.search}
+          placeholder="Search brew names"
+          onChange={({ target: { value } }) => onChange(value)}
+        />
+        <Link
+          to="brew"
+          className="button button--large button--yellow"
+        >New Brew</Link>
+      </div>
+      <div className={`${styles.brewLogHeader} ${headerClass.current}`}>
+        <label className={styles.nameCol}>Name</label>
+        <label>ABV %</label>
+        <label>IBU</label>
+        <label>SRM</label>
+        <label>Date Brewed</label>
+      </div>
+      <div ref={logHeader} style={placeholderClass} />
+      <Card customClass={styles.allBrews__list}>
+        <List customClass={styles.brewLog}>
+          {loading && brews.length === 0 ? <Loader className={styles.loader} />
+            : brews.length > 0
+              ? brews.map((brew: any, index: number) => {
+                return <ListItem
+                  key={brew.id}
+                  customClass={styles.brewLog__item}
+                  clicked={handleBrewClick(brew.id)}
+                  label="Click to see brew details"
+                >
+                  <div className={styles.nameCol}>{brew.name}</div>
+                  <span className={styles.abvCol}>{brew.abv ? brew.abv : '--'}</span>
+                  <span className={styles.ibuCol}>{brew.ibu ? brew.ibu : '--'}</span>
+                  <span className={styles.srmCol}>
+                    {brew.srm
+                      ? <>
+                          <div
+                            className={styles.srmSwatch}
+                            style={{backgroundColor: getSrmToRgb(brew.srm)}}
+                          />
+                          {brew.srm}
+                        </>
+                      : '--'}
+                  </span>
+                  <span className={styles.dateCol}><FormattedDate>{brew.date_brewed}</FormattedDate></span>
+                  <div className={styles.moreMenuWrapper}>
+                    <div className={styles.kebab} onClick={openMoreMenu(index)}>
+                      <span></span><span></span><span></span>
                     </div>
-                  </ListItem>
-                })
-                : <li className={styles.noBrews}>
-                    <Link
-                      to="brew"
-                      className={`button ${styles.brewLInk}`}
-                    >Get Brewing!</Link>
-                  </li>
-            }
-          </List>
-        </Card>
-        <div className={styles.brewLogPages}>
-          {pagination}
-        </div>
-      </section>
-    );
-  }
+                    <Tooltip
+                      show={showTooltip === index}
+                      placement="left-center"
+                      onClose={() => closeMoreMenu(index)}
+                      className={styles.moreMenu}
+                    >
+                      <button
+                        className={`button button--link button--small ${styles.moreButton}`}
+                        onClick={exportBrew(brew)}
+                      >Export</button>
+                    </Tooltip>
+                  </div>
+                </ListItem>
+              })
+              : <li className={styles.noBrews}>
+                  <Link
+                    to="brew"
+                    className={`button ${styles.brewLInk}`}
+                  >Get Brewing!</Link>
+                </li>
+          }
+        </List>
+      </Card>
+      <div className={styles.brewLogPages}>
+        {pagination}
+      </div>
+    </section>
+  );
 }
 
 export default Brews;

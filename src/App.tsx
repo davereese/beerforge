@@ -72,7 +72,7 @@ class App extends React.Component<any, Props> {
           </Switch>
         </main>
         <Modal />
-        <Snackbar snackbarProps={this.props.snackbarProps} />
+        <Snackbar />
         <Footer />
       </Fade>
     );

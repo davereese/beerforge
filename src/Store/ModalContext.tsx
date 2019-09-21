@@ -7,12 +7,13 @@ export interface ModalProviderInterface {
 };
 
 export interface ModalInterface {
-  title: string;
-  body: any;
-  node: any;
-  buttons: any;
-  classOverride: any;
+  title?: string;
+  body?: any;
+  node?: any;
+  buttons?: any;
+  classOverride?: any;
   closing: Boolean;
+  show: Boolean;
 }
 
 const initialState: any = '';

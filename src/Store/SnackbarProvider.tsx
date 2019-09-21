@@ -1,9 +1,10 @@
 import React from 'react';
 
 export interface SnackbarProviderInterface {
+  showSnackbar: Function;
   hideSnackbar: Function;
   show: boolean;
-  showSnackbar: Function;
+  closing: boolean;
 };
 
 export interface SnackbarInterface {
@@ -14,7 +15,8 @@ export interface SnackbarInterface {
 export const SnackbarContext = React.createContext({
   hideSnackbar: () => null,
   show: false,
-  showSnackbar: () => null
+  showSnackbar: () => null,
+  closing: false,
 } as SnackbarProviderInterface);
 
 let timeout: any;

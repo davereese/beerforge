@@ -8,19 +8,15 @@ import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
 import { useUser } from '../../Store/UserContext';
 import { useModal } from '../../Store/ModalContext';
-import { SnackbarProviderInterface } from '../../Store/SnackbarProvider';
+import { useSnackbar } from '../../Store/SnackbarContext';
 
-interface Props {
-  snackbarProps: SnackbarProviderInterface;
-}
-
-const Profile = (props: Props) => {
+const Profile = () => {
   const fileInput = React.createRef<HTMLInputElement>();
   const [user, userDispatch] = useUser();
   // eslint-disable-next-line
+  const [snackbar, snackbarDispatch] = useSnackbar();
+  // eslint-disable-next-line
   const [modal, modalDispatch] = useModal();
-  // const [password, setPassword] = useState('');
-  // const [password2, setPassword2] = useState('');
   const [email, setEmail] = useState(user.email);
   const [firstName, setFirstName] = useState(user.first_name);
   const [lastName, setLastName] = useState(user.last_name);
@@ -49,16 +45,16 @@ const Profile = (props: Props) => {
 
       userDispatch({type: 'update', payload: res.data[0]});
       setSaving(false);
-      props.snackbarProps.showSnackbar({
+      snackbarDispatch({type: 'show', payload: {
         status: 'success',
         message: 'Profile updated',
-      });
+      }});
     } catch (error) {
       setSaving(false);
-      props.snackbarProps.showSnackbar({
+      snackbarDispatch({type: 'show', payload: {
         status: 'error',
         message: error.message,
-      });
+      }});
     }
   }
 
@@ -69,16 +65,16 @@ const Profile = (props: Props) => {
       await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/users/${user.id}`, {
         headers: authHeaders,
       });
-      props.snackbarProps.showSnackbar({
+      snackbarDispatch({type: 'show', payload: {
         status: 'success',
         message: 'Account deleted',
-      });
+      }});
       userDispatch({type: 'logout'});
     } catch (error) {
-      props.snackbarProps.showSnackbar({
+      snackbarDispatch({type: 'show', payload: {
         status: 'error',
         message: error.message,
-      });
+      }});
     }
   }
 
@@ -143,19 +139,19 @@ const Profile = (props: Props) => {
           setUploading(false);
           setFile('');
           fileInput.current.value = '';
-          props.snackbarProps.showSnackbar({
+          snackbarDispatch({type: 'show', payload: {
             status: 'success',
             message: 'Upload success!',
-          });
+          }});
         }
       } catch (error) {
         setUploading(false);
         setFile('');
         fileInput.current.value = '';
-        props.snackbarProps.showSnackbar({
+        snackbarDispatch({type: 'show', payload: {
           status: 'error',
           message: error.message,
-        });
+        }});
       }
     }
   };
