@@ -1,53 +1,42 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-class FinalGravity extends Component<any, any> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      og: '',
-      attenuation: '',
-    }
+const FinalGravity = (props: any) => {
+  // STATE
+  const [og, setOg] = useState('');
+  const [attenuation, setAttenuation] = useState('');
+
+  const { calculator } = props;
+
+  const results = () => {
+    const result = calculator(og, attenuation);
+      return !isNaN(result) && isFinite(result) && result > 0 ? result : '';
   }
 
-  render() {
-    const { calculator } = this.props;
-
-    const handleInputChange = (e: any) => {
-      const type = e.target.name;
-      this.setState({[type]: e.target.value});
-    }
-
-    const results = () => {
-      const result = calculator(this.state.og, this.state.attenuation);
-       return !isNaN(result) && isFinite(result) && result > 0 ? result : '';
-    }
-
-    return (
+  return (
+    <div>
+      <h2>Final Gravity</h2>
       <div>
-        <h2>Final Gravity</h2>
-        <div>
-          <label htmlFor="og">Original Gravity</label><br />
-          <input
-            name="og"
-            type="number"
-            value={this.state.og}
-            onChange={handleInputChange}
-          ></input><br />
-          <label htmlFor="attenuation">Attenuation (%)</label><br />
-          <input
-            name="attenuation"
-            type="number"
-            value={this.state.attenuation}
-            onChange={handleInputChange}
-          ></input>
-        </div>
-        <div>
-          <h3>Result:</h3>
-          <p className="result">{results()}</p>
-        </div>
+        <label htmlFor="og">Original Gravity</label><br />
+        <input
+          name="og"
+          type="number"
+          value={og}
+          onChange={(e) => setOg(e.target.value)}
+        ></input><br />
+        <label htmlFor="attenuation">Attenuation (%)</label><br />
+        <input
+          name="attenuation"
+          type="number"
+          value={attenuation}
+          onChange={(e) => setAttenuation(e.target.value)}
+        ></input>
       </div>
-    );
-  }
+      <div>
+        <h3>Result:</h3>
+        <p className="result">{results()}</p>
+      </div>
+    </div>
+  );
 }
 
 export default FinalGravity;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -12,76 +12,83 @@ import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 import Loader from '../../components/Loader/Loader';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
-import { UserContext } from '../../Store/UserContext';
+import { useUser } from '../../Store/UserContext';
+import { useSnackbar } from '../../Store/SnackbarContext';
 
-class Dashboard extends React.Component<any, any> {
-  static contextType = UserContext;
-  _isMounted: boolean;
+const Dashboard = (props: any) => {
+  // CONTEXT
+  const [user, userDispatch] = useUser();
 
-  constructor(props: any) {
-    super(props);
+  // STATE
+  const [brewLogPage, setBrewLogPage] = useState(1);
+  // eslint-disable-next-line
+  const [snackbar, snackbarDispatch] = useSnackbar();
+  // eslint-disable-next-line
+  const [numToShow, setNumToShow] = useState(20);
+  const [brewLog, setBrewLog] = useState([]);
+  const [brewActivity, setBrewActivity] = useState([]);
+  const [brewsNum, setBrewsNum] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-    this._isMounted = false;
-    this.state = {
-      brewLogPage: 1,
-      numToShow: 20,
-      brewLog: [],
-      brewActivity: [],
-      brewsNum: 0,
-      loading: false,
-    }
-  }
-
-  async listUserBrews() {
-    const [user, userDispatch] = this.context;
-
+  const isMounted: any = useRef();
+  
+  const listUserBrews = async () => {
     try {
-      this.setState({loading: true});
+      setLoading(true);
       userDispatch({type: 'load'});
       const authHeaders = {'authorization': user ? user.token : null};
-      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/dashboard/?num=${this.state.numToShow}`, {
+      await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brews/dashboard/?num=${numToShow}`, {
         headers: authHeaders,
       }).then(result => {
-        this._isMounted && this.setState({
-          brewLog: result.data.allBrews,
-          brewActivity: result.data.brews,
-          brewsNum: result.data.allBrews.length,
-          loading: false
-        });
+        if (isMounted) {
+          setBrewLog(result.data.allBrews);
+          setBrewActivity(result.data.brews);
+          setBrewsNum(result.data.allBrews.length)
+          setLoading(false);
+        }
       });
     } catch (error) {
-      this._isMounted && this.setState({error: error.response.status, loading: false});
+      if (isMounted) {
+        snackbarDispatch({type: 'show', payload: {
+          status: 'error',
+          message: error.message,
+        }});
+        setLoading(false);
+      }
     }
   }
 
-  componentDidMount() {
+  // mount
+  useEffect(() => {
     document.title = "BeerForge | Dashboard";
-    this._isMounted = true;
-    this._isMounted && this.listUserBrews();
+    isMounted.current = true;
+    isMounted && listUserBrews();
+
+    // unmount
+    return function cleanup() {
+      isMounted.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleBrewClick = (brewId: number) => (event: any) => {
+    props.history.push(`brew/${brewId}`);
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
+  const togglePage = (page: number) => (event: any) => {
+    setBrewLogPage(page);
+    scrollToTop(400);
   }
 
-  handleBrewClick = (brewId: number) => (event: any) => {
-    this.props.history.push(`brew/${brewId}`);
-  }
-
-  togglePage = (page: number) => (event: any) => {
-    this.setState({brewLogPage: page}, () => scrollToTop(400));
-  }
-
-  render() {
-    const brewLogItems = this.state.brewLog.length > 0
-      ? this.state.brewLog.map((brew: any, index: number) => {
+  const brewLogItems = brewLog.length > 0
+    ? brewLog.map((brew: any, index: number) => {
         if (index <= 19) {
           return (
             <ListItem
               key={brew.id}
               customClass={styles.brewLog__item}
               data={index < 10 ? 'page1' : 'page2'}
-              clicked={this.handleBrewClick(brew.id)}
+              clicked={handleBrewClick(brew.id)}
               label="Click to see brew details"
             >
               {brew.name} <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
@@ -91,62 +98,61 @@ class Dashboard extends React.Component<any, any> {
           return null;
         }
       })
-      : <li className={styles.noBrews}>
-          <Link
-            to="brew"
-            className="button"
-          >Get Brewing!</Link>
-        </li>
-    ;
+    : <li className={styles.noBrews}>
+        <Link
+          to="brew"
+          className="button"
+        >Get Brewing!</Link>
+      </li>
+  ;
 
-    return (
-      <section className={styles.dashboard}>
-        <div className={styles.topRow}>
-          <UserInfo user={this.context[0]} brewsNum={this.state.brewsNum} />
-          <Link
-            to="brew"
-            className="button button--large button--yellow"
-          >New Brew</Link>
-        </div>
-        <div className={styles.leftColumn}>
-          <Card>
-            <h2 className={styles.dashboard__label}>Brew Log</h2>
-            <List customClass={`${styles.brewLog} ${styles['page' + this.state.brewLogPage]}`}>
-              {this.state.loading ? <Loader className={styles.brewLogLoader} /> : brewLogItems}
-            </List>
-            <div className={styles.brewLog__footer}>
-                <div>
+  return (
+    <section className={styles.dashboard}>
+      <div className={styles.topRow}>
+        <UserInfo user={user} brewsNum={brewsNum} />
+        <Link
+          to="brew"
+          className="button button--large button--yellow"
+        >New Brew</Link>
+      </div>
+      <div className={styles.leftColumn}>
+        <Card>
+          <h2 className={styles.dashboard__label}>Brew Log</h2>
+          <List customClass={`${styles.brewLog} ${styles['page' + brewLogPage]}`}>
+            {loading ? <Loader className={styles.brewLogLoader} /> : brewLogItems}
+          </List>
+          <div className={styles.brewLog__footer}>
+              <div>
+                <button
+                  className={`button button--page ${brewLogPage === 1 ? 'on' : ''}`}
+                  onClick={togglePage(1)}
+                >1</button>
+                {brewLog.length > 10 ?
                   <button
-                    className={`button button--page ${this.state.brewLogPage === 1 ? 'on' : ''}`}
-                    onClick={this.togglePage(1)}
-                  >1</button>
-                  {brewLogItems.length > 10 ?
-                    <button
-                      className={`button button--page ${this.state.brewLogPage === 2 ? 'on' : ''}`}
-                      onClick={this.togglePage(2)}
-                    >2</button>
-                    : null
-                  }
-                </div>
-              <Link to="/brews">All Brews</Link>
-            </div>
-          </Card>
-        </div>
-        <div className={styles.rightColumn}>
-          <Card>
-            <h2 className={styles.dashboard__label}>Weekly Activity</h2>
-            {this.state.loading ? <Loader className={styles.activityLoader} /> : <ActivityPanel brews={this.state.brewActivity} />}
-          </Card>
-          <Card customClass={styles.flex}>
-            <Link to="/calculators" className={styles.cardLink}>
-              <h2 className={styles.dashboard__header}>Calculators</h2>
-              <img src={calcImage} alt="calculators" />
-            </Link>
-          </Card>
-        </div>
-      </section>
-    );
-  }
+                    className={`button button--page ${brewLogPage === 2 ? 'on' : ''}`}
+                    onClick={togglePage(2)}
+                  >2</button>
+                  : null
+                }
+              </div>
+            <Link to="/brews">All Brews</Link>
+          </div>
+        </Card>
+      </div>
+      <div className={styles.rightColumn}>
+        <Card>
+          <h2 className={styles.dashboard__label}>Weekly Activity</h2>
+          {loading ? <Loader className={styles.activityLoader} /> : <ActivityPanel brews={brewActivity} />}
+        </Card>
+        <Card customClass={styles.flex}>
+          <Link to="/calculators" className={styles.cardLink}>
+            <h2 className={styles.dashboard__header}>Calculators</h2>
+            <img src={calcImage} alt="calculators" />
+          </Link>
+        </Card>
+      </div>
+    </section>
+  );
 }
 
 export default Dashboard;

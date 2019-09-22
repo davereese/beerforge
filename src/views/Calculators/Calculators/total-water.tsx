@@ -1,74 +1,63 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-class TotalWater extends Component<any, any> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      batchSize: '',
-      grainWeight: '',
-      boilTime: '',
-      boilOff: '',
-    }
+const TotalWater = (props: any) => {
+  // STATE
+  const [batchSize, setBatchSize] = useState('');
+  const [grainWeight, setGrainWeight] = useState('');
+  const [boilTime, setBoilTime] = useState('');
+  const [boilOff, setBoilOff] = useState('');
+
+  const { calculator } = props;
+  let label = null;
+
+  const results = () => {
+    const result = calculator(parseInt(batchSize), parseInt(boilTime), parseInt(boilOff), parseInt(grainWeight));
+
+      if (batchSize && boilTime && boilOff && grainWeight && !isNaN(result) && isFinite(result)) {
+        label = 'gal';
+        return result;
+      }
   }
 
-  render() {
-    const { calculator } = this.props;
-    let label = null;
-
-    const handleInputChange = (e: any) => {
-      const type = e.target.name;
-      this.setState({[type]: e.target.value});
-    }
-
-    const results = () => {
-      const result = calculator(parseInt(this.state.batchSize), parseInt(this.state.boilTime), parseInt(this.state.boilOff), parseInt(this.state.grainWeight));
-
-       if (this.state.batchSize && this.state.boilTime && this.state.boilOff && this.state.grainWeight && !isNaN(result) && isFinite(result)) {
-         label = 'gal';
-         return result;
-       }
-    }
-
-    return (
+  return (
+    <div>
+      <h2>Total Water Needed</h2>
       <div>
-        <h2>Total Water Needed</h2>
-        <div>
-          <label htmlFor="batchSize">Batch Size</label><br />
-          <input
-            name="batchSize"
-            type="number"
-            value={this.state.batchSize}
-            onChange={handleInputChange}
-          ></input><br />
-          <label htmlFor="grainWeight">Malt Weight (lbs)</label><br />
-          <input
-            name="grainWeight"
-            type="number"
-            value={this.state.grainWeight}
-            onChange={handleInputChange}
-          ></input><br />
-          <label htmlFor="boilTime">Boil Time (min)</label><br />
-          <input
-            name="boilTime"
-            type="number"
-            value={this.state.boilTime}
-            onChange={handleInputChange}
-          ></input><br />
-          <label htmlFor="boilOff">Evaporation Rate %/hr</label><br />
-          <input
-            name="boilOff"
-            type="number"
-            value={this.state.boilOff}
-            onChange={handleInputChange}
-          ></input><br />
-        </div>
-        <div>
-          <h3>Result:</h3>
-          <p className="result">{results()} <label>{label}</label></p>
-        </div>
+        <label htmlFor="batchSize">Batch Size</label><br />
+        <input
+          name="batchSize"
+          type="number"
+          value={batchSize}
+          onChange={(e) => setBatchSize(e.target.value)}
+        ></input><br />
+        <label htmlFor="grainWeight">Malt Weight (lbs)</label><br />
+        <input
+          name="grainWeight"
+          type="number"
+          value={grainWeight}
+          onChange={(e) => setGrainWeight(e.target.value)}
+        ></input><br />
+        <label htmlFor="boilTime">Boil Time (min)</label><br />
+        <input
+          name="boilTime"
+          type="number"
+          value={boilTime}
+          onChange={(e) => setBoilTime(e.target.value)}
+        ></input><br />
+        <label htmlFor="boilOff">Evaporation Rate %/hr</label><br />
+        <input
+          name="boilOff"
+          type="number"
+          value={boilOff}
+          onChange={(e) => setBoilOff(e.target.value)}
+        ></input><br />
       </div>
-    );
-  }
+      <div>
+        <h3>Result:</h3>
+        <p className="result">{results()} <label>{label}</label></p>
+      </div>
+    </div>
+  );
 }
 
 export default TotalWater;

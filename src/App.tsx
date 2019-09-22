@@ -20,49 +20,47 @@ interface Props extends RouteComponentProps {
   history: any;
 }
 
-class App extends React.Component<any, Props> {
-  render() {
-    return (
-      <Fade>
-        {window.location.pathname !== '/' ? <Header {...this.props} /> : null}
-        <main> 
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/login" exact render={props => (
-              <LoginSignup {...this.props} history={props.history} />
-            )} />
-            <Route path="/calculators" render={props => (
-              <Calculators {...{props}} {...this.props} />
-            )} />
-            <PrivateRoute
-              {...this.props}
-              path="/dashboard"
-              component={Dashboard}
-            />
-            <PrivateRoute
-              {...this.props}
-              path="/brew"
-              component={Brew}
-            />
-            <PrivateRoute
-              {...this.props}
-              path="/brews"
-              component={Brews}
-            />
-            <PrivateRoute
-              {...this.props}
-              path="/profile"
-              component={Profile}
-            />
-            <Route component={NoMatch} />
-          </Switch>
-        </main>
-        <Modal />
-        <Snackbar />
-        <Footer />
-      </Fade>
-    );
-  }
+const App = (props: Props) => {
+  return (
+    <Fade>
+      {window.location.pathname !== '/' ? <Header {...props} /> : null}
+      <main> 
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route path="/login" exact render={props => (
+            <LoginSignup {...props} history={props.history} />
+          )} />
+          <Route path="/calculators" render={props => (
+            <Calculators {...{props}} {...props} />
+          )} />
+          <PrivateRoute
+            {...props}
+            path="/dashboard"
+            component={Dashboard}
+          />
+          <PrivateRoute
+            {...props}
+            path="/brew"
+            component={Brew}
+          />
+          <PrivateRoute
+            {...props}
+            path="/brews"
+            component={Brews}
+          />
+          <PrivateRoute
+            {...props}
+            path="/profile"
+            component={Profile}
+          />
+          <Route component={NoMatch} />
+        </Switch>
+      </main>
+      <Modal />
+      <Snackbar />
+      <Footer />
+    </Fade>
+  );
 }
 
 export default withRouter(App);

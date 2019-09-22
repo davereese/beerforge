@@ -3,6 +3,7 @@ import { withRouter, RouteComponentProps } from 'react-router';
 
 import styles from './Fade.module.scss';
 
+// Due to rerendering issues, this component will need to stay a class for now.
 class Fade extends React.Component<RouteComponentProps, ComponentState> {
   constructor(props: RouteComponentProps) {
     super(props);

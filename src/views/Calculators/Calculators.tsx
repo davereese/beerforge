@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styles from './Calculators.module.scss';
 import Card from '../../components/Card/Card';
@@ -40,63 +40,56 @@ const calculatorArray = [
   {calculator: <CO2 calculator={Calculator.CO2} />, terms: ['co2', 'packaging', 'carbonation']},
 ];
 
-class Calculators extends React.Component<any, any> {
-  constructor(props: any) {
-    super(props);
+const Calculators = (props: any) => {
+  // STATE
+  const [search, setSearch] = useState('');
 
-    this.state = {
-      search: '',
-    }
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     document.title = "BeerForge | Calculators";
     scrollToTop(0);
-  }
+  }, []);
 
-  render() {
-    const filtered = calculatorArray.filter((item, i) => {
-      let result;
-      if (this.state.search !== '' && item.terms.find(term => term.includes(this.state.search))) {
-        result = item;
-      } else if (this.state.search === '') {
-        result = item;
-      }
-      return result;
-    });
+  const filtered = calculatorArray.filter((item, i) => {
+    let result;
+    if (search !== '' && item.terms.find(term => term.includes(search))) {
+      result = item;
+    } else if (search === '') {
+      result = item;
+    }
+    return result;
+  });
 
-    return (
-      <section className={styles.calculators}>
-        <div className={styles.topRow}>
-          <h1 className={styles.calculators__header}>Calculators</h1>
-          <input
-            type="text"
-            name="search"
-            className={styles.search}
-            placeholder="Search"
-            onChange={(e: any) => {this.setState({search: e.target.value})}}
-          />
-        </div>
-        <div className={styles.calculators__container}>
-          {filtered.length > 0 
-            ? filtered.map((item, i) => {
-                if (this.state.search !== '' && item.terms.find(term => term.includes(this.state.search))) {
-                  return <Card customClass={styles.card} key={i}>
-                      {item.calculator}
-                    </Card>;
-                } else if (this.state.search === '') {
-                  return <Card customClass={styles.card} key={i}>
-                      {item.calculator}
-                    </Card>;
-                } else {
-                  return null;
-                }
-              })
-            : <p className={styles.noResults}>No results round.</p>}
-        </div>
-      </section>
-    );
-  }
+  return (
+    <section className={styles.calculators}>
+      <div className={styles.topRow}>
+        <h1 className={styles.calculators__header}>Calculators</h1>
+        <input
+          type="text"
+          name="search"
+          className={styles.search}
+          placeholder="Search"
+          onChange={(e: any) => {setSearch(e.target.value)}}
+        />
+      </div>
+      <div className={styles.calculators__container}>
+        {filtered.length > 0 
+          ? filtered.map((item, i) => {
+              if (search !== '' && item.terms.find(term => term.includes(search))) {
+                return <Card customClass={styles.card} key={i}>
+                    {item.calculator}
+                  </Card>;
+              } else if (search === '') {
+                return <Card customClass={styles.card} key={i}>
+                    {item.calculator}
+                  </Card>;
+              } else {
+                return null;
+              }
+            })
+          : <p className={styles.noResults}>No results round.</p>}
+      </div>
+    </section>
+  );
 }
 
 export default Calculators;

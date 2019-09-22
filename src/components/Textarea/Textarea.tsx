@@ -1,44 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
   data: string | undefined;
   valueUpdated: Function;
 }
 
-class Textarea extends React.Component<Props, any> {
-  textInput: React.RefObject<HTMLTextAreaElement>;
+const Textarea = (props: Props) => {
+  const textInput = React.createRef<HTMLTextAreaElement>();
 
-  constructor(props: Props) {
-    super(props);
-    this.textInput = React.createRef<HTMLTextAreaElement>();
-  }
+  useEffect(() => {
+    resizeTextArea(textInput.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  componentDidMount() {
-    this.resizeTextArea(this.textInput.current);
-  }
-
-  resizeTextArea = (ref: HTMLTextAreaElement | null) => {
+  const resizeTextArea = (ref: HTMLTextAreaElement | null) => {
     if (ref) {
       ref.style.height = 'auto';
       ref.style.height = `${ref.scrollHeight}px`;
     }
   }
 
-  handleChange = (event: any) => {
-    this.resizeTextArea(event.target);
+  const handleChange = (event: any) => {
+    resizeTextArea(event.target);
     const data = event.currentTarget.value;
-    this.props.valueUpdated(data);
+    props.valueUpdated(data);
   };
 
-  render() {
-    return (
-      <textarea
-        ref={this.textInput}
-        defaultValue={this.props.data}
-        onChange={this.handleChange}
-      />
-    );
-  }
+  return (
+    <textarea
+      ref={textInput}
+      defaultValue={props.data}
+      onChange={handleChange}
+    />
+  );
 }
 
 export default Textarea;
