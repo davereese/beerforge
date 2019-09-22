@@ -37,7 +37,6 @@ const Brew = (props: Props) => {
   const [newBrew, setNewBrew] = useState(true);
   const [readOnly, setReadOnly] = useState(false);
   const [sideBarOpen, setSideBarOpen] = useState(false);
-  const [editingName, setEditingName] = useState(false);
   const [topSpacing, setTopSpacing] = useState(0);
   const [form, setForm] = useState('');
   const [editingData, setEditingData] = useState(null);
@@ -46,7 +45,6 @@ const Brew = (props: Props) => {
 
   // REFS
   const brewContainer = useRef<HTMLDivElement>(null);
-  const nameInput = useRef<HTMLInputElement>(null);
   const formContainer = useRef<HTMLDivElement>(null);
 
   const top = {marginTop: topSpacing};
@@ -145,13 +143,6 @@ const Brew = (props: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
-
-  useEffect(() => {
-    if (nameInput.current !== null) {
-      nameInput.current.focus();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingName]);
 
   const openSideBar = (
     choice: string = '',
@@ -333,26 +324,13 @@ const Brew = (props: Props) => {
       <div className={styles.mainContent} role="main">
         <div className={styles.brew__pageHeading}>
           <h1>
-            {!editingName
-              ? <>
-                  {brew.name === '' ? 'New Brew' : brew.name}
-                  {!readOnly
-                    ? <button
-                        className={`button button--link ${styles.edit}`}
-                        onClick={() => {
-                          setEditingName(true);
-                        }}
-                      >{pen}</button>
-                    : null}
-                </>
-              : <input
-                  className={styles.nameInput}
-                  value={brew.name}
-                  ref={nameInput}
-                  onChange={(e) => brewDispatch({type: 'update', payload: {name: e.currentTarget.value}})}
-                  onBlur={() => setEditingName(false)}
-                />
-            }
+            {brew.name === '' ? 'New Brew' : brew.name}
+            {!readOnly
+              ? <button
+                  className={`button button--link ${styles.edit}`}
+                  onClick={openSideBar('settings')}
+                >{pen}</button>
+              : null}
           </h1>
           <span>
             {!readOnly
