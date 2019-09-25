@@ -437,7 +437,7 @@ const Brew = (props: Props) => {
                 <span className={styles.firstCol}>
                   {fermentable.weight} lb{fermentable.weight && fermentable.weight > 1 ? 's' : null}
                 </span>
-                <span className={styles.secondCol}>{fermentable.name}</span>
+                <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>
                 <span className={styles.thirdCol}>{fermentable.lovibond} °L</span>
               </ListItem>
             ))}

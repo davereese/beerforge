@@ -6,12 +6,14 @@ import * as Calculator from '../resources/javascript/calculator';
 export interface FermentableInterface {
   id?: number;
   name?: string;
+  custom?: string;
   weight?: number;
   unit?: 'lbs' | 'oz';
   lovibond?: number;
   potential?: number;
   extract?: boolean;
   entryId?: number;
+  origin?: string;
 };
 
 export interface HopInterface {

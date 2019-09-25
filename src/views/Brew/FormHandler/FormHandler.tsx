@@ -11,8 +11,6 @@ import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
 import { BrewInterface } from '../../../Store/BrewContext';
-import { useModal } from '../../../Store/ModalContext';
-import { useSnackbar } from '../../../Store/SnackbarContext';
 
 interface Props {
   form: string;
@@ -38,11 +36,6 @@ function FormHandler({
       component: ReactElement | null,
       submitText: string;
   const [formData, setFormData] = useState<BrewInterface | null>(null);
-
-  // eslint-disable-next-line
-  const [modal, modalDispatch] = useModal();
-  // eslint-disable-next-line
-  const [snackbar, snackbarDispatch] = useSnackbar();
 
   // Stuff that isn't supposed to be part of the brew
   const [optionData, setOptionData] = useState<any | null>({});

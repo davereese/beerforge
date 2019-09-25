@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import styles from './Forms.module.scss';
 import { BrewInterface, FermentableInterface } from '../../Store/BrewContext';
 
 interface Props {
@@ -29,11 +30,24 @@ function AddFermentableForm(props: Props) {
     if (type === 'fermentable') {
       const choice = fermentables.find(fermentable => fermentable.id === parseInt(event.currentTarget.value));
       data = choice ? choice : {};
-    } else if (type === 'weight') {
-      data.weight = Number(event.currentTarget.value) + 0;
+    } else if (type === 'custom') {
+      data.custom = event.currentTarget.value;
+    } else {
+      // @ts-ignore-line
+      data[type] = Number(event.currentTarget.value) + 0;
     }
 
     if (data !== undefined) {
+      if (type === 'custom') {
+        delete formData['id'];
+        delete formData['extract'];
+        delete formData['lovibond'];
+        delete formData['name'];
+        delete formData['origin'];
+        delete formData['potential'];
+      } else if (type === 'fermentable') {
+        delete formData['custom'];
+      }
       setFormData({...formData, ...data});
     }
   };
@@ -51,10 +65,10 @@ function AddFermentableForm(props: Props) {
       dataToSet = [...fermentablesArray, formData];
     }
 
-    // this lastIndex stuff is a chack to make sure we don't submit an empty selection
+    // this lastIndex stuff is a check to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
-    const entryId = dataToSet[lastIndex].id;
-    if (entryId && entryId > 0) {
+    const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
+    if (name && name.length > 0) {
       props.dataUpdated({...props.brew, fermentables: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,17 +98,47 @@ function AddFermentableForm(props: Props) {
 
   return(
     <>
-      <label>Fermentable<br />
+      <label>Select Fermentable<br />
         <select
           onChange={dataChanged('fermentable')}
           value={formData.id ? formData.id : 0}
         >
-          <option value="0">Choose Malt</option>
+          <option value="0">Choose One</option>
           {fermentables.map(fermentable => (
             <option value={fermentable.id} key={fermentable.id}>{fermentable.name}</option>
           ))}
         </select>
-      </label><br />
+      </label>
+      <label><strong>Or</strong> add your own<br />
+        <input
+          type="text"
+          placeholder="Fermentable Name"
+          value={formData.custom ? formData.custom : ''}
+          onChange={dataChanged('custom')}
+        />
+      </label>
+      {formData.custom
+        ? <div className={styles.row}>
+            <label>Lovibond (color)<br />
+              <input
+                type="number"
+                step="0.1"
+                placeholder="1"
+                value={formData.lovibond ? formData.lovibond.toString() : ''}
+                onChange={dataChanged('lovibond')}
+              />
+            </label>
+            <label>Conversion Potential<br />
+              <input
+                type="number"
+                step="1"
+                placeholder="34"
+                value={formData.potential ? formData.potential.toString() : ''}
+                onChange={dataChanged('potential')}
+              />
+            </label>
+          </div>
+        : null }
       <label>Weight (lbs)<br />
         <input
           type="number"
