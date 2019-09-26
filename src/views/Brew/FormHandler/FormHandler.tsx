@@ -11,6 +11,7 @@ import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
 import { BrewInterface } from '../../../Store/BrewContext';
+import { useBrew } from '../../../Store/BrewContext';
 
 interface Props {
   form: string;
@@ -19,13 +20,11 @@ interface Props {
   closeSidebar: any;
   deleteBrew: Function;
   updateBrew: Function;
-  brew: BrewInterface;
 }
 
 function FormHandler({
   form,
   nextForm,
-  brew,
   editingData,
   closeSidebar,
   updateBrew,
@@ -35,6 +34,8 @@ function FormHandler({
   let title: string,
       component: ReactElement | null,
       submitText: string;
+  // eslint-disable-next-line
+  const [brew, brewDispatch] = useBrew();
   const [formData, setFormData] = useState<BrewInterface | null>(null);
 
   // Stuff that isn't supposed to be part of the brew

@@ -32,9 +32,9 @@ function AddYeastForm(props: Props) {
   const [formData, setFormData] = useState<YeastInterface>({});
   const [yeast, setYeast] = useState<yeastResults[]>([]);
 
-  const dataChanged = (type: string) => (event: any) => {
+  const dataChanged = (field: string) => (event: any) => {
     let data: YeastInterface = {};
-    if (type === 'yeast') {
+    if (field === 'yeast') {
       const choice = yeast.find(item => item.id === parseInt(event.currentTarget.value));
       data = choice
         ? {
@@ -46,19 +46,33 @@ function AddYeastForm(props: Props) {
           averageAttenuation: choice.average_attenuation,
         }
         : {};
-    } else if (type === 'amount') {
-      data.amount = Number(event.currentTarget.value) + 0;
-    } else if (type === 'mfgDate') {
-      data.mfgDate = event.currentTarget.value;
+    } else if (field === 'mfgDate' || field === 'custom' || field === 'type') {
+      data[field] = event.currentTarget.value;
+    } else {
+      data[field] = Number(event.currentTarget.value) + 0;
     }
 
     if (data !== undefined) {
+      if (field === 'custom' && !formData['custom']) {
+        data['id'] = undefined;
+        data['name'] = '';
+        data['averageAttenuation'] = undefined;
+        data['cellCount'] = undefined;
+        data['type'] = '';
+        data['mfgDate'] = undefined;
+        data['manufacturer'] = undefined;
+      } else if (field === 'yeast' && formData['custom']) {
+        data['custom'] = '';
+        data['manufacturer'] = '';
+      }
+
       data.viableCellCount = pitchingRate(
         data.type ? data.type : formData.type,
         data.cellCount ? data.cellCount : formData.cellCount,
         data.amount ? data.amount : formData.amount,
         data.mfgDate ? data.mfgDate : formData.mfgDate
       );
+
       setFormData({...formData, ...data});
     }
   };
@@ -88,8 +102,8 @@ function AddYeastForm(props: Props) {
 
     // this lastIndex stuff is a chack to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
-    const entryId = dataToSet[lastIndex].id;
-    if (entryId && entryId > 0) {
+    const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
+    if (name && name.length > 0) {
       props.dataUpdated({...props.brew, yeast: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,6 +137,7 @@ function AddYeastForm(props: Props) {
         <select
           onChange={dataChanged('yeast')}
           value={formData.id ? formData.id : 0}
+          className={formData.custom ? styles.unused : ''}
         >
           <option value="0">Choose Yeast</option>
           {yeast.map(item => (
@@ -130,6 +145,47 @@ function AddYeastForm(props: Props) {
           ))}
         </select>
       </label>
+      <label><strong>Or</strong> add your own<br />
+        <input
+          type="text"
+          placeholder="Yeast Name"
+          value={formData.custom ? formData.custom : ''}
+          onChange={dataChanged('custom')}
+          className={!formData.custom ? styles.unused : ''}
+        />
+      </label>
+      {formData.custom
+        ? <>
+            <select
+              onChange={dataChanged('type')}
+              value={formData.type ? formData.type : 0}
+            >
+              <option value="0">Choose Type</option>
+              <option value="liquid">Liquid</option>
+              <option value="dry">Dry</option>
+            </select>
+            <div className={styles.row}>
+              <label>Cell Count<br />
+                <input
+                  type="number"
+                  step="10" 
+                  placeholder="100"
+                  value={formData.cellCount ? formData.cellCount.toString() : ''}
+                  onChange={dataChanged('cellCount')}
+                />
+              </label>
+              <label>Avg. Attenuation<br />
+                <input
+                  type="number"
+                  step="1" 
+                  placeholder="75"
+                  value={formData.averageAttenuation ? formData.averageAttenuation.toString() : ''}
+                  onChange={dataChanged('averageAttenuation')}
+                />
+              </label>
+            </div>
+          </>
+        : null}
       <label>Number of Packs<br />
         <input
           type="number"

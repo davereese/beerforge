@@ -38,16 +38,17 @@ function AddFermentableForm(props: Props) {
     }
 
     if (data !== undefined) {
-      if (type === 'custom') {
-        delete formData['id'];
-        delete formData['extract'];
-        delete formData['lovibond'];
-        delete formData['name'];
-        delete formData['origin'];
-        delete formData['potential'];
-      } else if (type === 'fermentable') {
-        delete formData['custom'];
+      if (type === 'custom' && !formData['custom']) {
+        data['id'] = undefined;
+        data['extract'] = undefined;
+        data['lovibond'] = undefined;
+        data['name'] = '';
+        data['origin'] = '';
+        data['potential'] = undefined;
+      } else if (type === 'fermentable' && formData['custom']) {
+        data['custom'] = '';
       }
+
       setFormData({...formData, ...data});
     }
   };
@@ -69,6 +70,7 @@ function AddFermentableForm(props: Props) {
     const lastIndex = dataToSet.length - 1;
     const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
     if (name && name.length > 0) {
+      console.log('updated');
       props.dataUpdated({...props.brew, fermentables: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,6 +89,7 @@ function AddFermentableForm(props: Props) {
   }, [props.brew]);
 
   useEffect(() => {
+    console.log('test');
     // if the form's editingData changes, we've selected something to edit.
     // set the form default valies to be the data we're editing.
     if (props.editingData !== null) {
@@ -102,6 +105,7 @@ function AddFermentableForm(props: Props) {
         <select
           onChange={dataChanged('fermentable')}
           value={formData.id ? formData.id : 0}
+          className={formData.custom ? styles.unused : ''}
         >
           <option value="0">Choose One</option>
           {fermentables.map(fermentable => (
@@ -115,6 +119,7 @@ function AddFermentableForm(props: Props) {
           placeholder="Fermentable Name"
           value={formData.custom ? formData.custom : ''}
           onChange={dataChanged('custom')}
+          className={!formData.custom ? styles.unused : ''}
         />
       </label>
       {formData.custom

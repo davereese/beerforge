@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import styles from "./Forms.module.scss"
+import styles from './Forms.module.scss';
 import { BrewInterface, HopInterface } from '../../Store/BrewContext';
-import { IBU } from "../../resources/javascript/calculator";
+import { IBU } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
@@ -42,7 +42,7 @@ function AddHopForm(props: Props) {
           form: 'pellet',
           }
         : {};
-    } else if (type === 'form') {
+    } else if (type === 'form' || type === 'custom') {
       data[type] = event.currentTarget.value;
     } else {
       data[type] = Number(event.currentTarget.value) + 0;
@@ -55,6 +55,15 @@ function AddHopForm(props: Props) {
         props.brew.batchSize,
         'rager'
       );
+      
+      if (type === 'custom' && !formData['custom']) {
+        data['id'] = undefined;
+        data['name'] = '';
+        data['alphaAcid'] = undefined;
+      } else if (type === 'hop' && formData['custom']) {
+        data['custom'] = '';
+      }
+
       setFormData({...formData, ...data});
     }
   };
@@ -74,8 +83,8 @@ function AddHopForm(props: Props) {
 
     // this lastIndex stuff is a chack to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
-    const entryId = dataToSet[lastIndex].id;
-    if (entryId && entryId > 0) {
+    const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
+    if (name && name.length > 0) {
       props.dataUpdated({...props.brew, hops: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,12 +118,22 @@ function AddHopForm(props: Props) {
         <select
           onChange={dataChanged('hop')}
           value={formData.id ? formData.id : 0}
+          className={formData.custom ? styles.unused : ''}
         >
           <option value="0">Choose Hop</option>
           {hops.map(hop => (
             <option value={hop.id} key={hop.id}>{hop.name}</option>
           ))}
         </select>
+      </label>
+      <label><strong>Or</strong> add your own<br />
+        <input
+          type="text"
+          placeholder="Hop Name"
+          value={formData.custom ? formData.custom : ''}
+          onChange={dataChanged('custom')}
+          className={!formData.custom ? styles.unused : ''}
+        />
       </label>
       <div className={styles.row}>
         <label>Alpha Acid<br />

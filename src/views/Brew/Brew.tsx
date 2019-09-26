@@ -173,7 +173,6 @@ const Brew = (props: Props) => {
       payload: {
         node:
           <FormHandler
-            brew={brew}
             form={form}
             nextForm={nextForm}
             editingData={editingData}
@@ -464,10 +463,10 @@ const Brew = (props: Props) => {
                 key={`${hop.id}${index}`}
               >
                 <span className={styles.firstCol}>{hop.weight} oz</span>
-                <span className={styles.secondCol}>{hop.name}</span>
+                <span className={styles.secondCol}>{hop.name ? hop.name : hop.custom}</span>
                 <span className={styles.thirdCol}>{hop.alphaAcid}% AA</span>
                 <span className={styles.fourthCol}>{hop.lengthInBoil} min</span>
-                <span className={styles.fifthCol}>{hop.ibu ? <>{hop.ibu} IBU</> : null}</span>
+                <span className={styles.fifthCol}>{hop.ibu && hop.ibu !== Infinity ? <>{hop.ibu} IBU</> : null}</span>
               </ListItem>
             ))}
           </List>
@@ -498,7 +497,9 @@ const Brew = (props: Props) => {
                 <span className={styles.firstCol}>
                   {item.amount} pack{item.amount && item.amount > 1 ? 's' : null}
                 </span>
-                <span className={styles.secondCol}>{item.manufacturer} - {item.name}</span>
+                <span className={styles.secondCol}>
+                  {item.manufacturer ? `${item.manufacturer} - ` : null}{item.name ? item.name : item.custom}
+                </span>
                 <span className={styles.thirdCol}>{item.averageAttenuation}% average attenuation</span>
               </ListItem>
             ))}
@@ -710,7 +711,6 @@ const Brew = (props: Props) => {
       <div className={styles.sideBar} role="complementary" ref={formContainer}>
         <Card color="brew" customStyle={top} customClass={`${styles.formsContainer}`}>
           <FormHandler
-            brew={brew}
             form={form}
             nextForm={nextForm}
             editingData={editingData}

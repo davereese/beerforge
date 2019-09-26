@@ -19,6 +19,7 @@ export interface FermentableInterface {
 export interface HopInterface {
   id?: number;
   name?: string;
+  custom?: string;
   weight?: number;
   alphaAcid?: number;
   lengthInBoil?: number;
@@ -31,6 +32,7 @@ export interface HopInterface {
 export interface YeastInterface {
   id?: number;
   name?: string;
+  custom?: string;
   manufacturer?: string;
   amount?: number;
   type?: string;
@@ -38,6 +40,7 @@ export interface YeastInterface {
   averageAttenuation?: number;
   cellCount?: number;
   viableCellCount?: number;
+  [key: string]: string | number | Date | undefined;
 };
 
 export interface BrewInterface {
