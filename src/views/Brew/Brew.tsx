@@ -99,8 +99,9 @@ const Brew = (props: Props) => {
       document.title = `BeerForge | Viewing ${brew.name}`;
       setNewBrew(false);
       setReadOnly(readOnly);
-      setEditingData(null);
     }
+
+    setEditingData(null);
 
     if (prevBrew && prevBrew.id && !brew.id) {
       // if we had a brew with an id, and all of a sudden we don't, we must

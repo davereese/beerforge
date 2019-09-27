@@ -70,7 +70,6 @@ function AddFermentableForm(props: Props) {
     const lastIndex = dataToSet.length - 1;
     const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
     if (name && name.length > 0) {
-      console.log('updated');
       props.dataUpdated({...props.brew, fermentables: dataToSet});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,7 +88,6 @@ function AddFermentableForm(props: Props) {
   }, [props.brew]);
 
   useEffect(() => {
-    console.log('test');
     // if the form's editingData changes, we've selected something to edit.
     // set the form default valies to be the data we're editing.
     if (props.editingData !== null) {
