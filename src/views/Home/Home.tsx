@@ -147,6 +147,8 @@ const Home = () => {
             <li>Automatic calculations for brew day</li>
             <li>Standalone calculators</li>
             <li>Searchable Brew Logs</li>
+            <li>Huge ingredient library</li>
+            <li>Custom ingredient inputs</li>
             <li>Import/Export brews via BeerXML</li>
             <li>Fully mobile-responsive</li>
           </ul>
@@ -172,6 +174,7 @@ const Home = () => {
           >
             {calculatorArray[calculator].calculator}
           </Card>
+
           <div className={styles.cta}>
             <p>BeerForge is free, no freemium here.</p>
             <p><Link to="/login" className="button button--large button--yellow">Sign Up</Link></p>
