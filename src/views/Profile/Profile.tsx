@@ -138,7 +138,7 @@ const Profile = () => {
         if (result.status === 202) {
           setUploading(false);
           setFile('');
-          fileInput.current.value = '';
+          // fileInput.current.value = '';
           snackbarDispatch({type: 'show', payload: {
             status: 'success',
             message: 'Upload success!',
@@ -147,7 +147,7 @@ const Profile = () => {
       } catch (error) {
         setUploading(false);
         setFile('');
-        fileInput.current.value = '';
+        // fileInput.current.value = '';
         snackbarDispatch({type: 'show', payload: {
           status: 'error',
           message: error.message,

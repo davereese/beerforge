@@ -36,10 +36,10 @@ function AddHopForm(props: Props) {
       const choice = hops.find(hop => hop.id === parseInt(event.currentTarget.value));
       data = choice
         ? {
-          id: choice.id,
-          name: choice.name,
-          alphaAcid: Number(choice.average_alpha),
-          form: 'pellet',
+            id: choice.id,
+            name: choice.name,
+            alphaAcid: Number(choice.average_alpha),
+            form: 'pellet',
           }
         : {};
     } else if (type === 'form' || type === 'custom') {
@@ -165,7 +165,7 @@ function AddHopForm(props: Props) {
             onChange={dataChanged('weight')}
           />
         </label>
-        <label>Length in Boil (min)<br />
+        <label>Time (min)<br />
           <input
             type="number"
             step="1"

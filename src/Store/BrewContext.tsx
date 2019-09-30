@@ -14,6 +14,7 @@ export interface FermentableInterface {
   extract?: boolean;
   entryId?: number;
   origin?: string;
+  [key: string]: string | number | boolean | undefined;
 };
 
 export interface HopInterface {
@@ -43,6 +44,18 @@ export interface YeastInterface {
   [key: string]: string | number | Date | undefined;
 };
 
+export interface AdjunctInterface {
+  id?: number;
+  name?: string;
+  custom?: string;
+  amount?: number;
+  units?: string;
+  type?: string;
+  use?: string;
+  time?: number;
+  [key: string]: string | number | undefined;
+};
+
 export interface BrewInterface {
   id?: number;
   userId?: number;
@@ -60,6 +73,7 @@ export interface BrewInterface {
   hops: HopInterface[];
   totalHops?: number;
   yeast: YeastInterface[];
+  adjuncts: AdjunctInterface[];
   totalWater?: number;
   strikeTempFactor?: number;
   strikeTemp?: number;
@@ -99,7 +113,8 @@ const initialState: any = {
   name: '',
   fermentables: [],
   hops: [],
-  yeast: []
+  yeast: [],
+  adjuncts: []
 };
 
 export const BrewContext = React.createContext(initialState);
@@ -140,6 +155,9 @@ const processBrew = (brew: BrewInterface): BrewInterface => {
   }
   if (brew.yeast) {
     brew.yeast.sort(compareAmount);
+  }
+  if (brew.adjuncts) {
+    brew.adjuncts.sort(compareAmount);
   }
 
   // Run Calculations

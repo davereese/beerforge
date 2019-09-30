@@ -33,7 +33,6 @@ function AddFermentableForm(props: Props) {
     } else if (type === 'custom') {
       data.custom = event.currentTarget.value;
     } else {
-      // @ts-ignore-line
       data[type] = Number(event.currentTarget.value) + 0;
     }
 

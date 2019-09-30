@@ -22,6 +22,10 @@ strong {
   font-weight: $weight-semibold;
 }
 
+.capitalize {
+  text-transform: capitalize;
+}
+
 .divider {
   display: flex;
   align-items: center;

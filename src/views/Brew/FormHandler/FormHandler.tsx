@@ -5,6 +5,7 @@ import BrewSettingsForm from '../../../components/Forms/BrewSettingsForm';
 import AddFermentableForm from '../../../components/Forms/AddFermentableForm';
 import AddHopForm from '../../../components/Forms/AddHopForm';
 import AddYeastForm from '../../../components/Forms/AddYeastForm';
+import AddAdjunctForm from '../../../components/Forms/AddAdjunctForm';
 import MashForm from '../../../components/Forms/MashForm';
 import BoilForm from '../../../components/Forms/BoilForm';
 import FermentationForm from '../../../components/Forms/FermentationForm';
@@ -113,6 +114,16 @@ function FormHandler({
         submitText = '+ Add';
       }
       component = <AddYeastForm brew={brew} editingData={editingData} dataUpdated={setData} />;
+      break;
+    case 'adjuncts':
+      if (editingData) {
+        title = 'Edit Adjunct';
+        submitText = 'Edit';
+      } else {
+        title = 'Add Adjunct';
+        submitText = '+ Add';
+      }
+      component = <AddAdjunctForm brew={brew} editingData={editingData} dataUpdated={setData} />;
       break;
     case 'mash':
       title = 'Mash';

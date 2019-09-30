@@ -8,7 +8,13 @@ import ListItem from '../../components/ListItem/ListItem';
 import FormHandler from './FormHandler/FormHandler';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
-import { BrewInterface, FermentableInterface, HopInterface, YeastInterface } from '../../Store/BrewContext';
+import {
+  BrewInterface,
+  FermentableInterface,
+  HopInterface,
+  YeastInterface,
+  AdjunctInterface
+} from '../../Store/BrewContext';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { pen } from '../../resources/javascript/penSvg.js';
@@ -77,7 +83,8 @@ const Brew = (props: Props) => {
         });
     }
 
-    // before we start using the current user, let's just make sure they haven't expired, shall we?
+    // before we start using the current user, let's just make
+    // sure they haven't expired, shall we?
     userDispatch({type: 'load'});
     const brewId = Number(window.location.pathname.split('/')[2]);
     if (!isNaN(brewId)) {
@@ -206,8 +213,8 @@ const Brew = (props: Props) => {
 
   const nextForm = (event: any) => {
     const formOrder = [
-      'settings', 'fermentables', 'hops', 'yeast', 'mash',
-      'boil', 'fermentation', 'packaging', 'notes'];
+      'settings', 'fermentables', 'hops', 'yeast', 'adjuncts',
+      'mash', 'boil', 'fermentation', 'packaging', 'notes'];
     // remove steps for extrct brews
     if (brew.batchType && brew.batchType === 'extract') {
       formOrder.splice(4, 1);
@@ -465,7 +472,7 @@ const Brew = (props: Props) => {
               >
                 <span className={styles.firstCol}>{hop.weight} oz</span>
                 <span className={styles.secondCol}>{hop.name ? hop.name : hop.custom}</span>
-                <span className={styles.thirdCol}>{hop.alphaAcid}% AA</span>
+                <span className={styles.thirdCol}>{hop.alphaAcid ? `${hop.alphaAcid}% AA` : null}</span>
                 <span className={styles.fourthCol}>{hop.lengthInBoil} min</span>
                 <span className={styles.fifthCol}>{hop.ibu && hop.ibu !== Infinity ? <>{hop.ibu} IBU</> : null}</span>
               </ListItem>
@@ -502,6 +509,34 @@ const Brew = (props: Props) => {
                   {item.manufacturer ? `${item.manufacturer} - ` : null}{item.name ? item.name : item.custom}
                 </span>
                 <span className={styles.thirdCol}>{item.averageAttenuation}% average attenuation</span>
+              </ListItem>
+            ))}
+          </List>
+        </Card>
+        <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
+          <div className={styles.brew__header}>
+            <h2>Adjuncts</h2>
+            {!readOnly
+              ? <button
+                  className={`button button--icon plus ${styles.editButton}`}
+                  onClick={openSideBar('adjuncts')}
+                ><span>Edit</span></button>
+              : null}
+          </div>
+          <List customClass={`${styles.brew__ingredients} ${styles.adjuncts}`}>
+            {brew && brew.adjuncts.map((adjunct: AdjunctInterface, index: number) => (
+              <ListItem
+                color="brew"
+                clicked={!readOnly ? openSideBar('adjuncts', adjunct) : null}
+                key={`${adjunct.id}${index}`}
+              >
+                <span className={styles.firstCol}>
+                  {adjunct.amount} {adjunct.units}
+                </span>
+                <span className={styles.secondCol}>{adjunct.name ? adjunct.name : adjunct.custom}</span>
+                <span className={styles.thirdCol}>{adjunct.time ? `${adjunct.time} min` : null}</span>
+                <span className={styles.fourthCol}>{adjunct.use}</span>
+                <span className={styles.fifthCol}>{adjunct.type}</span>
               </ListItem>
             ))}
           </List>
