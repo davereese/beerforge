@@ -279,3 +279,8 @@
   margin: 0;
   height: auto;
 }
+
+.divider {
+  border: none;
+  border-bottom: 1px solid $tooltip-border;
+}

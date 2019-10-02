@@ -15,12 +15,16 @@ import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { BrewInterface } from '../../Store/BrewContext';
 import { useUser } from '../../Store/UserContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
+import { useModal } from '../../Store/ModalContext';
+import * as brewService from '../../Store/BrewService';
 
 const Brews = (props: any) => {
   // CONTEXT
   const [user, userDispatch] = useUser();
   // eslint-disable-next-line
   const [snackbar, snackbarDispatch] = useSnackbar();
+  // eslint-disable-next-line
+  const [modal, modalDispatch] = useModal();
 
   // STATE
   const [search, setSearch] = useState('');
@@ -43,6 +47,7 @@ const Brews = (props: any) => {
   useEffect(() => {
     document.title = "BeerForge | All Brews";
     listUserBrews(1);
+    scrollToTop(300);
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     // unmount
@@ -54,6 +59,7 @@ const Brews = (props: any) => {
 
   useEffect(() => {
     listUserBrews(1);
+    scrollToTop(300);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
@@ -71,8 +77,6 @@ const Brews = (props: any) => {
           setBrewsCount(result.data.count);
           setPage(page);
           setLoading(false);
-        }).then(() => {
-          scrollToTop(300);
         });
     } catch (error) {
       setLoading(false);
@@ -107,6 +111,44 @@ const Brews = (props: any) => {
         message: error.message,
       }});
     }
+  }
+
+  const handleDeleteBrew = (brew: BrewInterface) => async (event: any) => {
+    event.stopPropagation();
+    modalDispatch({
+      type: 'show',
+      payload: {
+        title: `Are you sure you want to permanently remove <strong>${brew.name}</strong>?`,
+        buttons: <>
+            <button
+              className="button button--brown"
+              onClick={() => modalDispatch({type: 'hide'})}
+            >No, cancel</button>
+            <button
+              className="button"
+              onClick={async () => {
+                // @ts-ignore-line
+                await brewService.deleteBrew(brew.id, user)
+                .then((res: any) => {
+                  snackbarDispatch({type: 'show', payload: {
+                    status: 'success',
+                    message: `Sucessfully removed: ${brew.name}`
+                  }});
+                  modalDispatch({type: 'hide'});
+                  listUserBrews(page);
+                })
+                .catch((error: any) => {
+                  snackbarDispatch({type: 'show', payload: {
+                    status: 'error',
+                    message: error.message,
+                  }});
+                  modalDispatch({type: 'hide'});
+                });
+              }}
+            >Yes, remove</button>
+          </>
+      }
+    });
   }
 
   const handleScroll = (event: Event) => {
@@ -227,6 +269,11 @@ const Brews = (props: any) => {
                       onClose={() => closeMoreMenu(index)}
                       className={styles.moreMenu}
                     >
+                      <button
+                        className={`button button--link button--small ${styles.moreButton}`}
+                        onClick={handleDeleteBrew(brew)}
+                      >Delete</button>
+                      <hr className={styles.divider} />
                       <button
                         className={`button button--link button--small ${styles.moreButton}`}
                         onClick={exportBrew(brew)}
