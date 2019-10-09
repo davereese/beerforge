@@ -150,6 +150,7 @@ const Home = () => {
             <li>Huge ingredient library</li>
             <li>Custom ingredient inputs</li>
             <li>Import/Export brews via BeerXML</li>
+            <li>Customizable equipment variables</li>
             <li>Fully mobile-responsive</li>
           </ul>
           <div className={styles.cta}>
