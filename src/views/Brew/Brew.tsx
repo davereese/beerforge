@@ -25,6 +25,7 @@ import { useBrew } from '../../Store/BrewContext';
 import { useModal } from '../../Store/ModalContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 import * as brewService from '../../Store/BrewService';
+import { lb2kg, gal2l, oz2g, f2c } from '../../resources/javascript/calculator';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -55,6 +56,12 @@ const Brew = (props: Props) => {
 
   const top = {marginTop: topSpacing};
   const prevBrew: BrewInterface = usePrevious(brew) as unknown as BrewInterface;
+  const unitLabels = {
+    vol: user.units === 'us' ? 'gal' : 'L',
+    largeWeight: user.units === 'us' ? 'lb' : 'kg',
+    smallWeight: user.units === 'us' ? 'oz' : 'g',
+    temp: user.units === 'us' ? 'F' : 'C',
+  }
 
   // mount
   useEffect(() => {
@@ -67,7 +74,11 @@ const Brew = (props: Props) => {
       await brewService.getBrew(brewId, user)
         .then((res: any) => {
           setLoading(false);
-          brewDispatch({type: 'process', payload: res.data.brew});
+          brewDispatch({
+            type: 'process',
+            payload: res.data.brew,
+            options: {ibuFormula: user.ibu_formula, units: user.units}
+          });
           return res;
         })
         .catch((error) => {
@@ -281,7 +292,7 @@ const Brew = (props: Props) => {
   }
 
   const handleUpdateBrew = (brew: BrewInterface) => {
-    brewDispatch({type: 'update', payload: brew});
+    brewDispatch({type: 'update', payload: brew, options: {ibuFormula: user.ibu_formula, units: user.units}});
   }
 
   const handleDeleteBrew = () => {
@@ -365,7 +376,7 @@ const Brew = (props: Props) => {
                   : null}
               </li>
               <li>
-                Batch Size: {brew.batchSize ? `${brew.batchSize} gal` : null}
+                Batch Size: {brew.batchSize ? `${user.units === 'metric' ? parseFloat(gal2l(brew.batchSize).toFixed(2)) : brew.batchSize} ${unitLabels.vol}` : null}
                 {!readOnly
                   ? <button
                       className={`button button--link ${styles.edit}`}
@@ -425,7 +436,7 @@ const Brew = (props: Props) => {
           <div className={styles.brew__header}>
             <h2>Fermentables</h2>
             {brew && brew.fermentables.length > 0
-              ? <span>Total: {brew.totalFermentables} lbs</span>
+              ? <span>Total: {user.units === 'metric' ? parseFloat(lb2kg(brew.totalFermentables).toFixed(2)) : brew.totalFermentables} {unitLabels.largeWeight}</span>
               : null}
             {!readOnly
               ? <button
@@ -442,7 +453,7 @@ const Brew = (props: Props) => {
                 key={`${fermentable.id}${index}`}
               >
                 <span className={styles.firstCol}>
-                  {fermentable.weight} lb{fermentable.weight && fermentable.weight > 1 ? 's' : null}
+                {user.units === 'metric' ? parseFloat(lb2kg(fermentable.weight).toFixed(2)) : fermentable.weight} {unitLabels.largeWeight}
                 </span>
                 <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>
                 <span className={styles.thirdCol}>{fermentable.lovibond} °L</span>
@@ -454,7 +465,9 @@ const Brew = (props: Props) => {
           <div className={styles.brew__header}>
             <h2>Hops</h2>
             {brew && brew.hops.length > 0
-              ? <span>Total: {brew.totalHops} oz</span>
+              ? <span>
+                  Total: {user.units === 'metric' ? parseFloat(oz2g(brew.totalHops).toFixed(2)) : brew.totalHops} {unitLabels.smallWeight}
+                </span>
               : null}
             {!readOnly
               ? <button
@@ -470,7 +483,9 @@ const Brew = (props: Props) => {
                 clicked={!readOnly ? openSideBar('hops', hop) : null}
                 key={`${hop.id}${index}`}
               >
-                <span className={styles.firstCol}>{hop.weight} oz</span>
+                <span className={styles.firstCol}>
+                  {user.units === 'metric' ? parseFloat(oz2g(hop.weight).toFixed(2)) : hop.weight} {unitLabels.smallWeight}
+                </span>
                 <span className={styles.secondCol}>{hop.name ? hop.name : hop.custom}</span>
                 <span className={styles.thirdCol}>{hop.alphaAcid ? `${hop.alphaAcid}% AA` : null}</span>
                 <span className={styles.fourthCol}>{hop.lengthInBoil} min</span>
@@ -564,10 +579,10 @@ const Brew = (props: Props) => {
                 <div className={styles.section__values}>
                   <span>
                     {brew.strikeVolume && brew.batchType !== 'BIAB' && brew.strikeTemp
-                      ? <>Strike with <strong>{brew.strikeVolume} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
+                      ? <>Strike with <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.strikeVolume).toFixed(1)) : brew.strikeVolume} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(brew.strikeTemp).toFixed(1)) : brew.strikeTemp}° {unitLabels.temp}</strong></>
                       : null}
                     {brew.totalWater && brew.batchType === 'BIAB' && brew.strikeTemp
-                      ? <>Strike with <strong>{brew.totalWater.toFixed(2)} gal</strong> at <strong>{brew.strikeTemp}° F</strong></>
+                      ? <>Strike with <strong>{brew.totalWater.toFixed(2)} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(brew.strikeTemp).toFixed(2)) : brew.strikeTemp}° {unitLabels.temp}</strong></>
                       : null}
                   </span>
                   <span>
@@ -577,19 +592,19 @@ const Brew = (props: Props) => {
                   </span>
                   <span>
                     {brew.targetMashTemp
-                      ? <>Mash at <strong>{brew.targetMashTemp}° F</strong></>
+                      ? <>Mash at <strong>{user.units === 'metric' ? parseFloat(f2c(brew.targetMashTemp).toFixed(1)) : brew.targetMashTemp}° {unitLabels.temp}</strong></>
                       : null}
                   </span>
                   <span>
                     {brew.batchType !== 'BIAB' && brew.spargeTemp
                       ? <>Sparge&nbsp;
                         {brew.spargeVolume
-                          ? <>with <strong>{brew.spargeVolume} gal</strong> </>
+                          ? <>with <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.spargeVolume).toFixed(2)) : brew.spargeVolume} {unitLabels.vol}</strong> </>
                           : null}
-                        at <strong>{brew.spargeTemp}° F</strong></>
+                        at <strong>{user.units === 'metric' ? parseFloat(f2c(brew.spargeTemp).toFixed(1)) : brew.spargeTemp}° {unitLabels.temp}</strong></>
                       : null}
                     {brew.totalMashVolume && brew.batchType === 'BIAB'
-                      ? <>Total Mash Vol: <strong>{brew.totalMashVolume} gal</strong></>
+                      ? <>Total Mash Vol: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.totalMashVolume).toFixed(2)) : brew.totalMashVolume} {unitLabels.vol}</strong></>
                       : null}
                   </span>
                 </div>
@@ -609,11 +624,11 @@ const Brew = (props: Props) => {
             <div className={`${styles.section__values} ${styles.withStats}`}>
               {brew.batchType === 'partialMash' && brew.preBoilVolume && brew.spargeVolume
                 ? <span>Top off with <strong>
-                    {brew.topOff} gal
+                    {user.units === 'metric' ? parseFloat(gal2l(brew.topOff).toFixed(2)) : brew.topOff} {unitLabels.vol}
                   </strong></span>
                 : null}
               <span>{brew.preBoilVolume
-                ? <>Boil Vol: <strong>{brew.preBoilVolume} gal</strong></>
+                ? <>Boil Vol: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.preBoilVolume).toFixed(2)) : brew.preBoilVolume} {unitLabels.vol}</strong></>
                 : null}</span>
               <span>{brew.boilLength
                 ? <>Boil Time: <strong>{brew.boilLength} min</strong></>
@@ -656,7 +671,7 @@ const Brew = (props: Props) => {
               </span>
               <span>
                 {brew.primaryTemp
-                  ? <>Temp: <strong>{brew.primaryTemp}° F</strong></>
+                  ? <>Temp: <strong>{user.units === 'metric' ? parseFloat(f2c(brew.primaryTemp).toFixed(1)) : brew.primaryTemp}° {unitLabels.temp}</strong></>
                   : null}
               </span>
               <span>
@@ -666,7 +681,7 @@ const Brew = (props: Props) => {
               </span>
               <span>
                 {brew.secondaryTemp
-                  ? <>Temp: <strong>{brew.secondaryTemp}° F</strong></>
+                  ? <>Temp: <strong>{user.units === 'metric' ? parseFloat(f2c(brew.secondaryTemp).toFixed(1)) : brew.secondaryTemp}° {unitLabels.temp}</strong></>
                   : null}
               </span>
               <span></span>
@@ -706,11 +721,11 @@ const Brew = (props: Props) => {
                 ? <>CO<sub>2</sub> Vol: <strong>{brew.CO2VolumeTarget}</strong></>
                 : null}</span>
               <span>{brew.beerTemp
-                ? <>Temp: <strong>{brew.beerTemp}° F</strong></>
+                ? <>Temp: <strong>{user.units === 'metric' ? parseFloat(f2c(brew.beerTemp).toFixed(1)) : brew.beerTemp}° {unitLabels.temp}</strong></>
                 : null}</span>
               <span>{brew.amountForCO2
                 ? <>{brew.carbonationMethod === 'forced' ? 'Pressure: ' : 'Amount: '}
-                <strong>{brew.amountForCO2} {brew.carbonationMethod === 'forced' ? 'psi' : 'oz'}</strong></>
+                <strong>{brew.amountForCO2} {brew.carbonationMethod === 'forced' ? 'psi' : unitLabels.smallWeight}</strong></>
                 : null}
               </span>
             </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../Store/BrewContext';
+import { useUser } from '../../Store/UserContext';
+import { f2c, c2f } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
@@ -9,10 +11,17 @@ interface Props {
 }
 
 function PackagingForm(props: Props) {
+  // eslint-disable-next-line
+  const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
-    const data = event.currentTarget.value;
+    let data;
+    if (type === 'beerTemp') {
+      data = user.units === 'metric' ? c2f(event.currentTarget.value) : event.currentTarget.value;
+    } else {
+      data = event.currentTarget.value;
+    }
     setFormData({...formData, [type]: data});
   };
 
@@ -57,8 +66,8 @@ function PackagingForm(props: Props) {
         <label>Beer Temp (°F)<br />
           <input
             type="number"
-            placeholder="34"
-            defaultValue={`${props.brew.beerTemp}`}
+            placeholder={user.units === 'metric' ? '1.1' : '34'}
+            defaultValue={`${user.units === 'metric' ? parseFloat(f2c(props.brew.beerTemp).toFixed(1)) : props.brew.beerTemp}`}
             onChange={dataChanged('beerTemp')}
           />
         </label>

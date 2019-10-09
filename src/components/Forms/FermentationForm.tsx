@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../Store/BrewContext';
+import { useUser } from '../../Store/UserContext';
+import { f2c, c2f } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
@@ -9,10 +11,17 @@ interface Props {
 }
 
 function FermentationForm(props: Props) {
+  // eslint-disable-next-line
+  const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
-    const data = event.currentTarget.value;
+    let data; 
+    if (type === 'primaryTemp' || type === 'secondaryTemp') {
+      data = user.units === 'metric' ? c2f(event.currentTarget.value) : event.currentTarget.value;
+    } else {
+      data = event.currentTarget.value;
+    }
     setFormData({...formData, [type]: data});
   };
 
@@ -37,11 +46,11 @@ function FermentationForm(props: Props) {
             onChange={dataChanged('primaryLength')}
           />
         </label>
-        <label>Primary Temp (°F)<br />
+        <label>Primary Temp (°{user.units === 'metric' ? 'C' : 'F'})<br />
           <input
             type="number"
-            placeholder="64"
-            defaultValue={`${props.brew.primaryTemp}`}
+            placeholder={user.units === 'metric' ? '17' : '64'}
+            defaultValue={`${user.units === 'metric' ? parseFloat(f2c(props.brew.primaryTemp).toFixed(2)) : props.brew.primaryTemp}`}
             onChange={dataChanged('primaryTemp')}
           />
         </label>
@@ -63,11 +72,11 @@ function FermentationForm(props: Props) {
               onChange={dataChanged('secondaryLength')}
             />
           </label>
-          <label>Secondary Temp (°F)<br />
+          <label>Secondary Temp (°{user.units === 'metric' ? 'C' : 'F'})<br />
             <input
               type="number"
-              placeholder="64"
-              defaultValue={`${props.brew.secondaryTemp}`}
+              placeholder={user.units === 'metric' ? '17' : '64'}
+              defaultValue={`${user.units === 'metric' ? parseFloat(f2c(props.brew.secondaryTemp).toFixed(2)) : props.brew.secondaryTemp}`}
               onChange={dataChanged('secondaryTemp')}
             />
           </label>

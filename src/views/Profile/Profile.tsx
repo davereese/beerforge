@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import debounce from 'lodash.debounce'
 
 import styles from './Profile.module.scss';
 import formStyles from '../../components/Forms/Forms.module.scss';
@@ -9,6 +10,7 @@ import Loader from '../../components/Loader/Loader';
 import { useUser } from '../../Store/UserContext';
 import { useModal } from '../../Store/ModalContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
+import Info from '../../components/Info/Info';
 
 const Profile = () => {
   const fileInput = React.createRef<HTMLInputElement>();
@@ -21,6 +23,14 @@ const Profile = () => {
   const [firstName, setFirstName] = useState(user.first_name);
   const [lastName, setLastName] = useState(user.last_name);
   const [saving, setSaving] = useState(false);
+  const [settings, setSettings] = useState({
+    edited: false,
+    units: user.units ? user.units : 'us',
+    ibuFormula: user.ibu_formula ? user.ibu_formula : 'rager',
+    kettle: user.kettle_size ? user.kettle_size : '',
+    evapRate: user.evap_rate ? user.evap_rate : '',
+    strikeFactor: user.strike_adjustment ? user.strike_adjustment : ''
+  });
   const [file, setFile] = useState('');
   const [uploading, setUploading] = useState(false);
 
@@ -28,21 +38,33 @@ const Profile = () => {
     document.title = "BeerForge | Profile";
   }, [])
 
+  useEffect(() => {
+    if (settings.edited === true) {
+      handleChangeSettings();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings])
+
+  const handleChangeSettings = debounce(() => {
+    updateUser();
+  }, 300);
+
   const updateUser = async () => {
     try {
-      setSaving(true);
+      delete settings.edited;
       // build our body for the request
       const body = {
         firstName: firstName,
         lastName: lastName,
         email: email,
+        ...settings
       };
       const authHeaders = {'authorization': user ? user.token : null};
 
       const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${user.id}`, body, {
         headers: authHeaders,
       });
-
       userDispatch({type: 'update', payload: res.data[0]});
       setSaving(false);
       snackbarDispatch({type: 'show', payload: {
@@ -56,6 +78,11 @@ const Profile = () => {
         message: error.message,
       }});
     }
+  }
+
+  const handleUpdateUser = () => {
+    setSaving(true);
+    updateUser();
   }
 
   const deleteUser = async () => {
@@ -167,11 +194,8 @@ const Profile = () => {
           <span>Joined <FormattedDate>{user.date_joined}</FormattedDate></span>
         </h1>
       </header>
+      <label className="divider"><span>User Info</span></label>
       <div className={styles.form}>
-        <label>First Name<br />
-          <input
-            type="text"
-            placeholder="First Name"
             id="firstName"
             className="dark"
             value={firstName ? firstName : ''}
@@ -188,6 +212,17 @@ const Profile = () => {
             onChange={ (e) => setLastName(e.target.value) }
           />
         </label>
+          </label>
+          <label>Last Name<br />
+            <input
+              type="text"
+              placeholder="Last Name"
+              id="lastName"
+              className="dark"
+              onChange={ (e) => setLastName(e.target.value) }
+            />
+          </label>
+        </div>
         <label>Email<br />
           <input
             type="email"
@@ -201,15 +236,100 @@ const Profile = () => {
         <div className={styles.buttons}>
           <button
             className={`button button--green ${styles.updateButton} ${saving ? styles.saving : null}`}
-            onClick={updateUser}
+            onClick={handleUpdateUser}
           >
-            <span>Update Info</span>
+            <span>Update User Info</span>
             {saving ? <Loader className={styles.savingLoader} /> : null}
           </button>
           <button
             className="button button--yellow"
             onClick={handleDeleteUser}
           >Delete Account</button>
+        </div>
+      </div>
+
+      <label className="divider"><span>Brewhouse Settings</span></label>
+      <div className={styles.form}>
+        <div className={formStyles.row}>
+          <label htmlFor="units">Measurement Units<br />
+            <select
+              name="units"
+              className="dark"
+              value={settings.units}
+              onChange={(e) => setSettings({...settings, units: e.target.value, edited: true})}
+            >
+              <option value="us">US</option>
+              <option value="metric">Metric</option>
+            </select>
+          </label>
+          <label>IBU Calculation Formula<br />
+            <select
+              name="ibuFormula"
+              className="dark"
+              value={settings.ibuFormula}
+              onChange={(e) => setSettings({...settings, ibuFormula: e.target.value, edited: true})}
+            >
+              <option value="rager">Rager</option>
+              <option value="tinseth">Tinseth</option>
+            </select>
+          </label>
+        </div>
+        <p className="light">Dial your brewhouse settings in here over time to pre-populate this data when setting up a brew. Changes will only affect new brews.</p>
+        <div className={formStyles.row}>
+          <label>
+            Kettle Size (gal)&nbsp;
+            <Info alignment="top-right" info="Primarily&nbsp;used&nbsp;in BIAB&nbsp;calculations." /><br />
+            <input
+              type="number"
+              placeholder="10"
+              step="0.5"
+              id="kettle"
+              className="dark"
+              autoComplete="none"
+              value={settings.kettle}
+              onChange={(e) => setSettings({
+                ...settings,
+                kettle: e.target.value !== '' ? Number(e.target.value) : '',
+                edited: true
+              })}
+            />
+          </label>
+          <label>
+            Evaporation Rate (%/hr)&nbsp;
+            <Info alignment="top-right" info="For&nbsp;assistance in&nbsp;determining your evap rate, visit&nbsp;our&nbsp;calculators page." /><br />
+            <input
+              type="number"
+              placeholder="1.5"
+              id="evapRate"
+              className="dark"
+              autoComplete="none"
+              value={settings.evapRate}
+              onChange={(e) => setSettings({
+                ...settings,
+                evapRate: e.target.value !== '' ? Number(e.target.value) : '',
+                edited: true
+              })}
+            />
+          </label>
+        </div>
+        <div className={formStyles.row}>
+          <label>
+            Strike Temperature Adjustment Factor&nbsp;
+            <Info alignment="top-right" info="Equipment&nbsp;losses. You may need to dial this in over time." /><br />
+            <input
+              type="number"
+              placeholder="0"
+              id="strikeFactor"
+              className="dark"
+              autoComplete="none"
+              value={settings.strikeFactor}
+              onChange={(e) => setSettings({
+                ...settings,
+                strikeFactor: e.target.value !== '' ? Number(e.target.value) : '',
+                edited: true
+              })}
+            />
+          </label>
         </div>
       </div>
 
@@ -238,12 +358,6 @@ const Profile = () => {
         </button>
       </div>
       <label>NOTE: This upload maps over everything it can form your beerXML files, but it is only as good as the data those files contain. Make sure your files are up to spec. <a href="http://www.beerxml.com/beerxml.htm" target="_blank" rel="noopener noreferrer">beerxml.com</a></label>
-
-        {/* <label className="divider"><span>Brewhouse Settings</span></label>
-        <button
-          className="button button--yellow"
-          // onClick={saveData}
-        >Update Settings</button> */}
     </section>
   );
 }

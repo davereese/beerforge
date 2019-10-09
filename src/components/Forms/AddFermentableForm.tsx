@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import styles from './Forms.module.scss';
 import { BrewInterface, FermentableInterface } from '../../Store/BrewContext';
+import { useUser } from '../../Store/UserContext';
+import { lb2kg, kg2lb } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
@@ -22,6 +24,8 @@ async function listAllFermentables() {
 }
 
 function AddFermentableForm(props: Props) {
+  // eslint-disable-next-line
+  const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState<FermentableInterface>({});
   const [fermentables, setFermentables] = useState<FermentableInterface[]>([]);
 
@@ -32,6 +36,8 @@ function AddFermentableForm(props: Props) {
       data = choice ? choice : {};
     } else if (type === 'custom') {
       data.custom = event.currentTarget.value;
+    } else if (type === 'weight') {
+      data.weight = user.units === 'metric' ? kg2lb(Number(event.currentTarget.value) + 0) : Number(event.currentTarget.value) + 0;
     } else {
       data[type] = Number(event.currentTarget.value) + 0;
     }
@@ -141,12 +147,12 @@ function AddFermentableForm(props: Props) {
             </label>
           </div>
         : null }
-      <label>Weight (lbs)<br />
+      <label>Weight ({user.units === 'metric' ? 'kg' : 'lb'})<br />
         <input
           type="number"
           step="0.01"
           placeholder="0"
-          value={formData.weight ? formData.weight.toString() : ''}
+          value={formData.weight ? user.units === 'metric' ? parseFloat(lb2kg(formData.weight).toFixed(5)) : formData.weight.toString() : ''}
           onChange={dataChanged('weight')}
         />
       </label>

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import styles from "./Forms.module.scss"
 import Info from '../Info/Info';
+import { useUser } from '../../Store/UserContext';
 import { BrewInterface } from '../../Store/BrewContext';
+import { l2gal, gal2l } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
@@ -11,8 +13,11 @@ interface Props {
 }
 
 function BrewSettingsForm(props: Props) {
+  // eslint-disable-next-line
+  const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState({
     ...props.brew,
+    // batchSize: user.units === 'metric' ? parseFloat(gal2l(props.brew.batchSize).toFixed(2)) : props.brew.batchSize,
     targetPitchingRate: props.brew.targetPitchingRate ? props.brew.targetPitchingRate : '0.75'
   });
 
@@ -23,6 +28,8 @@ function BrewSettingsForm(props: Props) {
       const hours = now.getHours();
       const minutes = now.getMinutes();
       data = `${event.currentTarget.value}T${hours}:${minutes}`;
+    } else if (type === 'batchSize') {
+      data = user.units === 'metric' ? l2gal(event.currentTarget.value) : event.currentTarget.value;
     } else {
       data = event.currentTarget.value;
     }
@@ -76,11 +83,13 @@ function BrewSettingsForm(props: Props) {
       </label>
       <div className={styles.row}>
         <label>
-          Batch Size (gal) <Info alignment="top-right" info="Volume of wort you expect to transfer to the&nbsp;fermentor." /><br />
+          Batch Size ({user.units === 'metric' ? 'L' : 'gal'})&nbsp;
+          <Info alignment="top-right" info="Volume of wort you expect to transfer to the&nbsp;fermentor." /><br />
           <input
             type="number"
-            placeholder="6"
-            defaultValue={`${props.brew.batchSize}`}
+            placeholder={user.units === 'metric' ? '22.5' : '6'}
+            step="0.1"
+            defaultValue={`${user.units === 'metric' ? parseFloat(gal2l(props.brew.batchSize).toFixed(2)): props.brew.batchSize}`}
             onChange={dataChanged('batchSize')}
           />
         </label>

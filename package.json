@@ -9,6 +9,7 @@
     "@types/react-dom": "^16.8.4",
     "@types/react-router-dom": "^4.3.3",
     "axios": "^0.19.0",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "node-sass": "^4.11.0",
     "react": "^16.8.6",
@@ -34,6 +35,9 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@types/lodash.debounce": "^4.0.6"
+    "@types/lodash.clonedeep": "^4.5.6",
+    "@types/lodash.debounce": "^4.0.6",
+    "install": "^0.13.0",
+    "npm": "^6.11.3"
   }
 }

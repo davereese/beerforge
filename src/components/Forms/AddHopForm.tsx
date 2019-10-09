@@ -4,6 +4,8 @@ import axios from 'axios';
 import styles from './Forms.module.scss';
 import { BrewInterface, HopInterface } from '../../Store/BrewContext';
 import { IBU } from '../../resources/javascript/calculator';
+import { useUser } from '../../Store/UserContext';
+import { oz2g, g2oz } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
@@ -27,6 +29,8 @@ async function listAllHops() {
 }
 
 function AddHopForm(props: Props) {
+  // eslint-disable-next-line
+  const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState<HopInterface>({});
   const [hops, setHops] = useState<HopResults[]>([]);
 
@@ -44,6 +48,8 @@ function AddHopForm(props: Props) {
         : {};
     } else if (type === 'form' || type === 'custom') {
       data[type] = event.currentTarget.value;
+    } else if (type === 'weight') {
+      data.weight = user.units === 'metric' ? g2oz(Number(event.currentTarget.value) + 0) : Number(event.currentTarget.value) + 0;
     } else {
       data[type] = Number(event.currentTarget.value) + 0;
     }
@@ -156,12 +162,12 @@ function AddHopForm(props: Props) {
         </label>
       </div>
       <div className={styles.row}>
-        <label>Weight (oz)<br />
+        <label>Weight ({user.units === 'metric' ? 'g' : 'oz'})<br />
           <input
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.weight ? formData.weight.toString() : ''}
+            value={formData.weight ? user.units === 'metric' ? parseFloat(oz2g(formData.weight).toFixed(5)) : formData.weight.toString() : ''}
             onChange={dataChanged('weight')}
           />
         </label>

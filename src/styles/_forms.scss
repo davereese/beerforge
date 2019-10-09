@@ -147,6 +147,10 @@ input[type="checkbox"].toggle {
         background-color: rgba($default-card-bg, 0.45);
         transition: left 0.3s;
       }
+
+      &.dark {
+        background-color: $black;
+      }
     }
   }
 

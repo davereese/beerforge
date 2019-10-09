@@ -3,7 +3,7 @@ export const UNITS = [
   'mg',
   'kg',
   'ml',
-  'l',
+  'L',
   'pkg',
   'items',
   'drops',

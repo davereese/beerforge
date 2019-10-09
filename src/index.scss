@@ -26,6 +26,10 @@ strong {
   text-transform: capitalize;
 }
 
+.light {
+  color: $text-light;
+}
+
 .divider {
   display: flex;
   align-items: center;

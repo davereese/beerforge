@@ -17,6 +17,7 @@ import { useUser } from '../../Store/UserContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 import { useModal } from '../../Store/ModalContext';
 import * as brewService from '../../Store/BrewService';
+import { IBU } from '../../resources/javascript/calculator';
 
 const Brews = (props: any) => {
   // CONTEXT
@@ -246,7 +247,11 @@ const Brews = (props: any) => {
                 >
                   <div className={styles.nameCol}>{brew.name}</div>
                   <span className={styles.abvCol}>{brew.abv ? brew.abv : '--'}</span>
-                  <span className={styles.ibuCol}>{brew.ibu ? brew.ibu : '--'}</span>
+                  <span className={styles.ibuCol}>
+                    {brew.hops && brew.original_gravity && brew.size
+                      ? IBU(brew.hops, brew.original_gravity, brew.size, user.ibu_formula)
+                      : '--'}
+                  </span>
                   <span className={styles.srmCol}>
                     {brew.srm
                       ? <>

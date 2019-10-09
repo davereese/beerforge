@@ -56,6 +56,11 @@ export interface AdjunctInterface {
   [key: string]: string | number | undefined;
 };
 
+export interface processOptionsInterface {
+  units: 'us' | 'metric',
+  ibuFormula: 'rager' | 'tinseth';
+};
+
 export interface BrewInterface {
   id?: number;
   userId?: number;
@@ -145,7 +150,7 @@ const compareAmount = (a: YeastInterface, b: YeastInterface) => {
   return comparison;
 };
 
-const processBrew = (brew: BrewInterface): BrewInterface => {
+export const processBrew = (brew: BrewInterface, options: processOptionsInterface): BrewInterface => {
   // Sort ingredients
   if (brew.fermentables) {
     brew.fermentables.sort(compareWeight);
@@ -184,14 +189,14 @@ const processBrew = (brew: BrewInterface): BrewInterface => {
   if (brew.hops.length > 0 && brew.og && brew.batchSize) {
     let totalIbu = 0;
     brew.hops = brew.hops.map(hop => {
-      hop.ibu = Calculator.IBU([hop], brew.og, brew.batchSize, 'rager');
+      hop.ibu = Calculator.IBU([hop], brew.og, brew.batchSize, options.ibuFormula);
       totalIbu += hop.ibu ? hop.ibu : 0;
       return hop;
     });
     brew.ibu = parseFloat(totalIbu.toFixed(2));
   }
   if (brew.batchType !== 'BIAB' && brew.grainTemp && brew.targetMashTemp && brew.waterToGrain) {
-    brew.strikeTemp = Calculator.strikeTemp(brew.grainTemp, brew.targetMashTemp, brew.waterToGrain, brew.strikeTempFactor);
+    brew.strikeTemp = Calculator.strikeTemp(brew.grainTemp, brew.targetMashTemp, brew.waterToGrain);
   }
   if (brew.batchSize && brew.boilLength && brew.evaporationRate && brew.totalFermentables) {
     if (brew.batchType === 'BIAB') {
@@ -201,7 +206,7 @@ const processBrew = (brew: BrewInterface): BrewInterface => {
     }
   }
   if (brew.batchType === 'BIAB' && brew.totalWater && brew.totalFermentables && brew.grainTemp && brew.targetMashTemp) {
-    brew.strikeTemp = Calculator.biabStrikeTemp(brew.totalWater, brew.totalFermentables, brew.targetMashTemp, brew.grainTemp, brew.strikeTempFactor);
+    brew.strikeTemp = Calculator.biabStrikeTemp(brew.totalWater, brew.totalFermentables, brew.targetMashTemp, brew.grainTemp, options.units);
   }
   if (brew.batchType === 'allGrain' && brew.totalWater && brew.strikeVolume) {
     brew.spargeVolume = Calculator.spargeVolume(brew.totalWater, brew.strikeVolume);
@@ -254,13 +259,13 @@ const processBrew = (brew: BrewInterface): BrewInterface => {
 const reducer = (state: any, action: any) => {
   switch (action.type) {
     case 'process':
-      return processBrew(action.payload);
+      return processBrew(action.payload, action.options);
     case 'update':
       state = {
         ...state,
         ...action.payload
       };
-      return processBrew(state);
+      return processBrew(state, action.options);
     case 'clear':
       return initialState;
     default:

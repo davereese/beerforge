@@ -13,7 +13,7 @@ const thermodynamicConstant = 0.2;
 
 function convertToGravityUnits(value) {
   return parseFloat(((value / 1000) + 1)).toFixed(3);
-}
+};
 
 function convertToGravityPoints(gravity) {
   return (gravity - 1) * 1000;
@@ -23,25 +23,61 @@ function convertToPlato(SG) {
   // E = -668.962 + (1262.45 * SG) - (776.43 * SG^2) + (182.94 * SG^3)  - specific gravity to plato
   const E = -668.962 + (1262.45 * SG) - (776.43 * Math.pow(SG, 2)) + (182.94 * Math.pow(SG, 3));
   return E;
-}
+};
 
 function calculateRealExtract(OE, AE) {
   // RE (real extract) = (0.8114 * AE) + (0.1886 * OE)
   const RE = (0.8114 * AE) + (0.1886 * OE);
   return RE;
-}
+};
 
 function oz2kg(number) {
   return number * 0.0283495;
-}
+};
 
-function gal2l(number) {
+export function oz2g(number) {
+  return number * 28.3495;
+};
+
+export function g2oz(number) {
+  return number / 28.3495;
+};
+
+export function gal2l(number) {
   return number * 3.78541;
-}
+};
+
+export function l2gal(number) {
+  return number / 3.78541;
+};
+
+export function qt2l(number) {
+  return number / 1.057;
+};
+
+export function l2qt(number) {
+  return number * 1.057;
+};
 
 function gal2ml(number) {
   return number * 3785.41;
-}
+};
+
+export function lb2kg(number) {
+  return number * 0.453592;
+};
+
+export function kg2lb(number) {
+  return number / 0.453592;
+};
+
+export function f2c(number) {
+  return (number - 32) * 5/9;
+};
+
+export function c2f(number) {
+  return (number * 9/5) + 32;
+};
 
 function tanh(number) {
   return (Math.exp(number) - Math.exp(-number)) / (Math.exp(number) + Math.exp(-number));
@@ -67,7 +103,7 @@ export function totalHopWeight(hops) {
   hops.forEach(hop => {
     totalHops += hop.weight ? hop.weight : 0;
   });
- return totalHops;
+ return parseFloat(totalHops.toFixed(5));
 };
 
 // * Total Water
@@ -111,11 +147,10 @@ export function strikeTemp(grainTemp, targetTemp, ratio, factor) {
 };
 
 // * BIAB Strike Water Temperature
-export function biabStrikeTemp(totalWater, grainWeight, targetTemp, grainTemp, factor) {
+export function biabStrikeTemp(totalWater, grainWeight, targetTemp, grainTemp, units = 'us') {
   // (.2/((totalwater/grain)*4))*(mashTemp-grainTemp)+mashTemp
-  // if ($scope.recipe.units != 'us') thermodynamicConstant = 0.41
-  // const useFactor = factor ? factor : 1;
-  const Tw = ((thermodynamicConstant / ((totalWater / grainWeight) * 4)) * (targetTemp - grainTemp) + parseInt(targetTemp)).toFixed(2);
+  const thermoConst = units !== 'us' ? 0.41 : thermodynamicConstant;
+  const Tw = ((thermoConst / ((totalWater / grainWeight) * 4)) * (targetTemp - grainTemp) + parseInt(targetTemp)).toFixed(2);
   return parseInt(Tw, 10);
 };
 
