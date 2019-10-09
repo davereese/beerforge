@@ -44,7 +44,7 @@ function BoilForm(props: Props) {
           placeholder={props.brew.batchType === 'BIAB' ? '0.5' : '1.5'}
           defaultValue={`${props.brew.batchType === 'BIAB'
             ? user.units === 'metric' ? parseFloat(gal2l(props.brew.evaporationRate).toFixed(5)) : props.brew.evaporationRate
-            : props.brew.evaporationRate}`}
+            : props.brew.evaporationRate ? props.brew.evaporationRate : user.evap_rate}`}
           onChange={dataChanged('evaporationRate')}
         />
       </label>

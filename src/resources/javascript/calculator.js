@@ -1,11 +1,4 @@
 // CONSTANTS
-// TODO: make these customizable
-const trubLoss = 0.5; // gal
-const equipmentLoss = 1; // gal
-const absorptionRate = 0.125; // gal/lb of grain
-const hopAbsorptionRate = 0.0365; // gal/oz
-
-// Not customizable
 const shrinkage = 4; // 4%
 const thermodynamicConstant = 0.2;
 
@@ -107,9 +100,10 @@ export function totalHopWeight(hops) {
 };
 
 // * Total Water
-export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
+export function totalWater(batchSize, boilTime, boilOff, grainWeight, options) {
   // boilTime is in hours, hense (boilTime / 60)
   // totalWater = (((batchSize + trubLoss) / (1 - (shrinkage / 100))) / (1 - (boilTime * (boilOff / 100)))) + equipmentLoss + (grainWeight * absorptionRate)
+  const {trubLoss, equipmentLoss, absorptionRate} = options;
   batchSize = parseFloat(batchSize);
   boilTime = parseFloat(boilTime);
   boilOff = parseFloat(boilOff);
@@ -120,7 +114,8 @@ export function totalWater(batchSize, boilTime, boilOff, grainWeight) {
 };
 
 // * BIAB Total Water
-export function totalBIABWater(batchSize, boilTime, boilOff, grainWeight, hopWeight) {
+export function totalBIABWater(batchSize, boilTime, boilOff, grainWeight, hopWeight, options) {
+  const {trubLoss, absorptionRate, hopAbsorptionRate} = options;
   batchSize = parseFloat(batchSize);
   boilTime = parseFloat(boilTime);
   boilOff = parseFloat(boilOff);
@@ -178,17 +173,19 @@ export function totalMashVolume(totalWaterVol, grainWeight) {
 };
 
 // * Pre-Boil Gravity
-export function preBoilG(OG, grainVol, totalWaterVol, vol) {
-  const PBVol = preBoilVol(totalWaterVol, grainVol);
+export function preBoilG(OG, grainVol, totalWaterVol, vol, equipmentLoss, absorptionRate, batchType = 'allGrain') {
+  const PBVol = preBoilVol(totalWaterVol, grainVol, equipmentLoss, absorptionRate, batchType);
   // Pre-boil specific gravity points = (Post-boil volume * Post-boil gravity points) / Pre-boil volume
   const PreBoilG = (vol * convertToGravityPoints(OG)) / PBVol;
+
+  console.log(PBVol);
 
   // convert back to gravity units and return
   return convertToGravityUnits(PreBoilG);
 };
 
 // * Pre-Boil Volume
-export function preBoilVol(totalWaterVol, grainVol, batchType = 'allGrain') {
+export function preBoilVol(totalWaterVol, grainVol, equipmentLoss, absorptionRate, batchType = 'allGrain') {
   // totalWaterVol - (grainVol * absorptionRate) - equipmentLoss
   const loss = batchType === 'BIAB' ? 0 : equipmentLoss;
   const result = totalWaterVol - (grainVol * absorptionRate) - loss;
@@ -196,7 +193,7 @@ export function preBoilVol(totalWaterVol, grainVol, batchType = 'allGrain') {
 };
 
 // Partial Mash Top-off
-export function partialMashTopOff(preBoilVolume, spargeVolume, grainVol) {
+export function partialMashTopOff(preBoilVolume, spargeVolume, grainVol, absorptionRate) {
   const result = preBoilVolume - ((spargeVolume * 2) - (grainVol * absorptionRate));
   return parseFloat(result).toFixed(2);
 };

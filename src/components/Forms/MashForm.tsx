@@ -66,7 +66,11 @@ function MashForm(props: Props) {
             <input
               type="number"
               placeholder={user.units === 'metric' ? '37.8' : '10'}
-              defaultValue={`${user.units === 'metric' ? parseFloat(gal2l(props.brew.kettleSize).toFixed(5)) : props.brew.kettleSize}`}
+              defaultValue={
+                props.brew.kettleSize !== undefined
+                ? `${user.units === 'metric' ? parseFloat(gal2l(props.brew.kettleSize).toFixed(5)) : props.brew.kettleSize}`
+                : `${user.units === 'metric' ? parseFloat(gal2l(user.kettle_size).toFixed(5)) : user.kettle_size}`
+              }
               onChange={dataChanged('kettleSize')}
             />
           </label>

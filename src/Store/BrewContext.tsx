@@ -59,6 +59,13 @@ export interface AdjunctInterface {
 export interface processOptionsInterface {
   units: 'us' | 'metric',
   ibuFormula: 'rager' | 'tinseth';
+  strikeFactor?: number;
+  kettle?: number;
+  evapRate?: number;
+  trubLoss?: number;
+  equipmentLoss?: number;
+  absorptionRate?: number;
+  hopAbsorptionRate?: number;
 };
 
 export interface BrewInterface {
@@ -80,7 +87,6 @@ export interface BrewInterface {
   yeast: YeastInterface[];
   adjuncts: AdjunctInterface[];
   totalWater?: number;
-  strikeTempFactor?: number;
   strikeTemp?: number;
   strikeVolume?: number;
   targetMashTemp?: number;
@@ -196,13 +202,13 @@ export const processBrew = (brew: BrewInterface, options: processOptionsInterfac
     brew.ibu = parseFloat(totalIbu.toFixed(2));
   }
   if (brew.batchType !== 'BIAB' && brew.grainTemp && brew.targetMashTemp && brew.waterToGrain) {
-    brew.strikeTemp = Calculator.strikeTemp(brew.grainTemp, brew.targetMashTemp, brew.waterToGrain);
+    brew.strikeTemp = Calculator.strikeTemp(brew.grainTemp, brew.targetMashTemp, brew.waterToGrain, options.strikeFactor);
   }
   if (brew.batchSize && brew.boilLength && brew.evaporationRate && brew.totalFermentables) {
     if (brew.batchType === 'BIAB') {
-      brew.totalWater = Calculator.totalBIABWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables, brew.totalHops);
+      brew.totalWater = Calculator.totalBIABWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables, brew.totalHops, options);
     } else {
-      brew.totalWater = Calculator.totalWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables);
+      brew.totalWater = Calculator.totalWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables, options);
     }
   }
   if (brew.batchType === 'BIAB' && brew.totalWater && brew.totalFermentables && brew.grainTemp && brew.targetMashTemp) {
@@ -218,7 +224,8 @@ export const processBrew = (brew: BrewInterface, options: processOptionsInterfac
     brew.og = Calculator.OG(brew.fermentables, brew.systemEfficiency, brew.batchSize);
   }
   if (brew.og && brew.totalFermentables && brew.totalWater && brew.batchSize) {
-    brew.preBoilG = Calculator.preBoilG(brew.og, brew.totalFermentables, brew.totalWater, brew.batchSize);
+    console.log(brew.og, brew.totalFermentables, brew.totalWater, brew.batchSize);
+    brew.preBoilG = Calculator.preBoilG(brew.og, brew.totalFermentables, brew.totalWater, brew.batchSize, options.equipmentLoss, options.absorptionRate, brew.batchType);
   }
   if (brew.og && brew.batchSize && brew.targetPitchingRate) {
     brew.targetPitchingCellCount = Calculator.targetPitchingRate(brew.og, brew.batchSize, brew.targetPitchingRate);
@@ -232,13 +239,13 @@ export const processBrew = (brew: BrewInterface, options: processOptionsInterfac
     brew.pitchCellCount = totalCellCount;
   }
   if (brew.totalWater && brew.totalFermentables) {
-    brew.preBoilVolume = Calculator.preBoilVol(brew.totalWater, brew.totalFermentables, brew.batchType);
+    brew.preBoilVolume = Calculator.preBoilVol(brew.totalWater, brew.totalFermentables, options.equipmentLoss, options.absorptionRate, brew.batchType);
     if (brew.batchType === 'BIAB') {
       brew.totalMashVolume = Calculator.totalMashVolume(brew.totalWater, brew.totalFermentables);
     }
   }
   if (brew.batchType === 'partialMash' && brew.preBoilVolume && brew.spargeVolume && brew.totalGrainFermentables) {
-    brew.topOff = Calculator.partialMashTopOff(brew.preBoilVolume, brew.spargeVolume, brew.totalGrainFermentables);
+    brew.topOff = Calculator.partialMashTopOff(brew.preBoilVolume, brew.spargeVolume, brew.totalGrainFermentables, options.absorptionRate);
   }
   if (brew.yeast.length > 0 && brew.og) {
     let attenuationAdditions = 0;

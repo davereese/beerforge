@@ -21,7 +21,7 @@ import { pen } from '../../resources/javascript/penSvg.js';
 import { isEmpty } from '../../resources/javascript/isEmpty';
 import { usePrevious } from '../../resources/javascript/usePreviousHook';
 import { useUser } from '../../Store/UserContext';
-import { useBrew } from '../../Store/BrewContext';
+import { useBrew, processOptionsInterface } from '../../Store/BrewContext';
 import { useModal } from '../../Store/ModalContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 import * as brewService from '../../Store/BrewService';
@@ -62,6 +62,17 @@ const Brew = (props: Props) => {
     smallWeight: user.units === 'us' ? 'oz' : 'g',
     temp: user.units === 'us' ? 'F' : 'C',
   }
+  const userSettings: processOptionsInterface = {
+    ibuFormula: user.ibu_formula,
+    units: user.units,
+    strikeFactor: user.strike_adjustment,
+    kettle: user.kettle_size,
+    evapRate: user.evap_rate,
+    trubLoss: user.trub_loss,
+    equipmentLoss: user.equipment_loss,
+    absorptionRate: user.absorption_rate,
+    hopAbsorptionRate: user.hop_absorption_rate
+  }
 
   // mount
   useEffect(() => {
@@ -77,7 +88,7 @@ const Brew = (props: Props) => {
           brewDispatch({
             type: 'process',
             payload: res.data.brew,
-            options: {ibuFormula: user.ibu_formula, units: user.units}
+            options: userSettings
           });
           return res;
         })
@@ -292,7 +303,7 @@ const Brew = (props: Props) => {
   }
 
   const handleUpdateBrew = (brew: BrewInterface) => {
-    brewDispatch({type: 'update', payload: brew, options: {ibuFormula: user.ibu_formula, units: user.units}});
+    brewDispatch({type: 'update', payload: brew, options: userSettings});
   }
 
   const handleDeleteBrew = () => {

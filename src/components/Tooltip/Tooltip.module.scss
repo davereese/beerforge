@@ -101,6 +101,16 @@
     }
   }
 
+  &.top-left {
+    @extend .top;
+    transform: translate(calc(0% - 17px), calc(-100% - 8px));
+
+    &::after {
+      right: auto;
+      left: 17px;
+    }
+  }
+
   &.left-center {
     right: 100%;
     top: 50%;

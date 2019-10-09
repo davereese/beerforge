@@ -11,6 +11,7 @@ import { useUser } from '../../Store/UserContext';
 import { useModal } from '../../Store/ModalContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 import Info from '../../components/Info/Info';
+import { gal2l, l2gal } from '../../resources/javascript/calculator';
 
 const Profile = () => {
   const fileInput = React.createRef<HTMLInputElement>();
@@ -29,7 +30,11 @@ const Profile = () => {
     ibuFormula: user.ibu_formula ? user.ibu_formula : 'rager',
     kettle: user.kettle_size ? user.kettle_size : '',
     evapRate: user.evap_rate ? user.evap_rate : '',
-    strikeFactor: user.strike_adjustment ? user.strike_adjustment : ''
+    strikeFactor: user.strike_adjustment ? user.strike_adjustment : '',
+    trubLoss: user.trub_loss ? user.trub_loss : 0.5,
+    equipmentLoss: user.equipment_loss ? user.equipment_loss : 1,
+    absorptionRate: user.absorption_rate ? user.absorption_rate : 0.125,
+    hopAbsorptionRate: user.hop_absorption_rate ? user.hop_absorption_rate : 0.0365
   });
   const [file, setFile] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -196,22 +201,16 @@ const Profile = () => {
       </header>
       <label className="divider"><span>User Info</span></label>
       <div className={styles.form}>
-            id="firstName"
-            className="dark"
-            value={firstName ? firstName : ''}
-            onChange={ (e) => setFirstName(e.target.value) }
-          />
-        </label>
-        <label>Last Name<br />
-          <input
-            type="text"
-            placeholder="Last Name"
-            id="lastName"
-            className="dark"
-            value={lastName ? lastName : ''}
-            onChange={ (e) => setLastName(e.target.value) }
-          />
-        </label>
+        <div className={formStyles.row}>
+          <label>First Name<br />
+            <input
+              type="text"
+              placeholder="First Name"
+              id="firstName"
+              className="dark"
+              value={firstName ? firstName : ''}
+              onChange={ (e) => setFirstName(e.target.value) }
+            />
           </label>
           <label>Last Name<br />
             <input
@@ -219,6 +218,7 @@ const Profile = () => {
               placeholder="Last Name"
               id="lastName"
               className="dark"
+              value={lastName ? lastName : ''}
               onChange={ (e) => setLastName(e.target.value) }
             />
           </label>
@@ -274,22 +274,24 @@ const Profile = () => {
             </select>
           </label>
         </div>
-        <p className="light">Dial your brewhouse settings in here over time to pre-populate this data when setting up a brew. Changes will only affect new brews.</p>
+        <p className="light">Pre-populate this data when setting up a brew. Changes will only affect new brews.</p>
         <div className={formStyles.row}>
           <label>
-            Kettle Size (gal)&nbsp;
-            <Info alignment="top-right" info="Primarily&nbsp;used&nbsp;in BIAB&nbsp;calculations." /><br />
+            Kettle Size ({settings.units === 'metric' ? 'L' : 'gal'})&nbsp;
+            <Info alignment="top-left" info="Primarily&nbsp;used&nbsp;in BIAB&nbsp;calculations." /><br />
             <input
               type="number"
-              placeholder="10"
+              placeholder={settings.units === 'metric' ? '37.8' : '10'}
               step="0.5"
               id="kettle"
               className="dark"
               autoComplete="none"
-              value={settings.kettle}
+              value={settings.units === 'metric' ? parseFloat(gal2l(settings.kettle).toFixed(5)) : settings.kettle}
               onChange={(e) => setSettings({
                 ...settings,
-                kettle: e.target.value !== '' ? Number(e.target.value) : '',
+                kettle: e.target.value !== ''
+                  ? settings.units === 'metric' ? l2gal(Number(e.target.value)) : Number(e.target.value)
+                  : '',
                 edited: true
               })}
             />
@@ -312,10 +314,103 @@ const Profile = () => {
             />
           </label>
         </div>
+        <p className="light">Dial your brewhouse settings in here over time to fine-tune BeerForge's calculations on your system.</p>
+        <div className={formStyles.row}>
+          <label>
+            Trub Loss ({settings.units === 'metric' ? 'L' : 'gal'})&nbsp;
+            <Info
+              alignment="top-left"
+              info={`Volume\u00A0of\u00A0uncollectable wort due to heavy trub material. Default is\u00A0${settings.units === 'metric' ? parseFloat(gal2l(1.5).toFixed(5))+'\u00A0L' : '1.5\u00A0gal'}.`}
+            /><br />
+            <input
+              type="number"
+              placeholder="1.5"
+              id="trubLoss"
+              className="dark"
+              autoComplete="none"
+              value={settings.units === 'metric' ? parseFloat(gal2l(settings.trubLoss).toFixed(5)) : settings.trubLoss}
+              onChange={(e) => setSettings({
+                ...settings,
+                trubLoss: e.target.value !== ''
+                  ? settings.units === 'metric' ? l2gal(Number(e.target.value)) : Number(e.target.value)
+                  : '',
+                edited: true
+              })}
+            />
+          </label>
+          <label>
+            Equipment Loss ({settings.units === 'metric' ? 'L' : 'gal'})&nbsp;
+            <Info
+              alignment="top-right"
+              info={`Volume\u00A0of\u00A0wort\u00A0lost by your system (due to false bottom, etc.). Default\u00A0is\u00A0${settings.units === 'metric' ? parseFloat(gal2l(1).toFixed(5))+'\u00A0L' : '1\u00A0gal'}.`}
+            /><br />
+            <input
+              type="number"
+              placeholder="1"
+              id="equipmentLoss"
+              className="dark"
+              autoComplete="none"
+              value={settings.units === 'metric' ? parseFloat(gal2l(settings.equipmentLoss).toFixed(5)) : settings.equipmentLoss}
+              onChange={(e) => setSettings({
+                ...settings,
+                equipmentLoss: e.target.value !== ''
+                  ? settings.units === 'metric' ? l2gal(Number(e.target.value)) : Number(e.target.value)
+                  : '',
+                edited: true
+              })}
+            />
+          </label>
+        </div>
+        <div className={formStyles.row}>
+          <label>
+            Absorption Rate ({settings.units === 'metric' ? 'L/kg of grain' : 'gal/lb of grain'})&nbsp;
+            <Info
+              alignment="top-left"
+              info={`Volume\u00A0of\u00A0wort absorbed by grains. The default\u00A0is\u00A0${settings.units === 'metric' ? parseFloat(gal2l(0.125).toFixed(5))+'\u00A0L' : '0.125\u00A0gal'}.`}
+            /><br />
+            <input
+              type="number"
+              placeholder="0.125"
+              id="absorptionRate"
+              className="dark"
+              autoComplete="none"
+              value={settings.units === 'metric' ? parseFloat(gal2l(settings.absorptionRate).toFixed(5)) : settings.absorptionRate}
+              onChange={(e) => setSettings({
+                ...settings,
+                absorptionRate: e.target.value !== ''
+                  ? settings.units === 'metric' ? l2gal(Number(e.target.value)) : Number(e.target.value)
+                  : '',
+                edited: true
+              })}
+            />
+          </label>
+          <label>
+            Hop Absorption Rate ({settings.units === 'metric' ? 'L/g' : 'gal/oz'})&nbsp;
+            <Info
+              alignment="top-right"
+              info={`Volume\u00A0of\u00A0wort absorbed by hops. The\u00A0default\u00A0is\u00A0${settings.units === 'metric' ? parseFloat(gal2l(0.0365).toFixed(5))+'\u00A0L' : '0.0365\u00A0gal'}.`}
+            /><br />
+            <input
+              type="number"
+              placeholder="0.0365"
+              id="hopAbsorptionRate"
+              className="dark"
+              autoComplete="none"
+              value={settings.units === 'metric' ? parseFloat(gal2l(settings.hopAbsorptionRate).toFixed(5)) : settings.hopAbsorptionRate}
+              onChange={(e) => setSettings({
+                ...settings,
+                hopAbsorptionRate: e.target.value !== ''
+                  ? settings.units === 'metric' ? l2gal(Number(e.target.value)) : Number(e.target.value)
+                  : '',
+                edited: true
+              })}
+            />
+          </label>
+        </div>
         <div className={formStyles.row}>
           <label>
             Strike Temperature Adjustment Factor&nbsp;
-            <Info alignment="top-right" info="Equipment&nbsp;losses. You may need to dial this in over time." /><br />
+            <Info alignment="top-left" info="Sparging&nbsp;equipment losses. You may need to dial this in over time." /><br />
             <input
               type="number"
               placeholder="0"

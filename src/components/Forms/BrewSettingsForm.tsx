@@ -104,15 +104,6 @@ function BrewSettingsForm(props: Props) {
         </label>
       </div>
       <label>
-        Strike Temperature Adjustment Factor <Info alignment="top-right" info="Equipment&nbsp;losses. You may need to dial this in over time." /><br />
-        <input
-          placeholder="0"
-          type="number"
-          defaultValue={`${props.brew.strikeTempFactor}`}
-          onChange={dataChanged('strikeTempFactor')}
-        />
-      </label>
-      <label>
         Target Pitching Rate (million cells / ml / °Plato) <Info alignment="top-right" info="It is reccommended to use a rate highter than&nbsp;the&nbsp;manufacturer's." /><br />
           <select
             onChange={dataChanged('targetPitchingRate')}
