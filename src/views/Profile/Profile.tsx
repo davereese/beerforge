@@ -320,11 +320,11 @@ const Profile = () => {
             Trub Loss ({settings.units === 'metric' ? 'L' : 'gal'})&nbsp;
             <Info
               alignment="top-left"
-              info={`Volume\u00A0of\u00A0uncollectable wort due to heavy trub material. Default is\u00A0${settings.units === 'metric' ? parseFloat(gal2l(1.5).toFixed(5))+'\u00A0L' : '1.5\u00A0gal'}.`}
+              info={`Volume\u00A0of\u00A0uncollectable wort due to heavy trub material. Default is\u00A0${settings.units === 'metric' ? parseFloat(gal2l(0.5).toFixed(5))+'\u00A0L' : '0.5\u00A0gal'}.`}
             /><br />
             <input
               type="number"
-              placeholder="1.5"
+              placeholder="0.5"
               id="trubLoss"
               className="dark"
               autoComplete="none"
