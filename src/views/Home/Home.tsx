@@ -140,8 +140,7 @@ const Home = () => {
       <section className={styles.features} ref={featuresRef}>
         <div className={styles.featuresText}>
           <h2>Features</h2>
-          <p><strong>BeerForge</strong> was built out of the desire to have a clean, simple and easy-to-scan interface for recipe formulation, brew day calculations and to keep track of past beer glory in the form of a robust brew log.</p>
-          <p>Our roadmap is long and ambition is high, but out of the gate BeerForge’s feature set includes:</p>
+          <p><strong>BeerForge</strong> was built out of the desire to have a clean, simple, and easy to scan natural language interface for recipe formulation, brew day calculations and to keep track of past beer glory in the form of a robust brew log. Our feature set includes:</p>
           <ul>
             <li>Recipe formulation for four brewing methods</li>
             <li>Automatic calculations for brew day</li>
@@ -154,7 +153,6 @@ const Home = () => {
             <li>Fully mobile-responsive</li>
           </ul>
           <div className={styles.cta}>
-            <p>BeerForge is free, no freemium here.</p>
             <p><Link to="/login" className="button button--large button--yellow">Sign Up</Link></p>
           </div>
         </div>
