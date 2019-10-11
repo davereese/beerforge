@@ -235,7 +235,7 @@ const Brew = (props: Props) => {
 
   const nextForm = (event: any) => {
     const formOrder = [
-      'settings', 'fermentables', 'hops', 'yeast', 'adjuncts',
+      'settings', 'fermentables', 'hops', 'adjuncts', 'yeast',
       'mash', 'boil', 'fermentation', 'packaging', 'notes', 'tags'];
     // remove steps for extrct brews
     if (brew.batchType && brew.batchType === 'extract') {
@@ -507,6 +507,34 @@ const Brew = (props: Props) => {
         </Card>
         <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
           <div className={styles.brew__header}>
+            <h2>Adjuncts</h2>
+            {!readOnly
+              ? <button
+                  className={`button button--icon plus ${styles.editButton}`}
+                  onClick={openSideBar('adjuncts')}
+                ><span>Edit</span></button>
+              : null}
+          </div>
+          <List customClass={`${styles.brew__ingredients} ${styles.adjuncts}`}>
+            {brew && brew.adjuncts.map((adjunct: AdjunctInterface, index: number) => (
+              <ListItem
+                color="brew"
+                clicked={!readOnly ? openSideBar('adjuncts', adjunct) : null}
+                key={`${adjunct.id}${index}`}
+              >
+                <span className={styles.firstCol}>
+                  {adjunct.amount} {adjunct.units}
+                </span>
+                <span className={styles.secondCol}>{adjunct.name ? adjunct.name : adjunct.custom}</span>
+                <span className={styles.thirdCol}>{adjunct.time ? `${adjunct.time} min` : null}</span>
+                <span className={styles.fourthCol}>{adjunct.use}</span>
+                <span className={styles.fifthCol}>{adjunct.type}</span>
+              </ListItem>
+            ))}
+          </List>
+        </Card>
+        <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
+          <div className={styles.brew__header}>
             <h2>Yeast</h2>
             {brew && brew.yeast.length > 0
               ? <span>{brew.pitchCellCount} bn cells {brew.targetPitchingCellCount
@@ -535,34 +563,6 @@ const Brew = (props: Props) => {
                   {item.manufacturer ? `${item.manufacturer} - ` : null}{item.name ? item.name : item.custom}
                 </span>
                 <span className={styles.thirdCol}>{item.averageAttenuation}% average attenuation</span>
-              </ListItem>
-            ))}
-          </List>
-        </Card>
-        <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
-          <div className={styles.brew__header}>
-            <h2>Adjuncts</h2>
-            {!readOnly
-              ? <button
-                  className={`button button--icon plus ${styles.editButton}`}
-                  onClick={openSideBar('adjuncts')}
-                ><span>Edit</span></button>
-              : null}
-          </div>
-          <List customClass={`${styles.brew__ingredients} ${styles.adjuncts}`}>
-            {brew && brew.adjuncts.map((adjunct: AdjunctInterface, index: number) => (
-              <ListItem
-                color="brew"
-                clicked={!readOnly ? openSideBar('adjuncts', adjunct) : null}
-                key={`${adjunct.id}${index}`}
-              >
-                <span className={styles.firstCol}>
-                  {adjunct.amount} {adjunct.units}
-                </span>
-                <span className={styles.secondCol}>{adjunct.name ? adjunct.name : adjunct.custom}</span>
-                <span className={styles.thirdCol}>{adjunct.time ? `${adjunct.time} min` : null}</span>
-                <span className={styles.fourthCol}>{adjunct.use}</span>
-                <span className={styles.fifthCol}>{adjunct.type}</span>
               </ListItem>
             ))}
           </List>
