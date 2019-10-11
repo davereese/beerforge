@@ -22,7 +22,7 @@ import SRM from './Calculators/srm';
 import CO2 from './Calculators/co2';
 
 const calculatorArray = [
-  {calculator: <TotalWater calculator={Calculator.totalWater} />, terms: ['water', 'total']},
+  {calculator: <TotalWater calculator={Calculator.totalWater}/>, terms: ['water', 'total']},
   {calculator: <StrikeVolume calculator={Calculator.strikeVolume} />, terms: ['water', 'strike']},
   {calculator: <StrikeTemperature calculator={Calculator.strikeTemp} />, terms: ['water', 'strike']},
   {calculator: <SpargeVolume calculator={Calculator.spargeVolume} />, terms: ['water', 'sparge']},

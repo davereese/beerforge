@@ -160,9 +160,9 @@ export function evaporationPercent(preBoil, postBoil, boilTime) {
 
   preBoil = parseFloat(preBoil);
   postBoil = parseFloat(postBoil);
-  boilTime = parseFloat(boilTime);
+  const boilTimeCorrction = parseFloat(boilTime / 60);
 
-  return parseFloat((preBoil - postBoil / boilTime)).toFixed(2);
+  return parseFloat( ((preBoil - postBoil) / preBoil * 10) / boilTimeCorrction ).toFixed(2);
 };
 
 // * BIAB Total Mash Volume

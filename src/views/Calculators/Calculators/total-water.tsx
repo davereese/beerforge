@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
+import { useUser } from '../../../Store/UserContext';
+
 
 const TotalWater = (props: any) => {
+  // CONTEXT
+  // eslint-disable-next-line
+  const [user, userDispatch] = useUser();
+  const userSettings = {
+    trubLoss: user.trub_loss ? user.trub_loss : 0.5,
+    absorptionRate: user.absorption_rate ? user.absorption_rate : 0.125,
+    equipmentLoss: user.equipment_loss ? user.equipment_loss : 1
+  }
+
   // STATE
   const [batchSize, setBatchSize] = useState('');
   const [grainWeight, setGrainWeight] = useState('');
@@ -11,7 +22,7 @@ const TotalWater = (props: any) => {
   let label = null;
 
   const results = () => {
-    const result = calculator(parseInt(batchSize), parseInt(boilTime), parseInt(boilOff), parseInt(grainWeight));
+    const result = calculator(parseFloat(batchSize), parseFloat(boilTime), parseFloat(boilOff), parseFloat(grainWeight), userSettings);
 
       if (batchSize && boilTime && boilOff && grainWeight && !isNaN(result) && isFinite(result)) {
         label = 'gal';
@@ -23,7 +34,7 @@ const TotalWater = (props: any) => {
     <div>
       <h2>Total Water Needed</h2>
       <div>
-        <label htmlFor="batchSize">Batch Size</label><br />
+        <label htmlFor="batchSize">Batch Size (gal)</label><br />
         <input
           name="batchSize"
           type="number"

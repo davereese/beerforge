@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Info from '../../../components/Info/Info';
 
 const StrikeTemperature = (props: any) => {
   // STATE
@@ -43,7 +44,7 @@ const StrikeTemperature = (props: any) => {
           value={temp2}
           onChange={(e) => setTemp2(e.target.value)}
         ></input><br />
-        <label htmlFor="factor">Adjustment Factor</label><br />
+        <label htmlFor="factor">Adjustment Factor <Info alignment="top-left" info="Sparging&nbsp;equipment losses." /></label><br />
         <input
           name="factor"
           type="number"
