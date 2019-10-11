@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 
 import styles from './FormHandler.module.scss';
 import BrewSettingsForm from '../../../components/Forms/BrewSettingsForm';
@@ -13,6 +13,7 @@ import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
 import { BrewInterface } from '../../../Store/BrewContext';
 import { useBrew } from '../../../Store/BrewContext';
+import TagsForm from '../../../components/Forms/TagsForm';
 
 interface Props {
   form: string;
@@ -41,6 +42,11 @@ function FormHandler({
 
   // Stuff that isn't supposed to be part of the brew
   const [optionData, setOptionData] = useState<any | null>({});
+
+  useEffect(() => {
+    if (optionData && optionData.tagDeleted) { saveData() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [optionData]);
 
   const setData = (data: any, options: any = null) => {
     setFormData(data);
@@ -150,6 +156,11 @@ function FormHandler({
       component = <NotesForm brew={brew} dataUpdated={setData} />;
       submitText = 'Submit';
       break;
+    case 'tags':
+      title = 'Tags';
+      component = <TagsForm brew={brew} dataUpdated={setData} saveData={saveData} />;
+      submitText = 'Add Tag';
+      break;
     default:
       title = '';
       component = null;
@@ -174,7 +185,7 @@ function FormHandler({
           className="button button--brown button--no-shadow"
           onClick={closeSidebar}
         >Cancel</button>
-        {form !== 'notes' && editingData === null
+        {form !== 'tags' && editingData === null
           ? <button
               className="button button--no-shadow"
               onClick={handleNext}

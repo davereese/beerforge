@@ -111,6 +111,7 @@ export interface BrewInterface {
   beerTemp?: number;
   amountForCO2?: number;
   notes?: string;
+  tags?: string;
   srm?: number;
   ibu?: number
   og?: number;
@@ -224,7 +225,6 @@ export const processBrew = (brew: BrewInterface, options: processOptionsInterfac
     brew.og = Calculator.OG(brew.fermentables, brew.systemEfficiency, brew.batchSize);
   }
   if (brew.og && brew.totalFermentables && brew.totalWater && brew.batchSize) {
-    console.log(brew.og, brew.totalFermentables, brew.totalWater, brew.batchSize);
     brew.preBoilG = Calculator.preBoilG(brew.og, brew.totalFermentables, brew.totalWater, brew.batchSize, options.equipmentLoss, options.absorptionRate, brew.batchType);
   }
   if (brew.og && brew.batchSize && brew.targetPitchingRate) {

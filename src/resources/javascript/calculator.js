@@ -178,8 +178,6 @@ export function preBoilG(OG, grainVol, totalWaterVol, vol, equipmentLoss, absorp
   // Pre-boil specific gravity points = (Post-boil volume * Post-boil gravity points) / Pre-boil volume
   const PreBoilG = (vol * convertToGravityPoints(OG)) / PBVol;
 
-  console.log(PBVol);
-
   // convert back to gravity units and return
   return convertToGravityUnits(PreBoilG);
 };

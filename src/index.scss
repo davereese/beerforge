@@ -65,3 +65,56 @@ canvas {
   width: 100%;
   pointer-events: none;
 }
+
+.tag {
+  position: relative;
+  display: inline-block;
+  height: 25px;
+  padding: 3px 10px 0;
+  border-radius: 25px;
+  background-color: rgba($button-brown-bg, 0.5);
+  font-weight: $weight-semibold;
+  overflow: hidden;
+
+  &:hover {
+    .removeTag {
+      right: 0;
+    }
+  }
+
+  .removeTag {
+    position: absolute;
+    right: -50px;
+    top: 0;
+    width: 25px;
+    height: 25px;
+    font-size: 0;
+    border-radius: 25px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: $brew-card-bg;
+    // box-shadow: 0 0 15px 5px $button-shadow;
+    transition: right 0.3s;
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      top: 7px;
+      left: 11px;
+      display: block;
+      width: 2px;
+      height: 12px;
+      background-color: $text-dark;
+    }
+
+    &:before {
+      transform: rotate(-45deg);
+    }
+
+    &:after {
+      transform: rotate(45deg);
+    }
+  }
+}

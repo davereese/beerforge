@@ -1,3 +1,5 @@
+@import '../../styles/variables';
+
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -38,4 +40,12 @@
 
 sub {
   line-height: 0;
+}
+
+.tagWrapper {
+  margin-bottom: 10px;
+
+  div {
+    margin-right: 5px;
+  }
 }

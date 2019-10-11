@@ -236,7 +236,7 @@ const Brew = (props: Props) => {
   const nextForm = (event: any) => {
     const formOrder = [
       'settings', 'fermentables', 'hops', 'yeast', 'adjuncts',
-      'mash', 'boil', 'fermentation', 'packaging', 'notes'];
+      'mash', 'boil', 'fermentation', 'packaging', 'notes', 'tags'];
     // remove steps for extrct brews
     if (brew.batchType && brew.batchType === 'extract') {
       formOrder.splice(4, 1);
@@ -756,6 +756,18 @@ const Brew = (props: Props) => {
                 ? <div dangerouslySetInnerHTML={transformNotes()} />
                 : null
               }
+            </div>
+            <div className={styles.tagsWrapper}>
+              {brew.tags
+                ? brew.tags.split(',').map((tag: string, i: number) => {
+                    return <div className="tag" key={i}>{tag}</div>
+                  })
+                : null
+              }
+              <button
+                className={`button ${styles.tagsButton}`}
+                onClick={openSideBar('tags')}
+              >Tags</button>
             </div>
           </div>
         </Card>

@@ -218,7 +218,7 @@ const Brews = (props: any) => {
           type="text"
           name="search"
           className={styles.search}
-          placeholder="Search brew names"
+          placeholder="Search names and tags"
           onChange={({ target: { value } }) => onChange(value)}
         />
         <Link
