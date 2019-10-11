@@ -39,7 +39,6 @@ function TagsForm(props: Props) {
   };
 
   useEffect(() => {
-    const test = props.brew.tags;
     if (props.brew.tags !== prevTags) {
       if (inputRef.current && prevTags !== undefined) {
         inputRef.current.value = '';

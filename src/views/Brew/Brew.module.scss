@@ -557,10 +557,11 @@
   .tagsWrapper {
     display: flex;
     justify-content: flex-end;
-    padding: 0 15px 25px;
+    flex-wrap: wrap;
+    padding: 0 15px 20px;
 
     * {
-      margin-left: 5px;
+      margin: 0 0 5px 5px;
     }
   }
 

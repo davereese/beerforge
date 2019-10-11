@@ -75,6 +75,7 @@ canvas {
   background-color: rgba($button-brown-bg, 0.5);
   font-weight: $weight-semibold;
   overflow: hidden;
+  white-space: nowrap;
 
   &:hover {
     .removeTag {
@@ -94,7 +95,6 @@ canvas {
     outline: none;
     cursor: pointer;
     background-color: $brew-card-bg;
-    // box-shadow: 0 0 15px 5px $button-shadow;
     transition: right 0.3s;
 
     &:before,
