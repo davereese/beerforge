@@ -20,11 +20,13 @@ import ApparentAttenuation from './Calculators/apparent-attenuation';
 import IBU from './Calculators/ibu';
 import SRM from './Calculators/srm';
 import CO2 from './Calculators/co2';
+import MashInfusion from './Calculators/mash-infusion';
 
 const calculatorArray = [
   {calculator: <TotalWater calculator={Calculator.totalWater}/>, terms: ['water', 'total']},
-  {calculator: <StrikeVolume calculator={Calculator.strikeVolume} />, terms: ['water', 'strike']},
-  {calculator: <StrikeTemperature calculator={Calculator.strikeTemp} />, terms: ['water', 'strike']},
+  {calculator: <StrikeVolume calculator={Calculator.strikeVolume} />, terms: ['water', 'strike', 'mash']},
+  {calculator: <StrikeTemperature calculator={Calculator.strikeTemp} />, terms: ['water', 'strike', 'mash']},
+  {calculator: <MashInfusion calculator={Calculator.mashInfusionWaterVol} />, terms: ['water', 'mash', 'infusion']},
   {calculator: <SpargeVolume calculator={Calculator.spargeVolume} />, terms: ['water', 'sparge']},
   {calculator: <EvaporationPercent calculator={Calculator.evaporationPercent} />, terms: ['water', 'boil']},
   {calculator: <PreBoilVolume calculator={Calculator.preBoilVol} />, terms: ['water', 'boil']},

@@ -149,6 +149,16 @@ export function biabStrikeTemp(totalWater, grainWeight, targetTemp, grainTemp, u
   return parseInt(Tw, 10);
 };
 
+// Mash Infusion Equation:
+export function mashInfusionWaterVol(targetTemp, initailTemp, grainVol, totalMashVol, infusionWaterTemp) {
+  // Wa = (T2 - T1)(.2G + Wm)/(Tw - T2)
+  const one = targetTemp - initailTemp;
+  const two = (0.2 * grainVol) + Number(totalMashVol);
+  const three = infusionWaterTemp - targetTemp;
+  const result = one * two / three;
+  return parseFloat(result).toFixed(2);
+};
+
 // * Sparge Water Volume
 export function spargeVolume(totalWater, mashVolume) {
   return parseFloat((totalWater - mashVolume)).toFixed(2);
