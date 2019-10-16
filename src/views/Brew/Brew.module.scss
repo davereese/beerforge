@@ -463,13 +463,38 @@
     }
 
     &.mash {
-      .section__values {
-        @include for-tablet-landscape-up () {
-          grid-template-columns: 50% 50%;
+      .mash_step {
+        padding: 12px 15px 15px;
+        background-color: rgba($brew-list-hover, 0);
+        border-bottom: 1px solid rgba($stat-border, 0.5);
+        transition: background-color 0.3s;
+        cursor: pointer;
+
+        &:last-of-type {
+          border-bottom: none;
+        }
+  
+        &:hover {
+          background-color: rgba($brew-list-hover, 0.4);
         }
 
-        @media (min-width: 1150px) {
-          grid-template-columns: 30% 20% 20% 30%;
+        .mash_label {
+          display: inline-block;
+          padding-bottom: 2px;
+          font-weight: $weight-semibold;
+          color: $brew-callout;
+        }
+
+        .section__values {
+          padding: 0;
+  
+          @include for-tablet-landscape-up () {
+            grid-template-columns: 50% 50%;
+          }
+  
+          @media (min-width: 1150px) {
+            grid-template-columns: 30% 20% 20% 30%;
+          }
         }
       }
     }
@@ -503,7 +528,7 @@
       }
 
       @include for-tablet-landscape-up () {
-        left: 60%;
+        left: 56%;
         transform: translateY(-45px);
       }
 

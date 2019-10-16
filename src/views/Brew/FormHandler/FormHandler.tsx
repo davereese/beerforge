@@ -54,6 +54,7 @@ function FormHandler({
   };
 
   const saveData = () => {
+    // remove secondary fermentation data if it has been removed in the form
     if (optionData && optionData.secondary === false && formData) {
       delete formData.secondaryLength;
       delete formData.secondaryTemp;
@@ -132,9 +133,9 @@ function FormHandler({
       component = <AddAdjunctForm brew={brew} editingData={editingData} dataUpdated={setData} />;
       break;
     case 'mash':
-      title = 'Mash';
-      component = <MashForm brew={brew} dataUpdated={setData} />;
-      submitText = 'Submit';
+      title = 'Add Mash Step';
+      component = <MashForm brew={brew} dataUpdated={setData} editingData={editingData} />;
+      submitText = '+ Add';
       break;
     case 'boil':
       title = 'Boil';

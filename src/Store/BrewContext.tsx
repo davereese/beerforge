@@ -2,6 +2,7 @@ import React, { useReducer, useContext } from 'react';
 
 // import * as brewService from './BrewService';
 import * as Calculator from '../resources/javascript/calculator';
+import { array } from 'prop-types';
 
 export interface FermentableInterface {
   id?: number;
@@ -56,8 +57,24 @@ export interface AdjunctInterface {
   [key: string]: string | number | undefined;
 };
 
+export interface MashInterface {
+  type?: 'strike' | 'infusion' | 'decoction' | 'temperature' | 'sparge';
+  strikeTemp?: number;
+  strikeVolume?: number;
+  targetStepTemp?: number;
+  currentMashTemp?: number;
+  waterToGrain?: number;
+  grainTemp?: number;
+  stepLength?: number;
+  spargeTemp?: number;
+  spargeVolume?: number;
+  infusionWaterTemp?: number;
+  infusionWaterVol?: number;
+  [key: string]: string | number | undefined;
+};
+
 export interface processOptionsInterface {
-  units: 'us' | 'metric',
+  units: 'us' | 'metric';
   ibuFormula: 'rager' | 'tinseth';
   strikeFactor?: number;
   kettle?: number;
@@ -87,17 +104,10 @@ export interface BrewInterface {
   yeast: YeastInterface[];
   adjuncts: AdjunctInterface[];
   totalWater?: number;
-  strikeTemp?: number;
-  strikeVolume?: number;
-  targetMashTemp?: number;
-  waterToGrain?: number;
-  grainTemp?: number;
+  mash: MashInterface[];
   totalMashVolume?: number;
-  mashLength?: number;
-  kettleSize?: number;
-  spargeTemp?: number;
-  spargeVolume?: number;
   topOff?: number;
+  kettleSize?: number;
   boilLength?: number;
   preBoilVolume?: number;
   evaporationRate?: number;
@@ -113,7 +123,7 @@ export interface BrewInterface {
   notes?: string;
   tags?: string;
   srm?: number;
-  ibu?: number
+  ibu?: number;
   og?: number;
   preBoilG?: number;
   fg?: number;
@@ -126,12 +136,16 @@ const initialState: any = {
   fermentables: [],
   hops: [],
   yeast: [],
-  adjuncts: []
+  adjuncts: [],
+  mash: [],
 };
 
 export const BrewContext = React.createContext(initialState);
 
-const compareWeight = (a: FermentableInterface | HopInterface, b: FermentableInterface | HopInterface) => {
+const compareWeight = (
+  a: FermentableInterface | HopInterface,
+  b: FermentableInterface | HopInterface
+) => {
   const weightA = Number(a.weight);
   const weightB = Number(b.weight);
 
@@ -157,7 +171,23 @@ const compareAmount = (a: YeastInterface, b: YeastInterface) => {
   return comparison;
 };
 
-export const processBrew = (brew: BrewInterface, options: processOptionsInterface): BrewInterface => {
+const compareStep = (a: MashInterface, b: MashInterface) => {
+  const typeA = a.type;
+  const typeB = b.type;
+
+  let comparison = 0;
+  if (typeA === 'sparge' && typeB !== 'sparge') {
+    comparison = 1;
+  } else if (typeA !== 'sparge' && typeB === 'sparge') {
+    comparison = -1;
+  }
+  return comparison;
+};
+
+export const processBrew = (
+  brew: BrewInterface,
+  options: processOptionsInterface
+): BrewInterface => {
   // Sort ingredients
   if (brew.fermentables) {
     brew.fermentables.sort(compareWeight);
@@ -172,22 +202,54 @@ export const processBrew = (brew: BrewInterface, options: processOptionsInterfac
     brew.adjuncts.sort(compareAmount);
   }
 
+  // Sort mash steps
+  if (brew.mash) {
+    brew.mash.sort(compareStep);
+  }
+
   // Run Calculations
   if (brew.fermentables.length > 0) {
-    brew.totalFermentables = Calculator.totalFermentableWeight(brew.fermentables);
+    brew.totalFermentables = Calculator.totalFermentableWeight(
+      brew.fermentables
+    );
     if (brew.batchType === 'partialMash') {
-      const nonExtractFermentablesArray = brew.fermentables.filter(fermentable => fermentable.extract !== true);
-      brew.totalGrainFermentables = Calculator.totalFermentableWeight(nonExtractFermentablesArray);
+      const nonExtractFermentablesArray = brew.fermentables.filter(
+        fermentable => fermentable.extract !== true
+      );
+      brew.totalGrainFermentables = Calculator.totalFermentableWeight(
+        nonExtractFermentablesArray
+      );
     }
   }
   if (brew.fermentables && brew.batchSize) {
     brew.srm = Calculator.SRM(brew.fermentables, brew.batchSize);
   }
-  if (brew.batchType !== 'BIAB' && brew.totalFermentables && brew.waterToGrain) {
-    if (brew.batchType === 'partialMash' && brew.totalGrainFermentables) {
-      brew.strikeVolume = Calculator.strikeVolume(brew.totalGrainFermentables, brew.waterToGrain);
-    } else {
-      brew.strikeVolume = Calculator.strikeVolume(brew.totalFermentables, brew.waterToGrain);
+  if (
+    brew.batchType !== 'BIAB' &&
+    brew.totalFermentables &&
+    brew.mash.some(e => e.waterToGrain)
+  ) {
+    let index;
+    const strike = brew.mash.find((step, i) => {
+      if (step.type === 'strike') {
+        index = i;
+        return step;
+      } else {
+        return null;
+      }
+    });
+    if (strike && index !== undefined) {
+      if (brew.batchType === 'partialMash' && brew.totalGrainFermentables) {
+        brew.mash[index].strikeVolume = Calculator.strikeVolume(
+          brew.totalGrainFermentables,
+          strike.waterToGrain
+        );
+      } else {
+        brew.mash[index].strikeVolume = Calculator.strikeVolume(
+          brew.totalFermentables,
+          strike.waterToGrain
+        );
+      }
     }
   }
   if (brew.hops.length) {
@@ -196,68 +258,271 @@ export const processBrew = (brew: BrewInterface, options: processOptionsInterfac
   if (brew.hops.length > 0 && brew.og && brew.batchSize) {
     let totalIbu = 0;
     brew.hops = brew.hops.map(hop => {
-      hop.ibu = Calculator.IBU([hop], brew.og, brew.batchSize, options.ibuFormula);
+      hop.ibu = Calculator.IBU(
+        [hop],
+        brew.og,
+        brew.batchSize,
+        options.ibuFormula
+      );
       totalIbu += hop.ibu ? hop.ibu : 0;
       return hop;
     });
     brew.ibu = parseFloat(totalIbu.toFixed(2));
   }
-  if (brew.batchType !== 'BIAB' && brew.grainTemp && brew.targetMashTemp && brew.waterToGrain) {
-    brew.strikeTemp = Calculator.strikeTemp(brew.grainTemp, brew.targetMashTemp, brew.waterToGrain, options.strikeFactor);
-  }
-  if (brew.batchSize && brew.boilLength && brew.evaporationRate && brew.totalFermentables) {
-    if (brew.batchType === 'BIAB') {
-      brew.totalWater = Calculator.totalBIABWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables, brew.totalHops, options);
-    } else {
-      brew.totalWater = Calculator.totalWater(brew.batchSize, brew.boilLength, brew.evaporationRate, brew.totalFermentables, options);
+  if (
+    brew.batchType !== 'BIAB' &&
+    brew.mash.some(item =>
+      item.grainTemp &&
+      item.targetStepTemp &&
+      item.waterToGrain
+    )
+  ) {
+    let index;
+    const step = brew.mash.find((item, i) => {
+      if (
+        item.grainTemp &&
+        item.targetStepTemp &&
+        item.waterToGrain
+      ) {
+        index = i;
+        return item;
+      } else {
+        return null;
+      }
+    });
+    if (step && index !== undefined) {
+      brew.mash[index].strikeTemp = Calculator.strikeTemp(
+        step.grainTemp,
+        step.targetStepTemp,
+        step.waterToGrain,
+        options.strikeFactor
+      );
     }
   }
-  if (brew.batchType === 'BIAB' && brew.totalWater && brew.totalFermentables && brew.grainTemp && brew.targetMashTemp) {
-    brew.strikeTemp = Calculator.biabStrikeTemp(brew.totalWater, brew.totalFermentables, brew.targetMashTemp, brew.grainTemp, options.units);
+  if (
+    brew.batchSize &&
+    brew.boilLength &&
+    brew.evaporationRate &&
+    brew.totalFermentables
+  ) {
+    if (brew.batchType === 'BIAB') {
+      brew.totalWater = Calculator.totalBIABWater(
+        brew.batchSize,
+        brew.boilLength,
+        brew.evaporationRate,
+        brew.totalFermentables,
+        brew.totalHops,
+        options
+      );
+    } else {
+      brew.totalWater = Calculator.totalWater(
+        brew.batchSize,
+        brew.boilLength,
+        brew.evaporationRate,
+        brew.totalFermentables,
+        options
+      );
+    }
   }
-  if (brew.batchType === 'allGrain' && brew.totalWater && brew.strikeVolume) {
-    brew.spargeVolume = Calculator.spargeVolume(brew.totalWater, brew.strikeVolume);
+  if (
+    brew.batchType === 'BIAB' &&
+    brew.totalWater &&
+    brew.totalFermentables &&
+    brew.mash.some(item =>
+      item.grainTemp &&
+      item.targetStepTemp
+    )
+  ) {
+    let index;
+    const step = brew.mash.find((item, i) => {
+      if (
+        item.grainTemp &&
+        item.targetStepTemp
+      ) {
+        index = i;
+        return item;
+      } else {
+        return null;
+      }
+    });
+    if (step && index !== undefined) {
+      brew.mash[index].strikeTemp = Calculator.biabStrikeTemp(
+        brew.totalWater,
+        brew.totalFermentables,
+        step.targetStepTemp,
+        step.grainTemp,
+        options.units
+      );
+    }
   }
-  if (brew.batchType === 'partialMash' && brew.strikeVolume) {
-    brew.spargeVolume = brew.strikeVolume;
+  if (
+    brew.totalFermentables &&
+    brew.mash.some(item =>
+      item.type === 'infusion' &&
+      item.targetStepTemp &&
+      item.currentMashTemp &&
+      item.infusionWaterTemp
+    )
+  ) {
+    let waterVol = 0;
+    brew.mash.forEach(step => {
+      if (step.type === 'strike') {
+        waterVol = step.strikeVolume
+          ? waterVol + Number(step.strikeVolume * 4) // convert to quarts from gallons
+          : waterVol + 0
+      }
+      if (step.type === 'infusion') {
+        step.infusionWaterVol = Calculator.infusionWaterVol(
+          step.targetStepTemp,
+          step.currentMashTemp,
+          brew.totalFermentables,
+          waterVol,
+          step.infusionWaterTemp
+        );
+        waterVol = step.infusionWaterVol
+          ? waterVol + Number(step.infusionWaterVol)
+          : waterVol + 0;
+      }
+      return step;
+    });
+  }
+  if (
+    brew.batchType === 'allGrain' &&
+    brew.totalWater &&
+    brew.mash.some(item => item.strikeVolume)
+  ) {
+    const step = brew.mash.find(item => item.type === 'strike');
+    let index;
+    let totalInfusionWaterVol = 0;
+    brew.mash.find((item, i) => {
+      if (item.type === 'sparge') {
+        index = i;
+      } else if (item.type === 'infusion') {
+        totalInfusionWaterVol = item.infusionWaterVol
+          ? totalInfusionWaterVol + Number(item.infusionWaterVol / 4) // convert to gallons from quarts
+          : totalInfusionWaterVol + 0
+      }
+      return null;
+    });
+    // if water is added in an infusion, remove amount added from sparge water
+    if (step && step.strikeVolume && index !== undefined) {
+      brew.mash[index].spargeVolume = Calculator.spargeVolume(
+        brew.totalWater,
+        Number(step.strikeVolume) + totalInfusionWaterVol
+      );
+    }
+  }
+  if (
+    brew.batchType === 'partialMash' &&
+    brew.mash.some(item => item.strikeVolume)
+  ) {
+    const step = brew.mash.find(item => item.type === 'strike');
+    let index;
+    brew.mash.find((item, i) => {
+      if (item.type === 'sparge') {
+        index = i;
+      }
+      return null;
+    });
+    if (step && index !== undefined) {
+      brew.mash[index].spargeVolume = step.strikeVolume;
+    }
   }
   if (brew.fermentables.length > 0 && brew.systemEfficiency && brew.batchSize) {
-    brew.og = Calculator.OG(brew.fermentables, brew.systemEfficiency, brew.batchSize);
+    brew.og = Calculator.OG(
+      brew.fermentables,
+      brew.systemEfficiency,
+      brew.batchSize
+    );
   }
   if (brew.og && brew.totalFermentables && brew.totalWater && brew.batchSize) {
-    brew.preBoilG = Calculator.preBoilG(brew.og, brew.totalFermentables, brew.totalWater, brew.batchSize, options.equipmentLoss, options.absorptionRate, brew.batchType);
+    brew.preBoilG = Calculator.preBoilG(
+      brew.og,
+      brew.totalFermentables,
+      brew.totalWater,
+      brew.batchSize,
+      options.equipmentLoss,
+      options.absorptionRate,
+      brew.batchType
+    );
   }
   if (brew.og && brew.batchSize && brew.targetPitchingRate) {
-    brew.targetPitchingCellCount = Calculator.targetPitchingRate(brew.og, brew.batchSize, brew.targetPitchingRate);
+    brew.targetPitchingCellCount = Calculator.targetPitchingRate(
+      brew.og,
+      brew.batchSize,
+      brew.targetPitchingRate
+    );
   }
   if (brew.yeast.length > 0) {
     let totalCellCount = 0;
     brew.yeast.forEach(item => {
-      item.viableCellCount = Calculator.pitchingRate(item.type, item.cellCount, item.amount, item.mfgDate);
+      item.viableCellCount = Calculator.pitchingRate(
+        item.type,
+        item.cellCount,
+        item.amount,
+        item.mfgDate
+      );
       totalCellCount += item.viableCellCount ? item.viableCellCount : 0;
     });
     brew.pitchCellCount = totalCellCount;
   }
   if (brew.totalWater && brew.totalFermentables) {
-    brew.preBoilVolume = Calculator.preBoilVol(brew.totalWater, brew.totalFermentables, options.equipmentLoss, options.absorptionRate, brew.batchType);
+    brew.preBoilVolume = Calculator.preBoilVol(
+      brew.totalWater,
+      brew.totalFermentables,
+      options.equipmentLoss,
+      options.absorptionRate,
+      brew.batchType
+    );
     if (brew.batchType === 'BIAB') {
-      brew.totalMashVolume = Calculator.totalMashVolume(brew.totalWater, brew.totalFermentables);
+      brew.totalMashVolume = Calculator.totalMashVolume(
+        brew.totalWater,
+        brew.totalFermentables
+      );
     }
   }
-  if (brew.batchType === 'partialMash' && brew.preBoilVolume && brew.spargeVolume && brew.totalGrainFermentables) {
-    brew.topOff = Calculator.partialMashTopOff(brew.preBoilVolume, brew.spargeVolume, brew.totalGrainFermentables, options.absorptionRate);
+  if (
+    brew.batchType === 'partialMash' &&
+    brew.preBoilVolume &&
+    brew.mash.some(item => item.spargeVolume) &&
+    brew.totalGrainFermentables
+  ) {
+    const step = brew.mash.find(item => item.spargeVolume);
+    if (step) {
+      brew.topOff = Calculator.partialMashTopOff(
+        brew.preBoilVolume,
+        step.spargeVolume,
+        brew.totalGrainFermentables,
+        options.absorptionRate
+      );
+    }
   }
   if (brew.yeast.length > 0 && brew.og) {
     let attenuationAdditions = 0;
-    brew.yeast.forEach(item => attenuationAdditions += item.averageAttenuation ? item.averageAttenuation : 0);
+    brew.yeast.forEach(
+      item =>
+        (attenuationAdditions += item.averageAttenuation
+          ? item.averageAttenuation
+          : 0)
+    );
     brew.attenuation = attenuationAdditions / brew.yeast.length;
     brew.fg = Calculator.FG(brew.og, brew.attenuation);
   }
   if (brew.og && brew.fg) {
     brew.alcoholContent = Calculator.alcoholContent(brew.og, brew.fg, 'ABV');
   }
-  if (brew.beerTemp && brew.CO2VolumeTarget && brew.carbonationMethod && brew.batchSize) {
-    brew.amountForCO2 = Calculator.CO2(brew.beerTemp, brew.CO2VolumeTarget, brew.carbonationMethod, brew.batchSize);
+  if (
+    brew.beerTemp &&
+    brew.CO2VolumeTarget &&
+    brew.carbonationMethod &&
+    brew.batchSize
+  ) {
+    brew.amountForCO2 = Calculator.CO2(
+      brew.beerTemp,
+      brew.CO2VolumeTarget,
+      brew.carbonationMethod,
+      brew.batchSize
+    );
   }
 
   return brew;
@@ -283,9 +548,7 @@ const reducer = (state: any, action: any) => {
 const BrewProvider = ({ children }: any) => {
   const contextValue = useReducer(reducer, initialState);
   return (
-    <BrewContext.Provider value={contextValue}>
-      {children}
-    </BrewContext.Provider>
+    <BrewContext.Provider value={contextValue}>{children}</BrewContext.Provider>
   );
 };
 

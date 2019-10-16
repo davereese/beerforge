@@ -150,7 +150,9 @@ export function biabStrikeTemp(totalWater, grainWeight, targetTemp, grainTemp, u
 };
 
 // Mash Infusion Equation:
-export function mashInfusionWaterVol(targetTemp, initailTemp, grainVol, totalMashVol, infusionWaterTemp) {
+export function infusionWaterVol(targetTemp, initailTemp, grainVol, totalMashVol, infusionWaterTemp) {
+  // totalMashVol is in QUARTS
+  // result is in QUARTS
   // Wa = (T2 - T1)(.2G + Wm)/(Tw - T2)
   const one = targetTemp - initailTemp;
   const two = (0.2 * grainVol) + Number(totalMashVol);

@@ -152,7 +152,11 @@ function AddFermentableForm(props: Props) {
           type="number"
           step="0.01"
           placeholder="0"
-          value={formData.weight ? user.units === 'metric' ? parseFloat(lb2kg(formData.weight).toFixed(5)) : formData.weight.toString() : ''}
+          value={formData.weight
+            ? user.units === 'metric'
+              ? parseFloat(lb2kg(formData.weight).toFixed(5))
+              : formData.weight.toString() 
+            : ''}
           onChange={dataChanged('weight')}
         />
       </label>

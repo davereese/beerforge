@@ -28,6 +28,13 @@ function BoilForm(props: Props) {
     props.dataUpdated(formData);
   });
 
+  useEffect(() => {
+    if (props.brew.batchType !== 'BIAB' && !formData.evaporationRate) {
+      setFormData({...formData, evaporationRate: user.evap_rate ? user.evap_rate : ''});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return(
     <>
       <label>Boil Length (min)<br />
@@ -42,9 +49,9 @@ function BoilForm(props: Props) {
         <input
           type="number"
           placeholder={props.brew.batchType === 'BIAB' ? '0.5' : '1.5'}
-          defaultValue={`${props.brew.batchType === 'BIAB'
-            ? user.units === 'metric' ? parseFloat(gal2l(props.brew.evaporationRate).toFixed(5)) : props.brew.evaporationRate
-            : props.brew.evaporationRate ? props.brew.evaporationRate : user.evap_rate}`}
+          value={`${props.brew.batchType === 'BIAB' && formData.evaporationRate
+            ? user.units === 'metric' ? parseFloat(gal2l(formData.evaporationRate).toFixed(5)) : formData.evaporationRate.toString()
+            : formData.evaporationRate ? formData.evaporationRate.toString() : ''}`}
           onChange={dataChanged('evaporationRate')}
         />
       </label>
