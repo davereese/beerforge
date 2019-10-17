@@ -180,6 +180,9 @@ const compareStep = (a: MashInterface, b: MashInterface) => {
   } else if (typeA !== 'sparge' && typeB === 'sparge') {
     comparison = -1;
   }
+  if (typeA === 'strike' && typeB !== 'strike') {
+    comparison = -1;
+  }
   return comparison;
 };
 
