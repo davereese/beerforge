@@ -2,7 +2,6 @@ import React, { useReducer, useContext } from 'react';
 
 // import * as brewService from './BrewService';
 import * as Calculator from '../resources/javascript/calculator';
-import { array } from 'prop-types';
 
 export interface FermentableInterface {
   id?: number;

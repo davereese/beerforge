@@ -14,6 +14,7 @@ import NotesForm from '../../../components/Forms/NotesForm';
 import { BrewInterface } from '../../../Store/BrewContext';
 import { useBrew } from '../../../Store/BrewContext';
 import TagsForm from '../../../components/Forms/TagsForm';
+import { isEquivalent } from '../../../resources/javascript/isEquivalent';
 
 interface Props {
   form: string;
@@ -71,15 +72,15 @@ function FormHandler({
 
   const handleDelete = () => {
     // @ts-ignore-line
-    let ingredientArray = [...formData[form]];
+    let editingArray = [...formData[form]];
     let dataToSet: any = [];
-    const index = ingredientArray.findIndex(ingredient => ingredient === editingData);
+    const index = editingArray.findIndex(entry => isEquivalent(entry, editingData));
 
     if (index > -1) {
-      dataToSet = ingredientArray;
+      dataToSet = editingArray;
       dataToSet.splice(index, 1);
     } else {
-      dataToSet = [...ingredientArray, formData];
+      dataToSet = [...editingArray, formData];
     }
 
     setFormData({...brew, [form]: dataToSet});
@@ -133,9 +134,14 @@ function FormHandler({
       component = <AddAdjunctForm brew={brew} editingData={editingData} dataUpdated={setData} />;
       break;
     case 'mash':
-      title = 'Add Mash Step';
+      if (editingData) {
+        title = 'Edit Mash Step';
+        submitText = 'Edit';
+      } else {
+        title = 'Add Mash Step';
+        submitText = '+ Add';
+      }
       component = <MashForm brew={brew} dataUpdated={setData} editingData={editingData} />;
-      submitText = '+ Add';
       break;
     case 'boil':
       title = 'Boil';
@@ -192,7 +198,7 @@ function FormHandler({
               onClick={handleNext}
             >Next</button>
           : <br />}
-        {editingData !== null
+        {editingData !== null && editingData.type !== 'strike'
           ? <button
               className="button button--error button--no-shadow"
               onClick={handleDelete}

@@ -100,6 +100,25 @@ function MashForm(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.brew]);
 
+  useEffect(() => {
+    // if the form's editingData changes, we've selected something to edit.
+    // set the form default valies to be the data we're editing.
+    if (props.editingData !== null) {
+      setFormData(props.editingData);
+    } else {
+      if (props.brew.mash.length > 0) {
+        setFormData({ type: "temperature" });
+      } else {
+        if (props.brew.batchType === "BIAB") {
+          setFormData({ type: "strike", kettleSize: user.kettle_size ? user.kettle_size : "" });
+        } else {
+          setFormData({ type: "strike" });
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.editingData]);
+
   return (
     <>
       <label>
@@ -109,13 +128,16 @@ function MashForm(props: Props) {
           onChange={dataChanged("type")}
           value={formData.type ? formData.type.toString() : ""}
         >
-          {props.brew.mash.length > 0
-            ? (<>
-                <option value="temperature">Temperature</option>
-                <option value="infusion">Infusion</option>
-                <option value="decoction">Decoction</option>
-                <option value="sparge">Sparge</option>
-              </>
+          {props.brew.mash.length > 0 
+            ? (
+              props.editingData && props.editingData.type === 'strike'
+                ? <option value="strike">Strike</option>
+                : <>
+                    <option value="temperature">Temperature</option>
+                    <option value="infusion">Infusion</option>
+                    <option value="decoction">Decoction</option>
+                    <option value="sparge">Sparge</option>
+                  </>
             ) : <option value="strike">Start with the strike step</option>}
         </select>
       </label>

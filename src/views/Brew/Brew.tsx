@@ -589,30 +589,33 @@ const Brew = (props: Props) => {
                       ><span>Edit</span></button>
                     : null}
                 </div>
-                {brew && brew.mash.map((item: MashInterface, index: number) => (
-                  <div key={`step${index + 1}`} className={styles.mash_step}>
+                {brew && brew.mash.map((step: MashInterface, index: number) => (
+                  <div
+                    key={`step${index + 1}`} className={styles.mash_step}
+                    onClick={!readOnly ? openSideBar('mash', step) : () => null}
+                  >
                     <label className={styles.mash_label}>
-                      {index + 1}: {item.type ? item.type.toUpperCase() : ''}
+                      {index + 1}: {step.type ? step.type.toUpperCase() : ''}
                     </label>
                     <div className={styles.section__values}>
-                      {item.type === 'strike'
+                      {step.type === 'strike'
                         ? <>
                           <span>
-                            {item.strikeVolume && brew.batchType !== 'BIAB' && item.strikeTemp
-                              ? <>Strike with <strong>{user.units === 'metric' ? parseFloat(gal2l(item.strikeVolume).toFixed(1)) : item.strikeVolume} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(item.strikeTemp).toFixed(1)) : item.strikeTemp} °{unitLabels.temp}</strong></>
+                            {step.strikeVolume && brew.batchType !== 'BIAB' && step.strikeTemp
+                              ? <>Strike with <strong>{user.units === 'metric' ? parseFloat(gal2l(step.strikeVolume).toFixed(1)) : step.strikeVolume} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.strikeTemp).toFixed(1)) : step.strikeTemp} °{unitLabels.temp}</strong></>
                               : null}
-                            {brew.totalWater && brew.batchType === 'BIAB' && item.strikeTemp
-                              ? <>Strike with <strong>{brew.totalWater.toFixed(2)} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(item.strikeTemp).toFixed(2)) : item.strikeTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                          </span>
-                          <span>
-                            {item.targetStepTemp
-                              ? <>Mash at <strong>{user.units === 'metric' ? parseFloat(f2c(item.targetStepTemp).toFixed(1)) : item.targetStepTemp} °{unitLabels.temp}</strong></>
+                            {brew.totalWater && brew.batchType === 'BIAB' && step.strikeTemp
+                              ? <>Strike with <strong>{brew.totalWater.toFixed(2)} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.strikeTemp).toFixed(2)) : step.strikeTemp} °{unitLabels.temp}</strong></>
                               : null}
                           </span>
                           <span>
-                            {item.stepLength
-                              ? <>Hold for <strong>{item.stepLength} min</strong></>
+                            {step.targetStepTemp
+                              ? <>Mash at <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
+                              : null}
+                          </span>
+                          <span>
+                            {step.stepLength
+                              ? <>Hold for <strong>{step.stepLength} min</strong></>
                               : null}
                           </span>
                           {brew.totalMashVolume && brew.batchType === 'BIAB'
@@ -620,50 +623,50 @@ const Brew = (props: Props) => {
                             : null}
                         </>
                         : null}
-                      {item.type === 'temperature' || item.type === 'decoction'
+                      {step.type === 'temperature' || step.type === 'decoction'
                         ? <>
                           <span>
-                            {item.targetStepTemp
-                              ? <>Raise to <strong>{user.units === 'metric' ? parseFloat(f2c(item.targetStepTemp).toFixed(1)) : item.targetStepTemp} °{unitLabels.temp}</strong></>
+                            {step.targetStepTemp
+                              ? <>Raise to <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
                               : null}
                           </span>
                           <span>
-                            {item.stepLength
-                              ? <>Hold for <strong>{item.stepLength} min</strong></>
+                            {step.stepLength
+                              ? <>Hold for <strong>{step.stepLength} min</strong></>
                               : null}
                           </span>
                           </>
                         : null}
-                      {item.type === 'infusion'
+                      {step.type === 'infusion'
                         ? <>
                           <span>
-                            {item.infusionWaterVol
-                              ? <>Add <strong>{user.units === 'metric' ? parseFloat(qt2l(item.infusionWaterVol).toFixed(2)) : item.infusionWaterVol} {unitLabels.smallVol}</strong></>
+                            {step.infusionWaterVol
+                              ? <>Add <strong>{user.units === 'metric' ? parseFloat(qt2l(step.infusionWaterVol).toFixed(2)) : step.infusionWaterVol} {unitLabels.smallVol}</strong></>
                               : null}
-                            {item.infusionWaterTemp
-                              ? <> at <strong>{user.units === 'metric' ? parseFloat(f2c(item.infusionWaterTemp).toFixed(1)) : item.infusionWaterTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                          </span>
-                          <span>
-                            {item.targetStepTemp
-                              ? <> Bring to <strong>{user.units === 'metric' ? parseFloat(f2c(item.targetStepTemp).toFixed(1)) : item.targetStepTemp} °{unitLabels.temp}</strong></>
+                            {step.infusionWaterTemp
+                              ? <> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.infusionWaterTemp).toFixed(1)) : step.infusionWaterTemp} °{unitLabels.temp}</strong></>
                               : null}
                           </span>
                           <span>
-                            {item.stepLength
-                              ? <>Hold for <strong>{item.stepLength} min</strong></>
+                            {step.targetStepTemp
+                              ? <> Bring to <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
+                              : null}
+                          </span>
+                          <span>
+                            {step.stepLength
+                              ? <>Hold for <strong>{step.stepLength} min</strong></>
                               : null}
                           </span>
                           </>
                         : null}
-                      {item.type === 'sparge'
+                      {step.type === 'sparge'
                         ? <span>
-                          {item.spargeTemp
+                          {step.spargeTemp
                             ? <>Sparge&nbsp;
-                              {item.spargeVolume
-                                ? <>with <strong>{user.units === 'metric' ? parseFloat(gal2l(item.spargeVolume).toFixed(2)) : item.spargeVolume} {unitLabels.vol}</strong> </>
+                              {step.spargeVolume
+                                ? <>with <strong>{user.units === 'metric' ? parseFloat(gal2l(step.spargeVolume).toFixed(2)) : step.spargeVolume} {unitLabels.vol}</strong> </>
                                 : null}
-                              at <strong>{user.units === 'metric' ? parseFloat(f2c(item.spargeTemp).toFixed(1)) : item.spargeTemp} °{unitLabels.temp}</strong></>
+                              at <strong>{user.units === 'metric' ? parseFloat(f2c(step.spargeTemp).toFixed(1)) : step.spargeTemp} °{unitLabels.temp}</strong></>
                             : null}
                         </span>
                         : null}
