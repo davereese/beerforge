@@ -34,7 +34,8 @@ const Profile = () => {
     trubLoss: user.trub_loss ? user.trub_loss : 0.5,
     equipmentLoss: user.equipment_loss ? user.equipment_loss : 1,
     absorptionRate: user.absorption_rate ? user.absorption_rate : 0.125,
-    hopAbsorptionRate: user.hop_absorption_rate ? user.hop_absorption_rate : 0.0365
+    hopAbsorptionRate: user.hop_absorption_rate ? user.hop_absorption_rate : 0.0365,
+    boilTemp: user.boil_temp ? user.boil_temp : 210
   });
   const [file, setFile] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -309,6 +310,25 @@ const Profile = () => {
               onChange={(e) => setSettings({
                 ...settings,
                 evapRate: e.target.value !== '' ? Number(e.target.value) : '',
+                edited: true
+              })}
+            />
+          </label>
+        </div>
+        <div className={formStyles.row}>
+        <label>
+            Boil Temperature&nbsp;
+            <Info alignment="top-right" info="The&nbsp;point&nbsp;at&nbsp;which water boils is dependant on altitude and atmospheric pressure." /><br />
+            <input
+              type="number"
+              placeholder="210"
+              id="boilTemp"
+              className="dark"
+              autoComplete="none"
+              value={settings.boilTemp}
+              onChange={(e) => setSettings({
+                ...settings,
+                boilTemp: e.target.value !== '' ? Number(e.target.value) : '',
                 edited: true
               })}
             />

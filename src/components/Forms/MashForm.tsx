@@ -43,11 +43,26 @@ function MashForm(props: Props) {
         user.units === "metric"
           ? l2gal(props.brew.kettleSize)
           : event.currentTarget.value;
+    } else if (type === "type" && event.currentTarget.value === "infusion") {
+      data[type] = event.currentTarget.value;
+      data.infusionWaterTemp = user.boil_temp;
     } else {
       data[type] = event.currentTarget.value;
     }
     setFormData({ ...formData, ...data });
   };
+
+  const setFormDataSwitch = () => {
+    if (props.brew.mash.length > 0) {
+      setFormData({ type: "temperature" });
+    } else {
+      if (props.brew.batchType === "BIAB") {
+        setFormData({ type: "strike", kettleSize: user.kettle_size ? user.kettle_size : "" });
+      } else {
+        setFormData({ type: "strike" });
+      }
+    }
+  }
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
@@ -88,15 +103,7 @@ function MashForm(props: Props) {
 
   useEffect(() => {
     // reset form when submitted
-    if (props.brew.mash.length > 0) {
-      setFormData({ type: "temperature" });
-    } else {
-      if (props.brew.batchType === "BIAB") {
-        setFormData({ type: "strike", kettleSize: user.kettle_size ? user.kettle_size : "" });
-      } else {
-        setFormData({ type: "strike" });
-      }
-    }
+    setFormDataSwitch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.brew]);
 
@@ -106,15 +113,7 @@ function MashForm(props: Props) {
     if (props.editingData !== null) {
       setFormData(props.editingData);
     } else {
-      if (props.brew.mash.length > 0) {
-        setFormData({ type: "temperature" });
-      } else {
-        if (props.brew.batchType === "BIAB") {
-          setFormData({ type: "strike", kettleSize: user.kettle_size ? user.kettle_size : "" });
-        } else {
-          setFormData({ type: "strike" });
-        }
-      }
+      setFormDataSwitch();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.editingData]);
