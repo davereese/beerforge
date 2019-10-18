@@ -559,7 +559,7 @@ const Brew = (props: Props) => {
                 key={`${item.id}${index}`}
               >
                 <span className={styles.firstCol}>
-                  {item.amount} pack{item.amount && item.amount > 1 ? 's' : null}
+                  {item.amount} {item.units === 'cells' ? 'bn cells' : item.units}
                 </span>
                 <span className={styles.secondCol}>
                   {item.manufacturer ? `${item.manufacturer} - ` : null}{item.name ? item.name : item.custom}

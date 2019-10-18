@@ -46,7 +46,7 @@ function AddYeastForm(props: Props) {
           averageAttenuation: choice.average_attenuation,
         }
         : {};
-    } else if (field === 'mfgDate' || field === 'custom' || field === 'type') {
+    } else if (field === 'mfgDate' || field === 'custom' || field === 'type' || field === 'units') {
       data[field] = event.currentTarget.value;
     } else {
       data[field] = Number(event.currentTarget.value) + 0;
@@ -66,11 +66,13 @@ function AddYeastForm(props: Props) {
         data['manufacturer'] = '';
       }
 
-      data.viableCellCount = pitchingRate(
-        data.type ? data.type : formData.type,
-        data.cellCount ? data.cellCount : formData.cellCount,
-        data.amount ? data.amount : formData.amount,
-        data.mfgDate ? data.mfgDate : formData.mfgDate
+      data.viableCellCount = data.units === 'cells' || formData.units === 'cells'
+      ? data.amount
+      : pitchingRate(
+          data.type ? data.type : formData.type,
+          data.cellCount ? data.cellCount : formData.cellCount,
+          data.amount ? data.amount : formData.amount,
+          data.mfgDate ? data.mfgDate : formData.mfgDate
       );
 
       setFormData({...formData, ...data});
@@ -118,7 +120,7 @@ function AddYeastForm(props: Props) {
 
   useEffect(() => {
     // reset form when submitted
-    setFormData({id: 0});
+    setFormData({id: 0, units: 'pkg'});
   }, [props.brew]);
 
   useEffect(() => {
@@ -127,7 +129,7 @@ function AddYeastForm(props: Props) {
     if (props.editingData !== null) {
       setFormData(props.editingData);
     } else {
-      setFormData({id: 0});
+      setFormData({id: 0, units: 'pkg'});
     }
   }, [props.editingData]);
 
@@ -186,15 +188,26 @@ function AddYeastForm(props: Props) {
             </div>
           </>
         : null}
-      <label>Number of Packs<br />
-        <input
-          type="number"
-          step="0.01" 
-          placeholder="0"
-          value={formData.amount ? formData.amount.toString() : ''}
-          onChange={dataChanged('amount')}
-        />
-      </label>
+      <div className={styles.row}>
+        <label>Amount<br />
+          <input
+            type="number"
+            step="0.01"
+            placeholder="0"
+            value={formData.amount ? formData.amount.toString() : ''}
+            onChange={dataChanged('amount')}
+          />
+        </label>
+        <label>Units<br />
+          <select
+              onChange={dataChanged('units')}
+              value={formData.units ? formData.units : 0}
+            >
+              <option value='pkg'>pkg</option>
+              <option value='cells'>billion cells</option>
+            </select>
+        </label>
+      </div>
       {formData.type === 'liquid'
           ? <label>Manufacture Date<br />
             <input

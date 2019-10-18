@@ -36,6 +36,7 @@ export interface YeastInterface {
   custom?: string;
   manufacturer?: string;
   amount?: number;
+  units?: string;
   type?: string;
   mfgDate?: Date;
   averageAttenuation?: number;
@@ -458,12 +459,16 @@ export const processBrew = (
   if (brew.yeast.length > 0) {
     let totalCellCount = 0;
     brew.yeast.forEach(item => {
-      item.viableCellCount = Calculator.pitchingRate(
-        item.type,
-        item.cellCount,
-        item.amount,
-        item.mfgDate
-      );
+      if (item.units === 'cells') {
+        item.viableCellCount = item.amount;
+      } else {
+        item.viableCellCount = Calculator.pitchingRate(
+          item.type,
+          item.cellCount,
+          item.amount,
+          item.mfgDate
+        );
+      }
       totalCellCount += item.viableCellCount ? item.viableCellCount : 0;
     });
     brew.pitchCellCount = totalCellCount;
