@@ -45,7 +45,6 @@
       transform: rotate3d(0, 1, 0, -115deg) rotateZ(5deg) rotateX(-0.6deg);
       transform-origin: bottom center 100px;
       transition: opacity 0.5s, transform 0.5s cubic-bezier(.53,.01,.4,.99);
-      pointer-events: auto;
     }
   }
 

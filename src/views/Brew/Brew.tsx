@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Prompt } from 'react-router'
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './Brew.module.scss';
@@ -50,6 +51,7 @@ const Brew = (props: Props) => {
   const [editingData, setEditingData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [shoudlBlock, setShoudlBlock] = useState(false);
 
   // REFS
   const brewContainer = useRef<HTMLDivElement>(null);
@@ -87,6 +89,7 @@ const Brew = (props: Props) => {
       await brewService.getBrew(brewId, user)
         .then((res: any) => {
           setLoading(false);
+          setNewBrew(false);
           brewDispatch({
             type: 'process',
             payload: res.data.brew,
@@ -175,6 +178,15 @@ const Brew = (props: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
+
+  // Watch changes for prompt display
+  useEffect(() => {
+    if (newBrew && shoudlBlock) {
+      window.onbeforeunload = () => true;
+    } else {
+      window.onbeforeunload = null;
+    }
+  });
 
   const openSideBar = (
     choice: string = '',
@@ -268,9 +280,10 @@ const Brew = (props: Props) => {
     newBrew
       ? await brewService.saveBrew(brew, user)
         .then((res: any) => {
+          setShoudlBlock(false);
           setNewBrew(false);
           setReadOnly(false);
-          props.history.push(`/brew/${brew.id}`);
+          props.history.push(`/brew/${res.data.brew.id}`);
           snackbarDispatch({type: 'show', payload: {
             status: 'success',
             message: `Successfully saved: ${brew.name}!`
@@ -307,6 +320,9 @@ const Brew = (props: Props) => {
 
   const handleUpdateBrew = (brew: BrewInterface) => {
     brewDispatch({type: 'update', payload: brew, options: userSettings});
+    if (newBrew) {
+      setShoudlBlock(true);
+    }
   }
 
   const handleDeleteBrew = () => {
@@ -353,6 +369,12 @@ const Brew = (props: Props) => {
       `}
       ref={brewContainer}
     >
+      {!readOnly
+        ? <Prompt
+            when={shoudlBlock}
+            message='You have unsaved changes, are you sure you want to leave?'
+          />
+        : null}
       <div className={styles.mainContent} role="main">
         <div className={styles.brew__pageHeading}>
           <h1>
