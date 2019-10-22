@@ -213,10 +213,15 @@
 
   .brewLogPages {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
 
-    button:hover {
-      background-color: rgba(darken(saturate($button-default-bg, 25%), 2.5%), 0.8);
+    button {
+      margin-bottom: 6px;
+
+      &:hover {
+        background-color: rgba(darken(saturate($button-default-bg, 25%), 2.5%), 0.8);
+      }
     }
   }
 }

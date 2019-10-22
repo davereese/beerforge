@@ -64,6 +64,8 @@ const Dashboard = (props: any) => {
     isMounted.current = true;
     isMounted && listUserBrews();
 
+    scrollToTop(400);
+
     // unmount
     return function cleanup() {
       isMounted.current = false;
