@@ -85,3 +85,30 @@
     }
   }
 }
+
+.sm {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin: 0 5px;
+  background-image: url("../../resources/images/sm.svg");
+  background-repeat: no-repeat;
+  background-size: auto 13px;
+  background-position: 1px 1px;
+  overflow: hidden;
+  transform: translateY(2px);
+
+  span {
+    visibility: hidden;
+    font-size: 0;
+  }
+}
+
+.twitter {
+  background-position: -25px 1px;
+}
+
+.facebook {
+  background-position: -48px 1px;
+  margin: 0 15px 0 0;
+}

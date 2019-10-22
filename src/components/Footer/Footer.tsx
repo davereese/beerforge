@@ -133,6 +133,30 @@ function Footer() {
     <footer className={styles.footer}>
       <p>&copy; Copyright {year} - BeerForge<span> &nbsp; | &nbsp; </span><br />Made with 🍺 by <a href="https://www.davidpreese.com/" target="_blank" rel="noopener noreferrer" className={styles.link}>Dave</a></p>
       <p>
+        <a
+          href="https://www.instagram.com/beerforge/"
+          className={`${styles.sm} ${styles.instagram}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Instagram</span>
+        </a>
+        <a
+          href="https://twitter.com/beer_forge"
+          className={`${styles.sm} ${styles.twitter}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Twitter</span>
+        </a>
+        <a
+          href="https://www.facebook.com/beerforge.net"
+          className={`${styles.sm} ${styles.facebook}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>Facebook</span>
+        </a>
         <button
           className={`button button--link ${styles.link}`}
           onClick={showPolicy}
