@@ -23,6 +23,7 @@ interface Props {
   closeSidebar: any;
   deleteBrew: Function;
   updateBrew: Function;
+  open: boolean;
 }
 
 function FormHandler({
@@ -32,6 +33,7 @@ function FormHandler({
   closeSidebar,
   updateBrew,
   deleteBrew,
+  open,
 }: Props) {
 
   let title: string,
@@ -45,6 +47,14 @@ function FormHandler({
   const [optionData, setOptionData] = useState<any | null>({});
 
   useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
+
+  useEffect(() => {
     if (optionData && optionData.tagDeleted) { saveData() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [optionData]);
@@ -52,6 +62,13 @@ function FormHandler({
   const setData = (data: any, options: any = null) => {
     setFormData(data);
     setOptionData(options);
+  };
+
+  const handleKeyDown = (e: any) => {
+    // submit and go to the next form on 'enter' press
+    if (open && e.keyCode === 13) {
+      handleNext();
+    }
   };
 
   const saveData = () => {

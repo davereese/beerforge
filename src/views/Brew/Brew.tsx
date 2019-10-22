@@ -223,6 +223,7 @@ const Brew = (props: Props) => {
             closeSidebar={closeSidebar}
             updateBrew={handleUpdateBrew}
             deleteBrew={handleDeleteBrew}
+            open={sideBarOpen}
           />,
         classOverride: styles.mobileFormHandler
       }
@@ -868,6 +869,7 @@ const Brew = (props: Props) => {
             closeSidebar={closeSidebar}
             updateBrew={handleUpdateBrew}
             deleteBrew={handleDeleteBrew}
+            open={sideBarOpen}
           />
         </Card>
       </div>
