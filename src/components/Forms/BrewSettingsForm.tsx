@@ -80,20 +80,31 @@ function BrewSettingsForm(props: Props) {
           />
         </label>
       ) : null}
-      <label>
-        Batch Type
-        <br />
-        <select
-          onChange={dataChanged("batchType")}
-          defaultValue={props.brew.batchType}
-        >
-          <option value="">Choose One</option>
-          <option value="allGrain">All Grain</option>
-          <option value="BIAB">BIAB</option>
-          <option value="partialMash">Partial Mash</option>
-          <option value="extract">Extract</option>
-        </select>
-      </label>
+      <div className={styles.row}>
+        <label>
+          Batch Type
+          <br />
+          <select
+            onChange={dataChanged("batchType")}
+            defaultValue={props.brew.batchType}
+          >
+            <option value="">Choose One</option>
+            <option value="allGrain">All Grain</option>
+            <option value="BIAB">BIAB</option>
+            <option value="partialMash">Partial Mash</option>
+            <option value="extract">Extract</option>
+          </select>
+        </label>
+        <label>
+          Units (global change)&nbsp;
+          <Info
+            alignment="top-right"
+            info="The&nbsp;units&nbsp;are&nbsp;managed at the account level. Go to your profile to switch. This will only change how units are displayed, and will not have any other affect on saved brews."
+          />
+          <br />
+          <span className={styles.info}>Current: <strong>{`${user.units === "metric" ? "Metric" : "US"}`}</strong></span>
+        </label>
+      </div>
       <div className={styles.row}>
         <label>
           Batch Size ({user.units === "metric" ? "L" : "gal"})&nbsp;

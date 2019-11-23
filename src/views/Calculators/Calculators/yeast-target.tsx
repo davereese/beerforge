@@ -30,7 +30,7 @@ const YeastTargetPitchingRate = (props: any) => {
           value={og}
           onChange={(e) => setOg(e.target.value)}
         ></input><br />
-        <label htmlFor="volume">Volume</label><br />
+        <label htmlFor="volume">Volume (gal)</label><br />
         <input
           name="volume"
           type="number"

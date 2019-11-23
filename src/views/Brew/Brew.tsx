@@ -60,11 +60,11 @@ const Brew = (props: Props) => {
   const top = {marginTop: topSpacing};
   const prevBrew: BrewInterface = usePrevious(brew) as unknown as BrewInterface;
   const unitLabels = {
-    vol: user.units === 'us' ? 'gal' : 'L',
-    smallVol: user.units === 'us' ? 'qts' : 'L',
-    largeWeight: user.units === 'us' ? 'lb' : 'kg',
-    smallWeight: user.units === 'us' ? 'oz' : 'g',
-    temp: user.units === 'us' ? 'F' : 'C',
+    vol: user.units === 'metric' ? 'L' : 'gal',
+    smallVol: user.units === 'metric' ? 'L' : 'qts',
+    largeWeight: user.units === 'metric' ? 'kg' : 'lb',
+    smallWeight: user.units === 'metric' ? 'g' : 'oz',
+    temp: user.units === 'metric' ? 'C' : 'F',
   }
   const userSettings: processOptionsInterface = {
     ibuFormula: user.ibu_formula,
@@ -842,10 +842,12 @@ const Brew = (props: Props) => {
                   })
                 : null
               }
-              <button
-                className={`button ${styles.tagsButton}`}
-                onClick={openSideBar('tags')}
-              >Tags</button>
+              {!readOnly
+                ? <button
+                  className={`button ${styles.tagsButton}`}
+                  onClick={openSideBar('tags')}
+                >Tags</button>
+              : null}
             </div>
           </div>
         </Card>

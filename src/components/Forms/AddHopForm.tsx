@@ -176,7 +176,7 @@ function AddHopForm(props: Props) {
             type="number"
             step="1"
             placeholder="0"
-            value={formData.lengthInBoil ? formData.lengthInBoil.toString() : ''}
+            value={formData.lengthInBoil !== undefined ? formData.lengthInBoil.toString() : ''}
             onChange={dataChanged('lengthInBoil')}
           />
         </label>

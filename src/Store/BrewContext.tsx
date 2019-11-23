@@ -187,6 +187,19 @@ const compareStep = (a: MashInterface, b: MashInterface) => {
   return comparison;
 };
 
+const compareTime = (a: HopInterface, b: HopInterface) => {
+  const lengthA = Number(a.lengthInBoil);
+  const lengthB = Number(b.lengthInBoil);
+
+  let comparison = 0;
+  if (lengthA > lengthB) {
+    comparison = -1;
+  } else if (lengthA < lengthB) {
+    comparison = 1;
+  }
+  return comparison;
+}
+
 export const processBrew = (
   brew: BrewInterface,
   options: processOptionsInterface
@@ -196,7 +209,7 @@ export const processBrew = (
     brew.fermentables.sort(compareWeight);
   }
   if (brew.hops) {
-    brew.hops.sort(compareWeight);
+    brew.hops.sort(compareTime);
   }
   if (brew.yeast) {
     brew.yeast.sort(compareAmount);

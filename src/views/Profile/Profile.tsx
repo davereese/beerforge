@@ -249,7 +249,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <label className="divider"><span>Brewhouse Settings</span></label>
+      <label className="divider"><span id="settings">Brewhouse Settings</span></label>
       <div className={styles.form}>
         <div className={formStyles.row}>
           <label htmlFor="units">Measurement Units<br />
@@ -430,7 +430,7 @@ const Profile = () => {
         <div className={formStyles.row}>
           <label>
             Strike Temperature Adjustment Factor&nbsp;
-            <Info alignment="top-left" info="Sparging&nbsp;equipment losses. You may need to dial this in over time." /><br />
+            <Info alignment="top-left" info="Temperature&nbsp;losses due to equipment and environment temps. You may need to dial this in over time." /><br />
             <input
               type="number"
               placeholder="0"
