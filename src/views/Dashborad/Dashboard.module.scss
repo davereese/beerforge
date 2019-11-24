@@ -1,5 +1,6 @@
 @import '../../styles/variables';
 @import '../../styles/utilities';
+@import '../../styles/type';
 
 .dashboard {
   display: grid;
@@ -93,11 +94,17 @@
     align-items: center;
     padding: 15px 15px 15px 0;
     width: 100%;
+    min-height: 79px;
     text-decoration: none;
+    background-color: transparent;
+    border: none;
+    box-sizing: border-box;
+    font-family: $montserrat;
     transition: background-color 0.3s;
 
     &:hover {
       background-color: rgba($default-card-bg, 0.15);
+      cursor: pointer;
     }
   }
 
@@ -180,4 +187,20 @@
   display: flex;
   padding-bottom: 25px;
   transform: translateY(-5px);
+}
+
+.formWrapper {
+  max-height: 480px;
+  overflow: scroll;
+}
+
+.donate {
+  header {
+    margin-bottom: 5px !important; // overrides
+    font-weight: $weight-medium !important; // overrides
+  }
+
+  p {
+    margin-top: 0;
+  }
 }

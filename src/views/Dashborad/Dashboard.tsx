@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import styles from './Dashboard.module.scss';
 import calcImage from '../../resources/images/calculators.svg';
+import coinsImage from '../../resources/images/coins.svg';
 import Card from '../../components/Card/Card';
 import UserInfo from './UserInfo/UserInfo';
 import List from '../../components/List/List';
@@ -14,10 +15,16 @@ import Loader from '../../components/Loader/Loader';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { useUser } from '../../Store/UserContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
+import { useModal } from '../../Store/ModalContext';
+
+// @ts-ignore
+const form = <div className={styles.formWrapper}><script src="https://donorbox.org/widget.js" paypalexpress="false"></script><p>Keep the servers running, or buy us a beer!</p><iframe title="donate" allowpaymentrequest="" frameBorder="0" height="750px" name="donorbox" scrolling="no" seamless="seamless" src="https://donorbox.org/embed/keep-the-servers-on-or-buy-me-a-beer-1" style={{"maxWidth": "500px", "minWidth": "310px", "maxHeight": "none !important"}} width="100%"></iframe></div>;
 
 const Dashboard = (props: any) => {
   // CONTEXT
   const [user, userDispatch] = useUser();
+  // eslint-disable-next-line
+  const [modal, modalDispatch] = useModal();
 
   // STATE
   const [brewLogPage, setBrewLogPage] = useState(1);
@@ -80,6 +87,18 @@ const Dashboard = (props: any) => {
   const togglePage = (page: number) => (event: any) => {
     setBrewLogPage(page);
     scrollToTop(400);
+  }
+
+  const handleDonateClick = (event: any) => {
+    event.stopPropagation();
+    modalDispatch({
+      type: 'show',
+      payload: {
+        classOverride: styles.donate,
+        title: `DONATE TO BEERFORGE`,
+        body: form,
+      },
+    });
   }
 
   const brewLogItems = brewLog.length > 0
@@ -151,6 +170,15 @@ const Dashboard = (props: any) => {
             <h2 className={styles.dashboard__header}>Calculators</h2>
             <img src={calcImage} alt="calculators" />
           </Link>
+        </Card>
+        <Card customClass={styles.flex}>
+          <button
+            className={styles.cardLink}
+            onClick={handleDonateClick}
+          >
+            <h2 className={styles.dashboard__header}>Donate</h2>
+            <img src={coinsImage} alt="calculators" />
+          </button>
         </Card>
       </div>
     </section>
