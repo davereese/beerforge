@@ -18,7 +18,7 @@ import { useSnackbar } from '../../Store/SnackbarContext';
 import { useModal } from '../../Store/ModalContext';
 
 // @ts-ignore
-const form = <div className={styles.formWrapper}><script src="https://donorbox.org/widget.js" paypalexpress="false"></script><p>Keep the servers running, or buy us a beer!</p><iframe title="donate" allowpaymentrequest="" frameBorder="0" height="750px" name="donorbox" scrolling="no" seamless="seamless" src="https://donorbox.org/embed/keep-the-servers-on-or-buy-me-a-beer-1" style={{"maxWidth": "500px", "minWidth": "310px", "maxHeight": "none !important"}} width="100%"></iframe></div>;
+const form = <div className={styles.formWrapper}><script src="https://donorbox.org/widget.js" paypalexpress="false"></script><p>Help us keep the servers running, or just buy us a beer!</p><iframe title="donate" allowpaymentrequest="" frameBorder="0" height="750px" name="donorbox" scrolling="no" seamless="seamless" src="https://donorbox.org/embed/keep-the-servers-on-or-buy-me-a-beer-1" style={{"maxWidth": "500px", "minWidth": "310px", "maxHeight": "none !important"}} width="100%"></iframe></div>;
 
 const Dashboard = (props: any) => {
   // CONTEXT
