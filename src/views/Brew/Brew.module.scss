@@ -11,8 +11,13 @@
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
-  transition: transform 0.5s, grid-template-columns 0.5s;
+  transition: transform 0.5s, grid-template-columns 0.5s,;
   perspective: 1000px;
+ 
+  // Safari has a problem with perspective
+  @media not all and (min-resolution:.001dpcm) { @supports (-webkit-appearance:none) {
+    perspective: none;
+  }}
 
   @include for-tablet-landscape-up () {
     grid-template-columns: minmax(66.7%, 66.7%) minmax(calc(33.3% - 20px), calc(33.3% - 20px));
@@ -46,6 +51,11 @@
       transform-origin: bottom center 100px;
       transition: opacity 0.5s, transform 0.5s cubic-bezier(.53,.01,.4,.99);
     }
+
+    // Safari has a problem with perspective
+    @media not all and (min-resolution:.001dpcm) { @supports (-webkit-appearance:none) {
+      transform: rotate3d(0, 1, 0, -90deg) rotateZ(5deg) rotateX(-0.6deg);
+    }}
   }
 
   &.open {
