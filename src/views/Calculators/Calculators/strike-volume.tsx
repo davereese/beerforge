@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { kg2lb, l2qt, gal2l } from '../../../resources/javascript/calculator';
 
 const StrikeVolume = (props: any) => {
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [ratio, setRatio] = useState('');
   const [weight, setWeight] = useState('');
 
   const { calculator } = props;
   let label = null;
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const results = () => {
-    const result = calculator(weight, ratio);
+    const result = calculator(
+      weight ? units === 'metric' ? parseFloat(kg2lb(weight).toFixed(4)) : weight : undefined,
+      ratio ? units === 'metric' ? parseFloat(l2qt(ratio).toFixed(4)) : ratio : undefined,
+    );
     if (!isNaN(result) && isFinite(result) && result > 0) {
-      label = 'gal';
-      return result;
+      label = props.labels.vol;
+      return units === 'metric' ? parseFloat(gal2l(result).toFixed(2)) : result;
     }
   }
 
@@ -20,14 +29,14 @@ const StrikeVolume = (props: any) => {
     <div>
       <h2>Strike Water Volume</h2>
       <div>
-        <label htmlFor="weight">Malt Weight (lbs)</label><br />
+        <label htmlFor="weight">Malt Weight ({props.labels.largeWeight})</label><br />
         <input
           name="weight"
           type="number"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
         ></input><br />
-        <label htmlFor="ratio">Quarts per lb of grain</label><br />
+        <label htmlFor="ratio">{units === 'metric' ? 'Litres' : 'Quarts'} per {props.labels.largeWeight} of grain</label><br />
         <input
           name="ratio"
           type="number"

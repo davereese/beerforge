@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { oz2g, l2gal, c2f } from '../../../resources/javascript/calculator';
 
 const CO2 = (props: any) => {
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [temp, setTemp] = useState('');
   const [beerVol, setBeerVol] = useState('');
   const [co2Vol, setCo2Vol] = useState('');
@@ -10,11 +12,20 @@ const CO2 = (props: any) => {
   const { calculator } = props;
   let label = null;
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const results = () => {
-    const result = calculator(temp, co2Vol, method, beerVol);
+    const result = calculator(
+      temp ? units === 'metric' ? parseFloat(c2f(temp).toFixed(4)) : temp : undefined,
+      co2Vol,
+      method,
+      beerVol ? units === 'metric' ? parseFloat(l2gal(beerVol).toFixed(4)) : beerVol : ''
+    );
     if (!isNaN(result) && isFinite(result) && result > 0) {
-      label = method === 'forced' ? 'psi' : 'oz';
-      return result;
+      label = method === 'forced' ? 'psi' : props.labels.smallWeight;
+      return method === 'forced' ? result : units === 'metric' ? parseFloat(oz2g(result).toFixed(2)) : result;
     } else {
       return '';
     }
@@ -49,7 +60,7 @@ const CO2 = (props: any) => {
           value={co2Vol}
           onChange={(e) => setCo2Vol(e.target.value)}
         ></input><br />
-        <label htmlFor="temp">Temperature</label><br />
+        <label htmlFor="temp">Temperature (°{props.labels.temp})</label><br />
         <input
           name="temp"
           type="number"

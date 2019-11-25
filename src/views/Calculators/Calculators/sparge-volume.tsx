@@ -11,7 +11,7 @@ const SpargeVolume = (props: any) => {
   const results = () => {
     const result = calculator(totalVol, mashVol);
     if (!isNaN(result) && isFinite(result) && result > 0) {
-      label = 'gal';
+      label = props.labels.vol;
       return result;
     }
   }
@@ -20,14 +20,14 @@ const SpargeVolume = (props: any) => {
     <div>
       <h2>Sparge Water Volume</h2>
       <div>
-        <label htmlFor="totalVol">Total water volume</label><br />
+        <label htmlFor="totalVol">Total water volume ({props.labels.vol})</label><br />
         <input
           name="totalVol"
           type="number"
           value={totalVol}
           onChange={(e) => settotalVol(e.target.value)}
         ></input><br />
-        <label htmlFor="mashVol">Mash water volume</label><br />
+        <label htmlFor="mashVol">Mash water volume ({props.labels.vol})</label><br />
         <input
           name="mashVol"
           type="number"

@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { kg2lb, l2gal } from '../../../resources/javascript/calculator';
 
 const OriginalGravity = (props: any) => {
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [potential, setPotential] = useState('');
   const [weight, setWeight] = useState('');
   const [efficiency, setEfficiency] = useState('');
@@ -9,9 +11,20 @@ const OriginalGravity = (props: any) => {
 
   const { calculator } = props;
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const results = () => {
-    const result = calculator([{potential: potential, weight: weight}], efficiency, volume);
-      return !isNaN(result) && isFinite(result) ? result : '';
+    const result = calculator(
+      [{
+        potential: potential,
+        weight: weight ? units === 'metric' ? parseFloat(kg2lb(weight).toFixed(4)) : weight : undefined,
+      }],
+      efficiency,
+      volume ? units === 'metric' ? parseFloat(l2gal(volume).toFixed(4)) : volume : undefined
+    );
+    return !isNaN(result) && isFinite(result) ? result : '';
   }
 
   return (
@@ -25,7 +38,7 @@ const OriginalGravity = (props: any) => {
           value={potential}
           onChange={(e) => setPotential(e.target.value)}
         ></input><br />
-        <label htmlFor="weight">Malt Weight (lbs)</label><br />
+        <label htmlFor="weight">Malt Weight ({props.labels.largeWeight})</label><br />
         <input
           name="weight"
           type="number"
@@ -39,7 +52,7 @@ const OriginalGravity = (props: any) => {
           value={efficiency}
           onChange={(e) => setEfficiency(e.target.value)}
         ></input><br />
-        <label htmlFor="volume">Post-boil Volume (gal)</label><br />
+        <label htmlFor="volume">Post-boil Volume ({props.labels.vol})</label><br />
         <input
           name="volume"
           type="number"

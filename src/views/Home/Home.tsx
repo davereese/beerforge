@@ -17,20 +17,30 @@ import CO2 from '../Calculators/Calculators/co2';
 import sketch from '../../resources/javascript/bubbles';
 import * as Calculator from '../../resources/javascript/calculator';
 
-const calculatorArray = [
-  {calculator: <AlcoholContent calculator={Calculator.alcoholContent} />},
-  {calculator: <YeastTargetPitchingRate calculator={Calculator.targetPitchingRate} />},
-  {calculator: <SRM calculator={Calculator.SRM} />},
-  {calculator: <CO2 calculator={Calculator.CO2} />},
-];
-
 const Home = () => {
   // STATE
   const [calculator, setCalculator] = useState(0);
   const [transition, setTransition] = useState('');
+  // eslint-disable-next-line
+  const [units, setUnits] = useState('us');
 
   // REFS
   const featuresRef = useRef<HTMLDivElement>(null);
+
+  const unitLabels = {
+    vol: units === 'metric' ? 'L' : 'gal',
+    smallVol: units === 'metric' ? 'L' : 'qts',
+    largeWeight: units === 'metric' ? 'kg' : 'lb',
+    smallWeight: units === 'metric' ? 'g' : 'oz',
+    temp: units === 'metric' ? 'C' : 'F',
+  }
+
+  const calculatorArray = [
+    {calculator: <AlcoholContent calculator={Calculator.alcoholContent} units={units} labels={unitLabels} />},
+    {calculator: <YeastTargetPitchingRate calculator={Calculator.targetPitchingRate} units={units} labels={unitLabels} />},
+    {calculator: <SRM calculator={Calculator.SRM} units={units} labels={unitLabels} />},
+    {calculator: <CO2 calculator={Calculator.CO2} units={units} labels={unitLabels} />},
+  ];
 
   // mount
   useEffect(() => {

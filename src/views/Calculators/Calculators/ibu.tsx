@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { g2oz, l2gal } from '../../../resources/javascript/calculator';
 
 const IBU = (props: any) => {
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [aa, setAa] = useState('');
   const [weight, setWeight] = useState('');
   const [length, setLength] = useState('');
@@ -13,13 +15,27 @@ const IBU = (props: any) => {
   const { calculator } = props;
   let label = null;
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const handleCheckboxChange = (e: any) => {
     const value = formula === 'tinseth' ? 'rager' : 'tinseth';
     setFormula(value);
   }
 
   const results = () => {
-    const result = calculator([{alphaAcid: Number(aa), weight: Number(weight), lengthInBoil: Number(length), form: type}], Number(og), Number(vol), formula);
+    const result = calculator(
+      [{
+        alphaAcid: Number(aa),
+        weight: Number(weight ? units === 'metric' ? parseFloat(g2oz(weight).toFixed(4)) : weight : undefined),
+        lengthInBoil: Number(length),
+        form: type
+      }],
+      Number(og),
+      Number(vol ? units === 'metric' ? parseFloat(l2gal(vol).toFixed(4)) : vol : undefined),
+      formula
+    );
     if (!isNaN(result) && isFinite(result) && result > 0) {
       label = 'IBU';
       return result;
@@ -40,7 +56,7 @@ const IBU = (props: any) => {
           onChange={(e) => setAa(e.target.value)}
           autoComplete="none"
         ></input><br />
-        <label htmlFor="weight">Hop Weight (oz)</label><br />
+        <label htmlFor="weight">Hop Weight ({props.labels.smallWeight})</label><br />
         <input
           name="weight"
           type="number"
@@ -70,7 +86,7 @@ const IBU = (props: any) => {
           value={og}
           onChange={(e) => setOg(e.target.value)}
         ></input><br />
-        <label htmlFor="vol">Final Volume (gal)</label><br />
+        <label htmlFor="vol">Final Volume ({props.labels.vol})</label><br />
         <input
           name="vol"
           type="number"

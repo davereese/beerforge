@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../../../Store/UserContext';
+import { l2gal, kg2lb, gal2l } from '../../../resources/javascript/calculator';
 
 
 const TotalWater = (props: any) => {
@@ -13,20 +14,31 @@ const TotalWater = (props: any) => {
   }
 
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [batchSize, setBatchSize] = useState('');
   const [grainWeight, setGrainWeight] = useState('');
   const [boilTime, setBoilTime] = useState('');
   const [boilOff, setBoilOff] = useState('');
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const { calculator } = props;
   let label = null;
 
   const results = () => {
-    const result = calculator(parseFloat(batchSize), parseFloat(boilTime), parseFloat(boilOff), parseFloat(grainWeight), userSettings);
+    const result = calculator(
+      batchSize ? units === 'metric' ? parseFloat(l2gal(batchSize).toFixed(4)) : batchSize : undefined,
+      parseFloat(boilTime),
+      parseFloat(boilOff),
+      grainWeight ? units === 'metric' ? parseFloat(kg2lb(grainWeight).toFixed(4)) : grainWeight : undefined,
+      userSettings
+    );
 
       if (batchSize && boilTime && boilOff && grainWeight && !isNaN(result) && isFinite(result)) {
-        label = 'gal';
-        return result;
+        label = props.labels.vol;
+        return units === 'metric' ? parseFloat(gal2l(result).toFixed(2)) : result;
       }
   }
 
@@ -34,14 +46,14 @@ const TotalWater = (props: any) => {
     <div>
       <h2>Total Water Needed</h2>
       <div>
-        <label htmlFor="batchSize">Batch Size (gal)</label><br />
+        <label htmlFor="batchSize">Batch Size ({props.labels.vol})</label><br />
         <input
           name="batchSize"
           type="number"
           value={batchSize}
           onChange={(e) => setBatchSize(e.target.value)}
         ></input><br />
-        <label htmlFor="grainWeight">Malt Weight (lbs)</label><br />
+        <label htmlFor="grainWeight">Malt Weight ({props.labels.largeWeight})</label><br />
         <input
           name="grainWeight"
           type="number"

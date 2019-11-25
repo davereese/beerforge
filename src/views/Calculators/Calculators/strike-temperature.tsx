@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Info from '../../../components/Info/Info';
+import { c2f, l2qt, f2c } from '../../../resources/javascript/calculator';
 
 const StrikeTemperature = (props: any) => {
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [ratio, setRatio] = useState('');
   const [temp1, settTmp1] = useState('');
   const [temp2, setTemp2] = useState('');
@@ -11,11 +13,20 @@ const StrikeTemperature = (props: any) => {
   const { calculator } = props;
   let label = null;
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const results = () => {
-    const result = calculator(temp1, temp2, ratio, factor);
+    const result = calculator(
+      temp1 ? units === 'metric' ? parseFloat(c2f(temp1).toFixed(4)) : temp1 : undefined,
+      temp2 ? units === 'metric' ? parseFloat(c2f(temp2).toFixed(4)) : temp2 : undefined,
+      ratio ? units === 'metric' ? parseFloat(l2qt(ratio).toFixed(4)) : ratio : undefined,
+      factor
+    );
     if (!isNaN(result) && isFinite(result) && result > 0) {
-      label = '°F';
-      return result;
+      label = `°${props.labels.temp}`;
+      return units === 'metric' ? parseFloat(f2c(result).toFixed(2)) : result;
     }
   }
 
@@ -23,21 +34,21 @@ const StrikeTemperature = (props: any) => {
     <div>
       <h2>Strike Water Temperature</h2>
       <div>
-        <label htmlFor="ratio">Quarts per lb of grain</label><br />
+        <label htmlFor="ratio">{units === 'metric' ? 'Litres' : 'Quarts'} per {props.labels.largeWeight} of grain</label><br />
         <input
           name="ratio"
           type="number"
           value={ratio}
           onChange={(e) => setRatio(e.target.value)}
         ></input><br />
-        <label htmlFor="temp1">Malt Temperature (°F)</label><br />
+        <label htmlFor="temp1">Malt Temperature (°{props.labels.temp})</label><br />
         <input
           name="temp1"
           type="number"
           value={temp1}
           onChange={(e) => settTmp1(e.target.value)}
         ></input><br />
-        <label htmlFor="temp2">Target Temperature (°F)</label><br />
+        <label htmlFor="temp2">Target Temperature (°{props.labels.temp})</label><br />
         <input
           name="temp2"
           type="number"

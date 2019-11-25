@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '../../../Store/UserContext';
+import { l2gal, kg2lb, gal2l } from '../../../resources/javascript/calculator';
 
 const PreBoilVolume = (props: any) => {
   // CONTEXT
   // eslint-disable-next-line
   const [user, userDispatch] = useUser();
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [batchType, setBatchType] = useState('allGrain');
   const [totalWaterVol, setTotalWaterVol] = useState('');
   const [grainWeight, setGrainWeight] = useState('');
@@ -15,12 +17,22 @@ const PreBoilVolume = (props: any) => {
   const absorptionRate = user.absorption_rate ? user.absorption_rate : 0.125;
   let vol = null;
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const results = () => {
-    const result = calculator(totalWaterVol, grainWeight, equipmentLoss, absorptionRate, batchType);
-      if (!isNaN(result) && isFinite(result) && result > 0) {
-        vol = 'gal';
-        return result;
-      }
+    const result = calculator(
+      totalWaterVol ? units === 'metric' ? parseFloat(l2gal(totalWaterVol).toFixed(4)) : totalWaterVol : undefined,
+      grainWeight ? units === 'metric' ? parseFloat(kg2lb(grainWeight).toFixed(4)) : grainWeight : undefined,
+      equipmentLoss,
+      absorptionRate,
+      batchType
+    );
+    if (!isNaN(result) && isFinite(result) && result > 0) {
+      vol = props.labels.vol;
+      return units === 'metric' ? parseFloat(gal2l(result).toFixed(2)) : result;
+    }
   }
 
   return (
@@ -36,14 +48,14 @@ const PreBoilVolume = (props: any) => {
           <option value="allGrain">All Grain</option>
           <option value="BIAB">BIAB</option>
         </select><br />
-        <label htmlFor="totalWaterVol">Total Water Volume</label><br />
+        <label htmlFor="totalWaterVol">Total Water Volume ({props.labels.vol})</label><br />
         <input
           name="totalWaterVol"
           type="number"
           value={totalWaterVol}
           onChange={(e) => setTotalWaterVol(e.target.value)}
         ></input><br />
-        <label htmlFor="grainWeight">Malt Weight (lbs)</label><br />
+        <label htmlFor="grainWeight">Malt Weight ({props.labels.largeWeight})</label><br />
         <input
           name="grainWeight"
           type="number"

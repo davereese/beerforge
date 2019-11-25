@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { l2gal } from '../../../resources/javascript/calculator';
 
 const YeastTargetPitchingRate = (props: any) => {
   // STATE
+  const [units, setUnits] = useState(props.units);
   const [og, setOg] = useState('');
   const [volume, setVolume] = useState('');
   const [target, setTarget] = useState('0.75');
@@ -9,8 +11,16 @@ const YeastTargetPitchingRate = (props: any) => {
   const { calculator } = props;
   let label = '';
 
+  useEffect(() => {
+    setUnits(props.units);
+  }, [props]);
+
   const results = () => {
-    const result = calculator(og, volume, target);
+    const result = calculator(
+      og,
+      volume ? units === 'metric' ? parseFloat(l2gal(volume).toFixed(4)) : volume : undefined,
+      target
+    );
     if (!isNaN(result) && isFinite(result) && result > 0) {
       label = 'billion cells';
       return result;
@@ -30,7 +40,7 @@ const YeastTargetPitchingRate = (props: any) => {
           value={og}
           onChange={(e) => setOg(e.target.value)}
         ></input><br />
-        <label htmlFor="volume">Volume (gal)</label><br />
+        <label htmlFor="volume">Wort Volume ({props.labels.vol})</label><br />
         <input
           name="volume"
           type="number"
