@@ -184,6 +184,15 @@ export function totalMashVolume(totalWaterVol, grainWeight) {
   return ((grainWeight * grainSpace) + totalWaterVol).toFixed(2);
 };
 
+// * Mash Efficiency %
+export function mashEfficiency(malts, volume, gravity) {
+  let extraction = 0;
+  malts.forEach(malt => {
+    extraction += malt.potential * malt.grainVol;
+  });
+  return ((extraction / (volume * (gravity * 1000 - 1000))) * 100).toFixed(0);
+};
+
 // * Pre-Boil Gravity
 export function preBoilG(OG, grainVol, totalWaterVol, vol, equipmentLoss, absorptionRate, batchType = 'allGrain') {
   const PBVol = preBoilVol(totalWaterVol, grainVol, equipmentLoss, absorptionRate, batchType);

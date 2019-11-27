@@ -22,6 +22,7 @@ import SRM from './Calculators/srm';
 import CO2 from './Calculators/co2';
 import MashInfusion from './Calculators/mash-infusion';
 import { useUser } from '../../Store/UserContext';
+import MashEfficiency from './Calculators/mash-efficiency';
 
 const Calculators = (props: any) => {
   // CONTEXT
@@ -67,6 +68,10 @@ const Calculators = (props: any) => {
       terms: ['water', 'sparge']
     },
     {
+      calculator: <MashEfficiency calculator={Calculator.mashEfficiency} units={units} labels={unitLabels} />,
+      terms: ['mash']
+    },
+    {
       calculator: <EvaporationPercent calculator={Calculator.evaporationPercent} units={units} labels={unitLabels} />,
       terms: ['water', 'boil']
     },
@@ -75,12 +80,12 @@ const Calculators = (props: any) => {
       terms: ['water', 'boil']
     },
     {
-      calculator: <OriginalGravity calculator={Calculator.OG} units={units} labels={unitLabels} />,
-      terms: ['gravity', 'original', 'og']
-    },
-    {
       calculator: <PreBoilGravity calculator={Calculator.preBoilG} units={units} labels={unitLabels} />,
       terms: ['gravity', 'pre boil', 'pre-boil']
+    },
+    {
+      calculator: <OriginalGravity calculator={Calculator.OG} units={units} labels={unitLabels} />,
+      terms: ['gravity', 'original', 'og']
     },
     {
       calculator: <YeastTargetPitchingRate calculator={Calculator.targetPitchingRate} units={units} labels={unitLabels} />,
@@ -95,20 +100,20 @@ const Calculators = (props: any) => {
       terms: ['gravity', 'final', 'fg']
     },
     {
-      calculator: <AlcoholContent calculator={Calculator.alcoholContent} units={units} labels={unitLabels} />,
-      terms: ['alcohol', 'abv']
-    },
-    {
-      calculator: <ApparentAttenuation calculator={Calculator.attenuation} units={units} labels={unitLabels} />,
-      terms: ['attenuation', 'yeast']
-    },
-    {
       calculator: <IBU calculator={Calculator.IBU} units={units} labels={unitLabels} />,
       terms: ['ibu', 'ibus', 'hops']
     },
     {
       calculator: <SRM calculator={Calculator.SRM} units={units} labels={unitLabels} />,
       terms: ['srm', 'color', 'malt']
+    },
+    {
+      calculator: <AlcoholContent calculator={Calculator.alcoholContent} units={units} labels={unitLabels} />,
+      terms: ['alcohol', 'abv']
+    },
+    {
+      calculator: <ApparentAttenuation calculator={Calculator.attenuation} units={units} labels={unitLabels} />,
+      terms: ['attenuation', 'yeast']
     },
     {
       calculator: <CO2 calculator={Calculator.CO2} units={units} labels={unitLabels} />,
