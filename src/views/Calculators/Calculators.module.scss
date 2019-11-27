@@ -120,15 +120,25 @@
   }
 }
 
-.row {
+.row,
+.rowQuad,
+.interiorRow,
+.interiorRow2 {
   display: grid;
   grid-template-columns: 1fr 1fr 27px;
   grid-column-gap: 10px;
   padding-top: 3px;
+  margin-bottom: 2px;
   align-items: end;
+  border-bottom: 1px solid rgba($input-bg-dark, 0.3);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
 
   button {
-    margin-bottom: 17px;
+    align-self: center;
+    transform: translateY(5px);
   }
 
   label {
@@ -141,4 +151,19 @@
   select {
     min-width: 50px;
   }
+}
+
+.rowQuad {
+  grid-template-columns: 1fr 27px;
+}
+
+.interiorRow,
+.interiorRow2 {
+  grid-template-columns: 1fr 1fr;
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.interiorRow2 {
+  grid-template-columns: 0.65fr 1fr;
 }

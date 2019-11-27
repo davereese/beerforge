@@ -290,6 +290,7 @@ export function attenuation(OG, FG) {
 
 // * IBU
 export function IBU(hops, OG, vol, type = 'rager') {
+  console.log(hops, OG, vol, type);
   // TODO: sepatate the unit conversions out of this function
 
   let utilization,

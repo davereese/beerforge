@@ -30,8 +30,6 @@ const MashEfficiency = (props: any) => {
 
   const results = () => {
     const result = calculator(
-      // potential,
-      // grainVol ? units === 'metric' ? parseFloat(kg2lb(grainVol).toFixed(4)) : grainVol : undefined,
       malts ? units === 'metric' ? malts.map(malt => {
         parseFloat(kg2lb(malt.grainVol).toFixed(4));
         return malt;
@@ -66,22 +64,21 @@ const MashEfficiency = (props: any) => {
                 value={malts[index].grainVol}
                 onChange={addMalt(index, 'grainVol')}
               ></input></label>
-              {index+1 === malts.length
-                ? <button
-                    className="button button--icon"
-                    onClick={(e) => setMalts([...malts, {potential: '', grainVol: ''}])}
-                  >+</button>
-                : <button
-                    className="button button--icon"
-                    onClick={
-                      (e) => {
-                        const maltsArray = [...malts];
-                        maltsArray.splice(index, 1);
-                        console.log(maltsArray);
-                        setMalts([...maltsArray]);
-                      }
+            {index+1 === malts.length
+              ? <button
+                  className="button button--icon"
+                  onClick={(e) => setMalts([...malts, {potential: '', grainVol: ''}])}
+                >+</button>
+              : <button
+                  className="button button--icon"
+                  onClick={
+                    (e) => {
+                      const maltsArray = [...malts];
+                      maltsArray.splice(index, 1);
+                      setMalts([...maltsArray]);
                     }
-                  >-</button>}
+                  }
+                >-</button>}
           </div>
         ))}
         <label htmlFor="volume">Collected Wort Volume ({props.labels.vol})</label><br />

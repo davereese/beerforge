@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
+import styles from '../Calculators.module.scss';
 import { getSrmToRgb } from '../../../resources/javascript/srmToRgb';
 import { kg2lb, l2gal } from '../../../resources/javascript/calculator';
+
+interface malt {
+  lovibond: number | '';
+  weight: number | '';
+};
 
 const SRM = (props:any) => {
   // STATE
   const [units, setUnits] = useState(props.units);
-  const [color, setColor] = useState('');
-  const [weight, setWeight] = useState('');
+  const [malts, setMalts] = useState<malt[]>([{lovibond: '', weight: ''}]);
   const [volume, setVolume] = useState('');
 
   const { calculator } = props;
@@ -17,12 +22,18 @@ const SRM = (props:any) => {
     setUnits(props.units);
   }, [props]);
 
+  const addMalt = (index: number, type: 'lovibond' | 'weight') => (e: any) => {
+    const maltsArray = [...malts];
+    maltsArray[index][type] = e.target.value;
+    setMalts(maltsArray);
+  }
+
   const results = () => {
     const result = calculator(
-      [{
-        lovibond: color,
-        weight: weight ? units === 'metric' ? parseFloat(kg2lb(weight).toFixed(4)) : weight : undefined,
-      }],
+      malts ? units === 'metric' ? malts.map(malt => {
+        parseFloat(kg2lb(malt.weight).toFixed(4));
+        return malt;
+      }) : malts : malts,
       volume ? units === 'metric' ? parseFloat(l2gal(volume).toFixed(4)) : volume : undefined
     );
     if (!isNaN(result) && isFinite(result) && result > 0) {
@@ -50,20 +61,40 @@ const SRM = (props:any) => {
     <div>
       <h2>Beer Color</h2>
       <div>
-        <label htmlFor="color">Malt Color (°L)</label><br />
-        <input
-          name="color"
-          type="number"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-        ></input><br />
-        <label htmlFor="weight">Malt Weight ({props.labels.largeWeight})</label><br />
-        <input
-          name="weight"
-          type="number"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-        ></input><br />
+        <label>Malt</label>
+        {malts && malts.map((malt, index: number) => (
+          <div className={styles.row} key={`malt${index}`}>
+            <label htmlFor="lovibond">Color (°L)
+              <input
+                name="lovibond"
+                type="number"
+                value={malts[index].lovibond}
+                onChange={addMalt(index, 'lovibond')}
+              ></input></label>
+            <label htmlFor="weight">Weight ({props.labels.largeWeight})
+              <input
+                name="weight"
+                type="number"
+                value={malts[index].weight}
+                onChange={addMalt(index, 'weight')}
+              ></input></label>
+            {index+1 === malts.length
+              ? <button
+                  className="button button--icon"
+                  onClick={(e) => setMalts([...malts, {lovibond: '', weight: ''}])}
+                >+</button>
+              : <button
+                  className="button button--icon"
+                  onClick={
+                    (e) => {
+                      const maltsArray = [...malts];
+                      maltsArray.splice(index, 1);
+                      setMalts([...maltsArray]);
+                    }
+                  }
+                >-</button>}
+          </div>
+        ))}
         <label htmlFor="volume">Final Volume ({props.labels.vol})</label><br />
         <input
           name="volume"
