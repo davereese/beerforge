@@ -35,7 +35,8 @@ const Profile = () => {
     equipmentLoss: user.equipment_loss ? user.equipment_loss : 1,
     absorptionRate: user.absorption_rate ? user.absorption_rate : 0.125,
     hopAbsorptionRate: user.hop_absorption_rate ? user.hop_absorption_rate : 0.0365,
-    boilTemp: user.boil_temp ? user.boil_temp : 210
+    boilTemp: user.boil_temp ? user.boil_temp : 210,
+    mashEfficiency: user.mash_efficiency ? user.mash_efficiency : '',
   });
   const [file, setFile] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -298,8 +299,27 @@ const Profile = () => {
             />
           </label>
           <label>
+            Mash Efficiency (%)&nbsp;
+            <Info alignment="top-right" info="For&nbsp;assistance&nbsp;in determining your mash efficiency, visit&nbsp;our&nbsp;calculators page." /><br />
+            <input
+              type="number"
+              placeholder="78"
+              id="mashEfficiency"
+              className="dark"
+              autoComplete="none"
+              value={settings.mashEfficiency}
+              onChange={(e) => setSettings({
+                ...settings,
+                mashEfficiency: e.target.value !== '' ? Number(e.target.value) : '',
+                edited: true
+              })}
+            />
+          </label>
+        </div>
+        <div className={formStyles.row}>
+          <label>
             Evaporation Rate (%/hr)&nbsp;
-            <Info alignment="top-right" info="For&nbsp;assistance in&nbsp;determining your evap rate, visit&nbsp;our&nbsp;calculators page." /><br />
+            <Info alignment="top-left" info="For&nbsp;assistance in&nbsp;determining your evap rate, visit&nbsp;our&nbsp;calculators page." /><br />
             <input
               type="number"
               placeholder="1.5"
@@ -314,9 +334,7 @@ const Profile = () => {
               })}
             />
           </label>
-        </div>
-        <div className={formStyles.row}>
-        <label>
+          <label>
             Boil Temperature&nbsp;
             <Info alignment="top-right" info="The&nbsp;point&nbsp;at&nbsp;which water boils is dependant on altitude and atmospheric pressure." /><br />
             <input
