@@ -525,8 +525,17 @@ const Brew = (props: Props) => {
                 </span>
                 <span className={styles.secondCol}>{hop.name ? hop.name : hop.custom}</span>
                 <span className={styles.thirdCol}>{hop.alphaAcid ? `${hop.alphaAcid}% AA` : null}</span>
-                <span className={styles.fourthCol}>{hop.lengthInBoil} min</span>
-                <span className={styles.fifthCol}>{hop.ibu && hop.ibu !== Infinity ? <>{hop.ibu} IBU</> : null}</span>
+                <span className={styles.fourthCol}>
+                  {hop.lengthInBoil
+                  && hop.use === 'boil' ? `${hop.lengthInBoil} min` : null}
+                  {hop.days ? `${hop.days} days` : null}
+                </span>
+                <span className={styles.fifthCol}>
+                  {hop.ibu && hop.ibu !== Infinity ? <>{hop.ibu} IBU</> : null}
+                </span>
+                <span className={styles.sixthCol}>
+                  {hop.use ? <div style={{textTransform: 'capitalize'}}>{hop.use}</div> : null}
+                </span>
               </ListItem>
             ))}
           </List>

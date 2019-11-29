@@ -26,10 +26,19 @@ export const ADJUNCT_TYPES = [
   'other'
 ];
 
-export const USE = [
+export const ADJUNCT_USE = [
   'mash',
   'boil',
   'primary',
   'secondary',
   'bottling'
+];
+
+
+export const HOP_USE = [
+  'boil',
+  'dry hop',
+  'mash',
+  'first wort',
+  'aroma'
 ];

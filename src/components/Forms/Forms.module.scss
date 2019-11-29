@@ -1,7 +1,8 @@
 @import '../../styles/variables';
 @import '../../styles/utilities';
 
-.row {
+.row,
+.rowThirds {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-column-gap: 10px;
@@ -11,6 +12,10 @@
   select {
     min-width: 50px;
   }
+}
+
+.rowThirds {
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .rowOneThird {

@@ -2,6 +2,13 @@ import React, { useReducer, useContext } from 'react';
 
 // import * as brewService from './BrewService';
 import * as Calculator from '../resources/javascript/calculator';
+import {
+  compareWeight,
+  compareTime,
+  byUse,
+  compareAmount,
+  compareStep
+} from './BrewContextUtils';
 
 export interface FermentableInterface {
   id?: number;
@@ -27,6 +34,9 @@ export interface HopInterface {
   ibu?: number;
   unit?: 'g' | 'oz';
   form?: 'pellet' | 'leaf';
+  use?: 'boil' | 'dry hop' | 'mash' | 'first wort' | 'aroma';
+  days?: number;
+  multiplier?: number;
   [key: string]: string | number | undefined;
 };
 
@@ -142,64 +152,6 @@ const initialState: any = {
 
 export const BrewContext = React.createContext(initialState);
 
-const compareWeight = (
-  a: FermentableInterface | HopInterface,
-  b: FermentableInterface | HopInterface
-) => {
-  const weightA = Number(a.weight);
-  const weightB = Number(b.weight);
-
-  let comparison = 0;
-  if (weightA > weightB) {
-    comparison = -1;
-  } else if (weightA < weightB) {
-    comparison = 1;
-  }
-  return comparison;
-};
-
-const compareAmount = (a: YeastInterface, b: YeastInterface) => {
-  const amountA = Number(a.amount);
-  const amountB = Number(b.amount);
-
-  let comparison = 0;
-  if (amountA > amountB) {
-    comparison = -1;
-  } else if (amountA < amountB) {
-    comparison = 1;
-  }
-  return comparison;
-};
-
-const compareStep = (a: MashInterface, b: MashInterface) => {
-  const typeA = a.type;
-  const typeB = b.type;
-
-  let comparison = 0;
-  if (typeA === 'sparge' && typeB !== 'sparge') {
-    comparison = 1;
-  } else if (typeA !== 'sparge' && typeB === 'sparge') {
-    comparison = -1;
-  }
-  if (typeA === 'strike' && typeB !== 'strike') {
-    comparison = -1;
-  }
-  return comparison;
-};
-
-const compareTime = (a: HopInterface, b: HopInterface) => {
-  const lengthA = Number(a.lengthInBoil);
-  const lengthB = Number(b.lengthInBoil);
-
-  let comparison = 0;
-  if (lengthA > lengthB) {
-    comparison = -1;
-  } else if (lengthA < lengthB) {
-    comparison = 1;
-  }
-  return comparison;
-}
-
 export const processBrew = (
   brew: BrewInterface,
   options: processOptionsInterface
@@ -210,6 +162,7 @@ export const processBrew = (
   }
   if (brew.hops) {
     brew.hops.sort(compareTime);
+    brew.hops.sort(byUse);
   }
   if (brew.yeast) {
     brew.yeast.sort(compareAmount);
@@ -274,6 +227,15 @@ export const processBrew = (
   if (brew.hops.length > 0 && brew.og && brew.batchSize) {
     let totalIbu = 0;
     brew.hops = brew.hops.map(hop => {
+      if (hop.use === 'first wort') {
+        hop.lengthInBoil = brew.boilLength;
+      } else if (hop.use === 'mash') {
+        let mashLength = 0;
+        brew.mash.forEach(step => {
+          mashLength += step.stepLength ? Number(step.stepLength) : 0;
+        });
+        hop.lengthInBoil = mashLength;
+      }
       hop.ibu = Calculator.IBU(
         [hop],
         brew.og,
@@ -315,6 +277,22 @@ export const processBrew = (
       );
     }
   }
+  // if (brew.boilLength && brew.hops.length) {
+  //   let totalIbu = 0;
+  //   brew.hops = brew.hops.map(hop => {
+  //     if (hop.use === 'first wort') {
+  //       hop.lengthInBoil = brew.boilLength;
+  //       hop.ibu = Calculator.IBU(
+  //         [hop],
+  //         brew.og,
+  //         brew.batchSize,
+  //         options.ibuFormula
+  //       );
+  //     }
+  //     return hop;
+  //   });
+  //   brew.ibu = parseFloat(totalIbu.toFixed(2));
+  // }
   if (
     brew.batchSize &&
     brew.boilLength &&

@@ -290,23 +290,28 @@ export function attenuation(OG, FG) {
 
 // * IBU
 export function IBU(hops, OG, vol, type = 'rager') {
-  console.log(hops, OG, vol, type);
   // TODO: sepatate the unit conversions out of this function
 
   let utilization,
-      IBU = 0;
+      IBU = 0,
+      multiplier = 1;
 
   for ( let i = 0; i < hops.length; i++ ) {
-    const utilizationFactor = hops[i].form === 'pellet' ? 1.15 : 1.0;
+    if (hops[i].use === 'first wort') { multiplier = hops[i].multiplier * 0.01 + 1; }
+    if (hops[i].use === 'mash') { multiplier = 0.125; }
+    if (hops[i].lengthInBoil || hops[i].days) {
+      const utilizationFactor = hops[i].form === 'pellet' ? 1.15 : 1.0;
 
-    if (type === 'tinseth') {
-      utilization = (1.65 * Math.pow(0.000125, OG - 1.0) * ((1 - Math.pow(Math.E, -0.04 * hops[i].lengthInBoil)) / 4.15));
-      IBU += utilization * ((hops[i].alphaAcid / 100.0 * oz2kg(hops[i].weight) * 1000000) / gal2l(vol) * utilizationFactor);
-    } else if (type === 'rager') {
-      utilization = 18.11 + 13.86 * tanh((hops[i].lengthInBoil - 31.32) / 18.27);
-      const adjustment = Math.max(0, (OG - 1.050) / 0.2);
-      IBU += oz2kg(hops[i].weight) * 100 * utilization * utilizationFactor * hops[i].alphaAcid / (gal2l(vol) * (1 + adjustment));
+      if (type === 'tinseth') {
+        utilization = (1.65 * Math.pow(0.000125, OG - 1.0) * ((1 - Math.pow(Math.E, -0.04 * hops[i].lengthInBoil)) / 4.15));
+        IBU += utilization * ((hops[i].alphaAcid / 100.0 * oz2kg(hops[i].weight) * 1000000) / gal2l(vol) * utilizationFactor);
+      } else if (type === 'rager') {
+        utilization = 18.11 + 13.86 * tanh((hops[i].lengthInBoil - 31.32) / 18.27);
+        const adjustment = Math.max(0, (OG - 1.050) / 0.2);
+        IBU += oz2kg(hops[i].weight) * 100 * utilization * utilizationFactor * hops[i].alphaAcid / (gal2l(vol) * (1 + adjustment));
+      }
     }
+    IBU = IBU * multiplier; // for first wort calculations
   }
   
   return !isNaN(IBU) ? parseFloat(IBU.toFixed(2)) : undefined;

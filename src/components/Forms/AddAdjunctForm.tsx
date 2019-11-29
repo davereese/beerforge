@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import styles from './Forms.module.scss';
 import { BrewInterface, AdjunctInterface } from '../../Store/BrewContext';
-import { ADJUNCT_TYPES, UNITS, USE } from '../../resources/javascript/constants';
+import { ADJUNCT_TYPES, UNITS, ADJUNCT_USE } from '../../resources/javascript/constants';
 
 interface Props {
   brew: BrewInterface;
@@ -168,7 +168,7 @@ function AddAdjunctsForm(props: Props) {
             value={formData.use ? formData.use : 0}
             className="capitalize"
           >
-            {USE.map(use => {
+            {ADJUNCT_USE.map(use => {
               return <option value={use} key={use}>{use}</option>;
             })}
           </select>
