@@ -74,8 +74,8 @@ function FormHandler({
   const saveData = () => {
     // remove secondary fermentation data if it has been removed in the form
     if (optionData && optionData.secondary === false && formData) {
-      delete formData.secondaryLength;
-      delete formData.secondaryTemp;
+      // delete formData.secondaryLength;
+      // delete formData.secondaryTemp;
     }
     updateBrew({...formData});
   };
@@ -166,9 +166,14 @@ function FormHandler({
       submitText = 'Submit';
       break;
     case 'fermentation':
-      title = 'Fermentation';
-      component = <FermentationForm brew={brew} dataUpdated={setData} />;
-      submitText = 'Submit';
+      if (editingData) {
+        title = 'Edit Fermentation Stage';
+        submitText = 'Edit';
+      } else {
+        title = 'Edit Fermentation Stage';
+        submitText = '+ Add';
+      }
+      component = <FermentationForm brew={brew} dataUpdated={setData} editingData={editingData} />;
       break;
     case 'packaging':
       title = 'Packaging';

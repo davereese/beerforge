@@ -1,88 +1,100 @@
 import React, { useState, useEffect } from 'react';
 
-import styles from "./Forms.module.scss"
-import { BrewInterface } from '../../Store/BrewContext';
+// import styles from "./Forms.module.scss"
+import { BrewInterface, FermentationInterface } from '../../Store/BrewContext';
 import { useUser } from '../../Store/UserContext';
 import { f2c, c2f } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
+  editingData: FermentationInterface;
   dataUpdated: Function;
 }
 
 function FermentationForm(props: Props) {
   // eslint-disable-next-line
   const [user, userDispatch] = useUser();
-  const [formData, setFormData] = useState(props.brew);
+  const [formData, setFormData] = useState<FermentationInterface>({});
 
   const dataChanged = (type: string) => (event: any) => {
-    let data; 
-    if (type === 'primaryTemp' || type === 'secondaryTemp') {
-      data = user.units === 'metric' ? c2f(event.currentTarget.value) : event.currentTarget.value;
+    let data: FermentationInterface = {};
+    if (type === 'stageTemp') {
+      data.stageTemp = user.units === 'metric' ? Number(c2f(event.currentTarget.value)) : Number(event.currentTarget.value);
+    } else if (type === 'stageLength') {
+      formData.stageLength = Number(event.currentTarget.value);
     } else {
-      data = event.currentTarget.value;
+      data.stageName = event.currentTarget.value;
     }
-    setFormData({...formData, [type]: data});
-  };
-
-  const [secondary, setSecondary] = useState(props.brew.secondaryLength ? true : false);
-
-  const toggleSecondary = (event: any) => {
-    setSecondary(event.currentTarget.checked);
+    setFormData({...formData, ...data});
   };
 
   useEffect(() => {
-    props.dataUpdated(formData, {secondary: secondary});
-  });
+    // when formData changes, update the data in formHandler component
+    const fermentationArray = props.brew.fermentation ? [...props.brew.fermentation] : [];
+    let dataToSet: FermentationInterface[] = [];
+    const index = fermentationArray.findIndex(fermentation => fermentation === props.editingData);
+
+    if (index > -1) {
+      dataToSet = fermentationArray;
+      dataToSet.splice(index, 1, formData);
+    } else {
+      dataToSet = [...fermentationArray, formData];
+    }
+
+    // this lastIndex stuff is a check to make sure we don't submit an empty selection
+    const lastIndex = dataToSet.length - 1;
+    const stageLength = dataToSet[lastIndex].stageLength;
+    if (stageLength && stageLength > 0) {
+      props.dataUpdated({...props.brew, fermentation: dataToSet});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]);
+
+  useEffect(() => {
+    // reset form when submitted
+    setFormData({});
+  }, [props.brew]);
+
+  useEffect(() => {
+    // if the form's editingData changes, we've selected something to edit.
+    // set the form default valies to be the data we're editing.
+    if (props.editingData !== null) {
+      setFormData(props.editingData);
+    } else {
+      setFormData({});
+    }
+  }, [props.editingData]);
 
   return(
     <>
-      <div className={styles.row}>
-        <label>Primary Length (days)<br />
-          <input
-            type="number"
-            placeholder="14"
-            defaultValue={`${props.brew.primaryLength}`}
-            onChange={dataChanged('primaryLength')}
-          />
-        </label>
-        <label>Primary Temp (°{user.units === 'metric' ? 'C' : 'F'})<br />
-          <input
-            type="number"
-            placeholder={user.units === 'metric' ? '17' : '64'}
-            defaultValue={`${user.units === 'metric' ? parseFloat(f2c(props.brew.primaryTemp).toFixed(2)) : props.brew.primaryTemp}`}
-            onChange={dataChanged('primaryTemp')}
-          />
-        </label>
-      </div>
-      <input
-        type="checkbox"
-        id="fermentSecCheck"
-        onChange={toggleSecondary}
-        defaultChecked={secondary}
-      />
-      <label htmlFor="fermentSecCheck">Secondary Fermentation</label>
-      {secondary === true
-        ? <div className={styles.row}>
-          <label>Secondary Length (days)<br />
-            <input
-              type="number"
-              placeholder="14"
-              defaultValue={`${props.brew.secondaryLength}`}
-              onChange={dataChanged('secondaryLength')}
-            />
-          </label>
-          <label>Secondary Temp (°{user.units === 'metric' ? 'C' : 'F'})<br />
-            <input
-              type="number"
-              placeholder={user.units === 'metric' ? '17' : '64'}
-              defaultValue={`${user.units === 'metric' ? parseFloat(f2c(props.brew.secondaryTemp).toFixed(2)) : props.brew.secondaryTemp}`}
-              onChange={dataChanged('secondaryTemp')}
-            />
-          </label>
-        </div>
-        : null
-      }
+      <label>Stage Name<br />
+        <input
+          type="text"
+          placeholder="Primary"
+          value={formData.stageName ? formData.stageName : ''}
+          onChange={dataChanged('stageName')}
+        />
+      </label>
+      <label>Stage Length (days)<br />
+        <input
+          type="number"
+          placeholder="14"
+          value={formData.stageLength ? formData.stageLength : ''}
+          onChange={dataChanged('stageLength')}
+        />
+      </label>
+      <label>Stage Temp (°{user.units === 'metric' ? 'C' : 'F'})<br />
+        <input
+          type="number"
+          placeholder={user.units === 'metric' ? '17' : '64'}
+          value={formData.stageTemp ? user.units === 'metric'
+              ? parseFloat(f2c(formData.stageTemp).toFixed(2))
+              : formData.stageTemp
+            : ''
+          }
+          onChange={dataChanged('stageTemp')}
+        />
+      </label>
     </>
   );
 };

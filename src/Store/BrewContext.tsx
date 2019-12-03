@@ -83,6 +83,14 @@ export interface MashInterface {
   [key: string]: string | number | undefined;
 };
 
+export interface FermentationInterface {
+  stageName?: string;
+  stageLength?: number;
+  stageTemp?: number;
+  notes?: string;
+  [key: string]: string | number | undefined;
+};
+
 export interface processOptionsInterface {
   units: 'us' | 'metric';
   ibuFormula: 'rager' | 'tinseth';
@@ -121,10 +129,11 @@ export interface BrewInterface {
   boilLength?: number;
   preBoilVolume?: number;
   evaporationRate?: number;
-  primaryLength?: number;
-  primaryTemp?: number;
-  secondaryLength?: number;
-  secondaryTemp?: number;
+  fermentation?: FermentationInterface[];
+  // primaryLength?: number;
+  // primaryTemp?: number;
+  // secondaryLength?: number;
+  // secondaryTemp?: number;
   packagingType?: string;
   carbonationMethod?: string;
   CO2VolumeTarget?: number;
@@ -148,6 +157,7 @@ const initialState: any = {
   yeast: [],
   adjuncts: [],
   mash: [],
+  fermentation: [],
 };
 
 export const BrewContext = React.createContext(initialState);

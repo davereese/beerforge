@@ -524,9 +524,55 @@
     }
 
     &.fermentation {
-      .section__values {
+      min-height: 127px;
+
+      @include for-tablet-landscape-up () {
+        min-height: 116px;
+      }
+
+      .fermentation_stage {
+        padding: 12px 15px 15px;
+        background-color: rgba($brew-list-hover, 0);
+        border-bottom: 1px solid rgba($stat-border, 0.5);
+        transition: background-color 0.3s;
+        cursor: pointer;
+  
+        &:hover {
+          background-color: rgba($brew-list-hover, 0.4);
+        }
+
+        &.first:hover {
+          background-color: transparent;
+          background-image: linear-gradient(90deg, rgba($brew-list-hover, 0.4) 40%, transparent 65%);
+        }
+
+        &:last-of-type {
+          border-bottom: none;
+        }
+
+        .fermentation_label {
+          display: inline-block;
+          padding-bottom: 2px;
+          font-weight: $weight-semibold;
+          color: $brew-callout;
+        }
+
+        .section__values {
+          padding: 0;
+          min-height: 0;
+
+          @include for-tablet-portrait-up () {
+            grid-template-columns: 30% 30%;
+          }
+        }
+      }
+
+      .section__stats {
+        top: 56px;
+
         @include for-tablet-landscape-up () {
-          grid-template-columns: 30% 30%;
+          top: 18px;
+          transform: translateY(0px);
         }
       }
     }
@@ -552,13 +598,12 @@
       }
 
       @include for-tablet-landscape-up () {
-        left: 56%;
-        transform: translateY(-45px);
+        left: 59%;
+        transform: translateY(-49px);
       }
 
       @media (min-width: 1000px) {
         left: 65%;
-        transform: translateY(-45px);
       }
 
       .brew__stat {

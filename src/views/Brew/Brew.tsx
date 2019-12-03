@@ -15,7 +15,8 @@ import {
   HopInterface,
   YeastInterface,
   AdjunctInterface,
-  MashInterface
+  MashInterface,
+  FermentationInterface
 } from '../../Store/BrewContext';
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
@@ -296,7 +297,11 @@ const Brew = (props: Props) => {
           console.log({error});
           snackbarDispatch({type: 'show', payload: {
             status: 'error',
-            message: error.response.data && !error.response.data.startsWith("<!") ? error.response.data : error.message,
+            message: error.response.data
+              && error.response.data.length > 0
+              && !error.response.data.startsWith("<!")
+                ? error.response.data
+                : error.message,
           }});
           setSaving(false);
         })
@@ -726,10 +731,10 @@ const Brew = (props: Props) => {
               : null}
             <div className={`${styles.section__values} ${styles.withStats}`}>
               <span>{brew.preBoilVolume
-                ? <>Boil Vol: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.preBoilVolume).toFixed(2)) : brew.preBoilVolume} {unitLabels.vol}</strong></>
+                ? <>Volume: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.preBoilVolume).toFixed(2)) : brew.preBoilVolume} {unitLabels.vol}</strong></>
                 : null}</span>
               <span>{brew.boilLength
-                ? <>Boil Time: <strong>{brew.boilLength} min</strong></>
+                ? <>Time: <strong>{brew.boilLength} min</strong></>
                 : null}</span>
               {brew.batchType !== 'partialMash'
                 ? <span></span>
@@ -751,7 +756,7 @@ const Brew = (props: Props) => {
               </div>
             </div>
           </div>
-          <div className={`${styles.brew__section} ${styles.fermentation}`}>
+          <div className={`${styles.brew__section} ${styles.mash} ${styles.fermentation}`}>
             <div className={styles.brew__header}>
               <h2>Fermentation</h2>
               {!readOnly
@@ -761,44 +766,48 @@ const Brew = (props: Props) => {
                   ><span>Edit</span></button>
                 : null}
             </div>
-            <div className={`${styles.section__values} ${styles.withStats}`}>
-              <span>
-                {brew.primaryLength
-                  ? <>Primary: <strong>{brew.primaryLength} days</strong></>
-                  : null}
-              </span>
-              <span>
-                {brew.primaryTemp
-                  ? <>Temp: <strong>{user.units === 'metric' ? parseFloat(f2c(brew.primaryTemp).toFixed(1)) : brew.primaryTemp} °{unitLabels.temp}</strong></>
-                  : null}
-              </span>
-              <span>
-                {brew.secondaryLength
-                  ? <>Secondary: <strong>{brew.secondaryLength} days</strong></>
-                  : null}
-              </span>
-              <span>
-                {brew.secondaryTemp
-                  ? <>Temp: <strong>{user.units === 'metric' ? parseFloat(f2c(brew.secondaryTemp).toFixed(1)) : brew.secondaryTemp} °{unitLabels.temp}</strong></>
-                  : null}
-              </span>
-              <span></span>
-              <div className={styles.section__stats}>
-                <div className={styles.brew__stat}>
-                  <div>
-                    <span className={styles.value}>{brew.og}</span>
-                    <label className={styles.label}>OG</label>
-                  </div>
+            <div className={styles.section__stats}>
+              <div className={styles.brew__stat}>
+                <div>
+                  <span className={styles.value}>{brew.og}</span>
+                  <label className={styles.label}>OG</label>
                 </div>
-                <span className={styles.arrow}></span>
-                <div className={styles.brew__stat}>
-                  <div>
-                    <span className={styles.value}>{brew.fg}</span>
-                    <label className={styles.label}>FG</label>
-                  </div>
+              </div>
+              <span className={styles.arrow}></span>
+              <div className={styles.brew__stat}>
+                <div>
+                  <span className={styles.value}>{brew.fg}</span>
+                  <label className={styles.label}>FG</label>
                 </div>
               </div>
             </div>
+            {brew && brew.fermentation && brew.fermentation.map((stage: FermentationInterface, index: number) => (
+              <div
+                key={`stage${index + 1}`} className={`${styles.fermentation_stage} ${index === 0 && styles.first}`}
+                onClick={!readOnly ? openSideBar('fermentation', stage) : () => null}
+              >
+                <label className={styles.fermentation_label}>
+                  {stage.stageName ? stage.stageName.toUpperCase() : ''}
+                </label>
+                <div className={`${styles.section__values} ${styles.withStats}`}>
+                  <span>
+                    {stage.stageLength
+                      ? <>Length: <strong>{stage.stageLength} days</strong></>
+                      : null}
+                  </span>
+                  <span>
+                    {stage.stageTemp
+                      ? <>Temp: <strong>{
+                          user.units === 'metric'
+                            ? parseFloat(f2c(stage.stageTemp).toFixed(1))
+                            : stage.stageTemp
+                          } °{unitLabels.temp}</strong>
+                        </>
+                      : null}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
           <div className={styles.brew__section}>
             <div className={styles.brew__header}>
