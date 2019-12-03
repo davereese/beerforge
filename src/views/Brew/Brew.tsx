@@ -4,21 +4,12 @@ import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './Brew.module.scss';
 import Card from '../../components/Card/Card';
-import List from '../../components/List/List';
-import ListItem from '../../components/ListItem/ListItem';
 import FormHandler from './FormHandler/FormHandler';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
 import {
   BrewInterface,
-  FermentableInterface,
-  HopInterface,
-  YeastInterface,
-  AdjunctInterface,
-  MashInterface,
-  FermentationInterface
 } from '../../Store/BrewContext';
-import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { pen } from '../../resources/javascript/penSvg.js';
 import { isEmpty } from '../../resources/javascript/isEmpty';
@@ -28,7 +19,16 @@ import { useBrew, processOptionsInterface } from '../../Store/BrewContext';
 import { useModal } from '../../Store/ModalContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 import * as brewService from '../../Store/BrewService';
-import { lb2kg, gal2l, oz2g, f2c, qt2l } from '../../resources/javascript/calculator';
+import BrewSettings from './BrewComponents/BrewSettings';
+import BrewFermentables from './BrewComponents/BrewFermentables';
+import BrewHops from './BrewComponents/BrewHops';
+import BrewAdjuncts from './BrewComponents/BrewAdjuncts';
+import BrewYeast from './BrewComponents/BrewYeast';
+import BrewMash from './BrewComponents/BrewMash';
+import BrewBoil from './BrewComponents/BrewBoil';
+import BrewFermentation from './BrewComponents/BrewFermentation';
+import BrewPackaging from './BrewComponents/BrewPackaging';
+import BrewNotes from './BrewComponents/BrewNotes';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -263,18 +263,6 @@ const Brew = (props: Props) => {
     }
   }
 
-  const transformNotes = () => {
-    if (brew.notes) {
-      return {__html: brew.notes.replace(/\n/g, '<br>')};
-    }
-  }
-
-  const parseStringValues = (string: string | undefined) => {
-    if (typeof string !== 'string') { return ''};
-    let newString = string.charAt(0).toUpperCase() + string.slice(1)
-    return newString.replace(/([a-z])([A-Z])/g, '$1 $2')
-  }
-
   const handleSaveBrew = async (e: any) => {
     // double check current user hasn't expired
     userDispatch({type: 'load'});
@@ -405,469 +393,89 @@ const Brew = (props: Props) => {
           </span>
         </div>
         {props.staticContext}
-        <Card color="brew" customClass={newBrew? styles.newBrew: styles.view}>
-          <div className={styles.brew__numbers}>
-            <ul className={styles.brew__numbersList}>
-              <li>
-                Brew Method: {parseStringValues(brew.batchType)}
-                {!readOnly
-                  ? <button
-                      className={`button button--link ${styles.edit}`}
-                      onClick={openSideBar('settings')}
-                    >{pen}</button>
-                  : null}
-              </li>
-              <li>
-                Batch Size: {brew.batchSize ? `${user.units === 'metric' ? parseFloat(gal2l(brew.batchSize).toFixed(2)) : brew.batchSize} ${unitLabels.vol}` : null}
-                {!readOnly
-                  ? <button
-                      className={`button button--link ${styles.edit}`}
-                      onClick={openSideBar('settings')}
-                    >{pen}</button>
-                  : null}
-              </li>
-              <li>
-                System Efficiency: {brew.systemEfficiency ? `${brew.systemEfficiency}%` : null}
-                {!readOnly
-                  ? <button
-                      className={`button button--link ${styles.edit}`}
-                      onClick={openSideBar('settings')}
-                    >{pen}</button>
-                  : null}
-              </li>
-            </ul>
-            <div className={styles.brew__stats}>
-              <div className={styles.brew__stat}>
-                <div>
-                  <span className={styles.value}>{brew.alcoholContent ? `${brew.alcoholContent}%` : null}</span>
-                  <label className={styles.label}>ABV</label>
-                </div>
-              </div>
-              <div className={styles.brew__stat}>
-                <div>
-                  <span className={styles.value}>{brew.attenuation ? `${brew.attenuation}%` : null}</span>
-                  <label className={styles.label}>ATTEN</label>
-                </div>
-              </div>
-              <div className={styles.brew__stat}>
-                <div>
-                  <span className={styles.value}>{brew.ibu}</span>
-                  <label className={styles.label}>IBU</label>
-                </div>
-              </div>
-              <div className={styles.brew__stat}>
-                <div>
-                  <span className={styles.value}>
-                    {brew.srm
-                      ? <>
-                          <div
-                            className={styles.srmSwatch}
-                            style={{backgroundColor: getSrmToRgb(brew.srm)}}
-                          />
-                          {brew.srm}
-                        </>
-                      : null }
-                  </span>
-                  <label className={styles.label}>SRM</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-        <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
-          <div className={styles.brew__header}>
-            <h2>Fermentables</h2>
-            {brew && brew.fermentables.length > 0
-              ? <span>Total: {user.units === 'metric' ? parseFloat(lb2kg(brew.totalFermentables).toFixed(2)) : brew.totalFermentables} {unitLabels.largeWeight}</span>
-              : null}
-            {!readOnly
-              ? <button
-                  className={`button button--icon plus ${styles.editButton}`}
-                  onClick={openSideBar('fermentables')}
-                ><span>Edit</span></button>
-              : null}
-          </div>
-          <List customClass={`${styles.brew__ingredients} ${styles.fermentables}`}>
-            {brew && brew.fermentables.map((fermentable: FermentableInterface, index: number) => (
-              <ListItem
-                color="brew"
-                clicked={!readOnly ? openSideBar('fermentables', fermentable) : null}
-                key={`${fermentable.id}${index}`}
-              >
-                <span className={styles.firstCol}>
-                {user.units === 'metric' ? parseFloat(lb2kg(fermentable.weight).toFixed(2)) : fermentable.weight} {unitLabels.largeWeight}
-                </span>
-                <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>
-                <span className={styles.thirdCol}>{fermentable.lovibond} °L</span>
-              </ListItem>
-            ))}
-          </List>
-        </Card>
-        <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
-          <div className={styles.brew__header}>
-            <h2>Hops</h2>
-            {brew && brew.hops.length > 0
-              ? <span>
-                  Total: {user.units === 'metric' ? parseFloat(oz2g(brew.totalHops).toFixed(2)) : brew.totalHops} {unitLabels.smallWeight}
-                </span>
-              : null}
-            {!readOnly
-              ? <button
-                  className={`button button--icon plus ${styles.editButton}`}
-                  onClick={openSideBar('hops')}
-                ><span>Edit</span></button>
-              : null}
-          </div>
-          <List customClass={`${styles.brew__ingredients} ${styles.hops}`}>
-            {brew && brew.hops.map((hop: HopInterface, index: number) => (
-              <ListItem
-                color="brew"
-                clicked={!readOnly ? openSideBar('hops', hop) : null}
-                key={`${hop.id}${index}`}
-              >
-                <span className={styles.firstCol}>
-                  {user.units === 'metric' ? parseFloat(oz2g(hop.weight).toFixed(2)) : hop.weight} {unitLabels.smallWeight}
-                </span>
-                <span className={styles.secondCol}>{hop.name ? hop.name : hop.custom}</span>
-                <span className={styles.thirdCol}>{hop.alphaAcid ? `${hop.alphaAcid}% AA` : null}</span>
-                <span className={styles.fourthCol}>
-                  {hop.lengthInBoil
-                  && hop.use === 'boil' ? `${hop.lengthInBoil} min` : null}
-                  {hop.days ? `${hop.days} days` : null}
-                </span>
-                <span className={styles.fifthCol}>
-                  {hop.ibu && hop.ibu !== Infinity ? <>{hop.ibu} IBU</> : null}
-                </span>
-                <span className={styles.sixthCol}>
-                  {hop.use ? <div style={{textTransform: 'capitalize'}}>{hop.use}</div> : null}
-                </span>
-              </ListItem>
-            ))}
-          </List>
-        </Card>
-        <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
-          <div className={styles.brew__header}>
-            <h2>Adjuncts</h2>
-            {!readOnly
-              ? <button
-                  className={`button button--icon plus ${styles.editButton}`}
-                  onClick={openSideBar('adjuncts')}
-                ><span>Edit</span></button>
-              : null}
-          </div>
-          <List customClass={`${styles.brew__ingredients} ${styles.adjuncts}`}>
-            {brew && brew.adjuncts.map((adjunct: AdjunctInterface, index: number) => (
-              <ListItem
-                color="brew"
-                clicked={!readOnly ? openSideBar('adjuncts', adjunct) : null}
-                key={`${adjunct.id}${index}`}
-              >
-                <span className={styles.firstCol}>
-                  {adjunct.amount} {adjunct.units}
-                </span>
-                <span className={styles.secondCol}>{adjunct.name ? adjunct.name : adjunct.custom}</span>
-                <span className={styles.thirdCol}>{adjunct.time ? `${adjunct.time} min` : null}</span>
-                <span className={styles.fourthCol}>{adjunct.use}</span>
-                <span className={styles.fifthCol}>{adjunct.type}</span>
-              </ListItem>
-            ))}
-          </List>
-        </Card>
-        <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
-          <div className={styles.brew__header}>
-            <h2>Yeast</h2>
-            {brew && brew.yeast.length > 0
-              ? <span>{brew.pitchCellCount} bn cells {brew.targetPitchingCellCount
-                  ? <>of {brew.targetPitchingCellCount} bn target</>
-                  : null}
-                </span>
-              : null}
-            {!readOnly
-              ? <button
-                  className={`button button--icon plus ${styles.editButton}`}
-                  onClick={openSideBar('yeast')}
-                ><span>Edit</span></button>
-              : null}
-          </div>
-          <List customClass={`${styles.brew__ingredients} ${styles.yeast}`}>
-            {brew && brew.yeast.map((item: YeastInterface, index: number) => (
-              <ListItem
-                color="brew"
-                clicked={!readOnly ? openSideBar('yeast', item) : null}
-                key={`${item.id}${index}`}
-              >
-                <span className={styles.firstCol}>
-                  {item.amount} {item.units === 'cells' ? 'bn cells' : item.units}
-                </span>
-                <span className={styles.secondCol}>
-                  {item.manufacturer ? `${item.manufacturer} - ` : null}{item.name ? item.name : item.custom}
-                </span>
-                <span className={styles.thirdCol}>{item.averageAttenuation}% average attenuation</span>
-              </ListItem>
-            ))}
-          </List>
-        </Card>
+        <BrewSettings
+          readOnly={readOnly}
+          newBrew={newBrew}
+          brew={brew}
+          unitLabels={unitLabels}
+          openSideBar={openSideBar}
+          user={user}
+        />
+        <BrewFermentables
+          readOnly={readOnly}
+          newBrew={newBrew}
+          brew={brew}
+          unitLabels={unitLabels}
+          openSideBar={openSideBar}
+          user={user}
+        />
+        <BrewHops
+          readOnly={readOnly}
+          newBrew={newBrew}
+          brew={brew}
+          unitLabels={unitLabels}
+          openSideBar={openSideBar}
+          user={user}
+        />
+        <BrewAdjuncts
+          readOnly={readOnly}
+          newBrew={newBrew}
+          brew={brew}
+          unitLabels={unitLabels}
+          openSideBar={openSideBar}
+          user={user}
+        />
+        <BrewYeast
+          readOnly={readOnly}
+          newBrew={newBrew}
+          brew={brew}
+          unitLabels={unitLabels}
+          openSideBar={openSideBar}
+          user={user}
+        />
         <Card color="brew" customClass={newBrew? styles.newBrew: styles.view}>
           {brew.batchType && brew.batchType !== 'extract'
-            ? <>
-              <div className={`${styles.brew__section} ${styles.mash}`}>
-                <div className={styles.brew__header}>
-                  <h2>Mash</h2>
-                  <span>{brew.batchType === 'BIAB' &&
-                    brew.totalMashVolume &&
-                    brew.kettleSize &&
-                    Number(brew.totalMashVolume) > Number(brew.kettleSize)
-                      ? <>Warning: Total mash volume exceeds kettle size</>
-                      : null}
-                  </span>
-                  {!readOnly
-                    ? <button
-                        className={`button button--icon pen ${styles.editButton}`}
-                        onClick={openSideBar('mash')}
-                      ><span>Edit</span></button>
-                    : null}
-                </div>
-                {brew && brew.mash.map((step: MashInterface, index: number) => (
-                  <div
-                    key={`step${index + 1}`} className={styles.mash_step}
-                    onClick={!readOnly ? openSideBar('mash', step) : () => null}
-                  >
-                    <label className={styles.mash_label}>
-                      {index + 1}: {step.type ? step.type.toUpperCase() : ''}
-                    </label>
-                    <div className={styles.section__values}>
-                      {step.type === 'strike'
-                        ? <>
-                          <span>
-                            {step.strikeVolume && brew.batchType !== 'BIAB' && step.strikeTemp
-                              ? <>Strike with <strong>{user.units === 'metric' ? parseFloat(gal2l(step.strikeVolume).toFixed(1)) : step.strikeVolume} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.strikeTemp).toFixed(1)) : step.strikeTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                            {brew.totalWater && brew.batchType === 'BIAB' && step.strikeTemp
-                              ? <>Strike with <strong>{brew.totalWater.toFixed(2)} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.strikeTemp).toFixed(2)) : step.strikeTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                          </span>
-                          <span>
-                            {step.targetStepTemp
-                              ? <>Mash at <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                          </span>
-                          <span>
-                            {step.stepLength
-                              ? <>Hold for <strong>{step.stepLength} min</strong></>
-                              : null}
-                          </span>
-                          {brew.totalMashVolume && brew.batchType === 'BIAB'
-                            ? <span>Total Mash Vol: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.totalMashVolume).toFixed(2)) : brew.totalMashVolume} {unitLabels.vol}</strong></span>
-                            : null}
-                        </>
-                        : null}
-                      {step.type === 'temperature' || step.type === 'decoction'
-                        ? <>
-                          <span>
-                            {step.targetStepTemp
-                              ? <>Raise to <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                          </span>
-                          <span>
-                            {step.stepLength
-                              ? <>Hold for <strong>{step.stepLength} min</strong></>
-                              : null}
-                          </span>
-                          </>
-                        : null}
-                      {step.type === 'infusion'
-                        ? <>
-                          <span>
-                            {step.infusionWaterVol
-                              ? <>Add <strong>{user.units === 'metric' ? parseFloat(qt2l(step.infusionWaterVol).toFixed(2)) : step.infusionWaterVol} {unitLabels.smallVol}</strong></>
-                              : null}
-                            {step.infusionWaterTemp
-                              ? <> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.infusionWaterTemp).toFixed(1)) : step.infusionWaterTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                          </span>
-                          <span>
-                            {step.targetStepTemp
-                              ? <> Bring to <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
-                              : null}
-                          </span>
-                          <span>
-                            {step.stepLength
-                              ? <>Hold for <strong>{step.stepLength} min</strong></>
-                              : null}
-                          </span>
-                          </>
-                        : null}
-                      {step.type === 'sparge'
-                        ? <span>
-                          {step.spargeTemp
-                            ? <>Sparge&nbsp;
-                              {step.spargeVolume
-                                ? <>with <strong>{user.units === 'metric' ? parseFloat(gal2l(step.spargeVolume).toFixed(2)) : step.spargeVolume} {unitLabels.vol}</strong> </>
-                                : null}
-                              at <strong>{user.units === 'metric' ? parseFloat(f2c(step.spargeTemp).toFixed(1)) : step.spargeTemp} °{unitLabels.temp}</strong></>
-                            : null}
-                        </span>
-                        : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </>
+            ? <BrewMash
+                readOnly={readOnly}
+                newBrew={newBrew}
+                brew={brew}
+                unitLabels={unitLabels}
+                openSideBar={openSideBar}
+                user={user}
+              />
             : null}
-          <div className={styles.brew__section}>
-            <div className={styles.brew__header}>
-              <h2>Boil</h2>
-              {!readOnly
-                ? <button
-                    className={`button button--icon pen ${styles.editButton}`}
-                    onClick={openSideBar('boil')}
-                  ><span>Edit</span></button>
-                : null}
-            </div>
-            {brew.batchType === 'partialMash' && brew.preBoilVolume && brew.mash.some((item: MashInterface) => item.spargeVolume)
-              ? <div style={{padding: "15px 0 0 15px"}}>Top off with <strong>
-                  {user.units === 'metric' ? parseFloat(gal2l(brew.topOff).toFixed(2)) : brew.topOff} {unitLabels.vol}
-                </strong></div>
-              : null}
-            <div className={`${styles.section__values} ${styles.withStats}`}>
-              <span>{brew.preBoilVolume
-                ? <>Volume: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.preBoilVolume).toFixed(2)) : brew.preBoilVolume} {unitLabels.vol}</strong></>
-                : null}</span>
-              <span>{brew.boilLength
-                ? <>Time: <strong>{brew.boilLength} min</strong></>
-                : null}</span>
-              {brew.batchType !== 'partialMash'
-                ? <span></span>
-                : null}
-              <div className={styles.section__stats}>
-                <div className={styles.brew__stat}>
-                  <div>
-                    <span className={styles.value}>{brew.preBoilG}</span>
-                    <label className={styles.label}>PRE</label>
-                  </div>
-                </div>
-                <span className={styles.arrow}></span>
-                <div className={styles.brew__stat}>
-                  <div>
-                    <span className={styles.value}>{brew.og}</span>
-                    <label className={styles.label}>OG</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className={`${styles.brew__section} ${styles.mash} ${styles.fermentation}`}>
-            <div className={styles.brew__header}>
-              <h2>Fermentation</h2>
-              {!readOnly
-                ? <button
-                    className={`button button--icon pen ${styles.editButton}`}
-                    onClick={openSideBar('fermentation')}
-                  ><span>Edit</span></button>
-                : null}
-            </div>
-            <div className={styles.section__stats}>
-              <div className={styles.brew__stat}>
-                <div>
-                  <span className={styles.value}>{brew.og}</span>
-                  <label className={styles.label}>OG</label>
-                </div>
-              </div>
-              <span className={styles.arrow}></span>
-              <div className={styles.brew__stat}>
-                <div>
-                  <span className={styles.value}>{brew.fg}</span>
-                  <label className={styles.label}>FG</label>
-                </div>
-              </div>
-            </div>
-            {brew && brew.fermentation && brew.fermentation.map((stage: FermentationInterface, index: number) => (
-              <div
-                key={`stage${index + 1}`} className={`${styles.fermentation_stage} ${index === 0 && styles.first}`}
-                onClick={!readOnly ? openSideBar('fermentation', stage) : () => null}
-              >
-                <label className={styles.fermentation_label}>
-                  {stage.stageName ? stage.stageName.toUpperCase() : ''}
-                </label>
-                <div className={`${styles.section__values} ${styles.withStats}`}>
-                  <span>
-                    {stage.stageLength
-                      ? <>Length: <strong>{stage.stageLength} days</strong></>
-                      : null}
-                  </span>
-                  <span>
-                    {stage.stageTemp
-                      ? <>Temp: <strong>{
-                          user.units === 'metric'
-                            ? parseFloat(f2c(stage.stageTemp).toFixed(1))
-                            : stage.stageTemp
-                          } °{unitLabels.temp}</strong>
-                        </>
-                      : null}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className={styles.brew__section}>
-            <div className={styles.brew__header}>
-              <h2>Packaging</h2>
-              {!readOnly
-                ? <button
-                    className={`button button--icon pen ${styles.editButton}`}
-                    onClick={openSideBar('packaging')}
-                  ><span>Edit</span></button>
-                : null}
-            </div>
-            <div className={styles.section__values}>
-              <span>{brew.packagingType && brew.carbonationMethod
-                ? <strong>{parseStringValues(brew.packagingType)}/{parseStringValues(brew.carbonationMethod)}</strong>
-                : null}
-              </span>
-              <span>{brew.CO2VolumeTarget
-                ? <>CO<sub>2</sub> Vol: <strong>{brew.CO2VolumeTarget}</strong></>
-                : null}</span>
-              <span>{brew.beerTemp
-                ? <>Temp: <strong>{user.units === 'metric' ? parseFloat(f2c(brew.beerTemp).toFixed(1)) : brew.beerTemp} °{unitLabels.temp}</strong></>
-                : null}</span>
-              <span>{brew.amountForCO2
-                ? <>{brew.carbonationMethod === 'forced' ? 'Pressure: ' : 'Amount: '}
-                <strong>{brew.amountForCO2} {brew.carbonationMethod === 'forced' ? 'psi' : unitLabels.smallWeight}</strong></>
-                : null}
-              </span>
-            </div>
-          </div>
-          <div className={styles.brew__section}>
-            <div className={styles.brew__header}>
-              <h2>Notes</h2>
-              {!readOnly
-                ? <button
-                    className={`button button--icon pen ${styles.editButton}`}
-                    onClick={openSideBar('notes')}
-                  ><span>Edit</span></button>
-                : null}
-            </div>
-            <div className={styles.brew__notes}>
-              {brew.notes
-                ? <div dangerouslySetInnerHTML={transformNotes()} />
-                : null
-              }
-            </div>
-            <div className={styles.tagsWrapper}>
-              {brew.tags
-                ? brew.tags.split(',').map((tag: string, i: number) => {
-                    return <div className="tag" key={i}>{tag}</div>
-                  })
-                : null
-              }
-              {!readOnly
-                ? <button
-                  className={`button ${styles.tagsButton}`}
-                  onClick={openSideBar('tags')}
-                >Tags</button>
-              : null}
-            </div>
-          </div>
+          <BrewBoil
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
+          <BrewFermentation
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
+          <BrewPackaging
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
+          <BrewNotes
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
         </Card>
         {!readOnly
           ? <button
