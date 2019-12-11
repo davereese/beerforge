@@ -282,7 +282,6 @@ const Brew = (props: Props) => {
           setSaving(false);
         })
         .catch((error) => {
-          console.log({error});
           snackbarDispatch({type: 'show', payload: {
             status: 'error',
             message: error.response.data

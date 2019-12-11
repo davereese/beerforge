@@ -33,8 +33,9 @@
     height: 475px;
   }
 
-  .signUp,
-  .logIn {
+  .signUpPanel,
+  .logInPanel,
+  .forgotPanel {
     position: absolute;
     top: 0;
     left: 0;
@@ -46,25 +47,35 @@
     background-position-x: 300px;
   }
 
-  .logIn {
-    top: 80px;
+  .logInPanel {
+    top: 60px;
   }
 
-  .signUp {
+  .signUpPanel {
     opacity: 0;
     transform: rotateY(-180deg);
     pointer-events: none;
   }
 
+  .forgotPanel {
+    opacity: 0;
+    transform: rotateY(-180deg);
+    pointer-events: none;
+
+    p {
+      color: $label-color;
+    }
+  }
+
   .front {
-    .logIn {
+    .logInPanel {
       animation: flipFront 1.4s, flashFront 1.4s;
       animation-fill-mode: forwards;
       display: block;
       pointer-events: auto;
     }
 
-    .signUp {
+    .signUpPanel {
       animation: flipBack 1.4s, flashBack 1.4s;
       animation-fill-mode: forwards;
       pointer-events: none;
@@ -72,14 +83,44 @@
   }
 
   .back {
-    .signUp {
+    .signUpPanel {
       animation: flipFront 1.4s, flashFront 1.4s;
       animation-fill-mode: forwards;
       display: block;
       pointer-events: auto;
     }
 
-    .logIn {
+    .logInPanel {
+      animation: flipBack 1.4s, flashBack 1.4s;
+      animation-fill-mode: forwards;
+      pointer-events: none;
+    }
+  }
+
+  .forgotFront {
+    .logInPanel {
+      animation: flipFront 1.4s, flashFront 1.4s;
+      animation-fill-mode: forwards;
+      display: block;
+      pointer-events: auto;
+    }
+
+    .forgotPanel {
+      animation: flipBack 1.4s, flashBack 1.4s;
+      animation-fill-mode: forwards;
+      pointer-events: none;
+    }
+  }
+
+  .forgotBack {
+    .forgotPanel {
+      animation: flipFront 1.4s, flashFront 1.4s;
+      animation-fill-mode: forwards;
+      display: block;
+      pointer-events: auto;
+    }
+
+    .logInPanel {
       animation: flipBack 1.4s, flashBack 1.4s;
       animation-fill-mode: forwards;
       pointer-events: none;
@@ -95,6 +136,18 @@
 
   svg {
     margin: -3px -5px 0 0;
+  }
+}
+
+.forgotButton {
+  display: block;
+  margin: 20px auto 0;
+  color: $button-default-text;
+  text-transform: capitalize;
+  font-weight: $weight-regular;
+
+  &:hover {
+    color: $white;
   }
 }
 

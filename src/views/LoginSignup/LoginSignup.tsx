@@ -4,11 +4,14 @@ import axios from 'axios';
 import styles from './LoginSignup.module.scss';
 import Loader from '../../components/Loader/Loader';
 import { useUser } from '../../Store/UserContext';
+import { useSnackbar } from '../../Store/SnackbarContext';
 
 const LoginSignup = (props: any) => {
   // CONTEXT
   // eslint-disable-next-line
   const [user, userDispatch] = useUser();
+  // eslint-disable-next-line
+  const [snackbar, snackbarDispatch] = useSnackbar();
 
   // STATE
   const [username, setUsername] = useState('');
@@ -20,6 +23,8 @@ const LoginSignup = (props: any) => {
   const [flip, setFlip] = useState('');
   const [error, setError] = useState<number | string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState('');
+  const [forgotUsername, setForgotUsername] = useState('');
 
   // mount
   useEffect(() => {
@@ -69,6 +74,38 @@ const LoginSignup = (props: any) => {
     }
   }
 
+  const handlePassReset = async (e: any) => {
+    e.preventDefault();
+    if (forgotUsername && forgotPassword) {
+      setError('notBoth');
+    } else {
+      let url = '';
+      let payload;
+      if (forgotUsername) {
+        url = `${process.env.REACT_APP_API_ENDPOINT}/recover/user`;
+        payload = {email: forgotUsername};
+      } else {
+        url = `${process.env.REACT_APP_API_ENDPOINT}/recover/pass`;
+        payload = {username: forgotPassword};
+      }
+      try {
+        setSaving(true);
+        const request = await axios.post(url, payload);
+        setSaving(false);
+        snackbarDispatch({type: 'show', payload: {
+          status: 'success',
+          message: request.data.success,
+        }});
+      } catch (error) {
+        snackbarDispatch({type: 'show', payload: {
+          status: 'error',
+          message: error.response.data.error,
+        }});
+        setSaving(false);
+      }
+    }
+  }
+
   const flipStyles = (direction: string) => (event: any) => {
     setFlip(styles[direction]);
   }
@@ -76,7 +113,7 @@ const LoginSignup = (props: any) => {
   return (
     <section className={styles.loginSignup}>
       <div className={`${styles.container} ${flip}`}>
-        <div className={styles.logIn}>
+        <div className={styles.logInPanel}>
           <h1 className={styles.loginSignup__header}>Log In</h1>
           {
             error === 404 ?
@@ -131,9 +168,13 @@ const LoginSignup = (props: any) => {
               >Sign Up</button>
             </div>
           </form>
+          <button
+            onClick={flipStyles('forgotBack')}
+            className={`button button--link button--small ${styles.forgotButton}`}
+          >Forgot Password</button>
         </div>
 
-        <div className={styles.signUp}>
+        <div className={styles.signUpPanel}>
           <h1 className={styles.loginSignup__header}>Sign Up</h1>
           {
             error === 500 ?
@@ -206,6 +247,59 @@ const LoginSignup = (props: any) => {
                 type="button"
                 className="button button--no-button"
                 onClick={flipStyles('front')}
+              >Log In</button>
+            </div>
+          </form>
+        </div>
+
+        <div className={styles.forgotPanel}>
+          <h1 className={styles.loginSignup__header}>Password Reset</h1>
+          {
+            error === 'notBoth' ?
+              <span className={`error center-text`}>
+                Please submit either password reset or username recovery, not both.
+              </span>
+              : null
+          }
+          <form onSubmit={handlePassReset}>
+            <p>Enter your username to recieve a new temporary password at the email address we have on file.</p>
+            <label className={styles.loginSignup__label}>
+              Username<br />
+              <input
+                type="text"
+                name="forgotPassword"
+                className='dark'
+                autoComplete="off"
+                value={forgotPassword}
+                disabled={forgotUsername ? true : false}
+                onChange={(e) => setForgotPassword(e.target.value)}
+              />
+            </label><br />
+            <p>If you forgot that, enter your email to be sent your username.</p>
+            <label className={styles.loginSignup__label}>
+              Email<br />
+              <input
+                type="email"
+                name="forgotUsername"
+                className='dark'
+                autoComplete="off"
+                value={forgotUsername}
+                disabled={forgotPassword ? true : false}
+                onChange={(e) => setForgotUsername(e.target.value)}
+              />
+            </label><br />
+            <div className={styles.loginSignup__buttons}>
+              <button
+                type="submit"
+                className={`button button--yellow ${styles.loginSignupButton}`}
+              >
+                <span>{forgotUsername ? 'Submit' : 'Reset'}</span>
+                {saving ? <Loader className={styles.savingLoader} color="#191919" /> : null}
+              </button>
+              <button
+                type="button"
+                className="button button--no-button"
+                onClick={flipStyles('forgotFront')}
               >Log In</button>
             </div>
           </form>

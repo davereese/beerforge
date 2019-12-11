@@ -59,6 +59,10 @@ textarea {
       font-weight: $weight-light;
     }
   }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
 select {

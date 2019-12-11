@@ -23,6 +23,8 @@ const Profile = () => {
   const [email, setEmail] = useState(user.email);
   const [firstName, setFirstName] = useState(user.first_name);
   const [lastName, setLastName] = useState(user.last_name);
+  const [password1, setPassword1] = useState('');
+  const [password2, setPassword2] = useState('');
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
     edited: false,
@@ -61,12 +63,25 @@ const Profile = () => {
     try {
       delete settings.edited;
       // build our body for the request
-      const body = {
+      const body: any = {
         firstName: firstName,
         lastName: lastName,
         email: email,
+        icon: user.icon_schema,
+        username: user.username,
         ...settings
       };
+      if (password1.length > 0 && password2.length > 0 && password1 === password2) {
+        body.password = password1;
+      }
+      if (password1 !== password2) {
+        setSaving(false);
+        snackbarDispatch({type: 'show', payload: {
+          status: 'error',
+          message: 'Passwords do not match.',
+        }});
+        return null;
+      }
       const authHeaders = {'authorization': user ? user.token : null};
 
       const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${user.id}`, body, {
@@ -74,6 +89,8 @@ const Profile = () => {
       });
       userDispatch({type: 'update', payload: res.data[0]});
       setSaving(false);
+      setPassword1('');
+      setPassword2('');
       snackbarDispatch({type: 'show', payload: {
         status: 'success',
         message: 'Profile updated',
@@ -235,6 +252,30 @@ const Profile = () => {
             onChange={ (e) => setEmail(e.target.value) }
           />
         </label>
+        <div className={formStyles.row}>
+          <label className={styles.loginSignup__label}>
+            Reset Password<br />
+            <input
+              type="password"
+              name="password1"
+              value={password1}
+              onChange={(e) => setPassword1(e.target.value)}
+              className="dark"
+              // className={`dark ${error === 'noMatch' ? 'error' : ''}`}
+            />
+          </label>
+          <label className={styles.loginSignup__label}>
+            Re-Type Password<br />
+            <input
+              type="password"
+              name="password2"
+              value={password2}
+              onChange={(e) => setPassword2(e.target.value)}
+              className="dark"
+              // className={`dark ${error === 'noMatch' ? 'error' : ''}`}
+            />
+          </label>
+        </div>
         <div className={styles.buttons}>
           <button
             className={`button button--green ${styles.updateButton} ${saving ? styles.saving : null}`}
