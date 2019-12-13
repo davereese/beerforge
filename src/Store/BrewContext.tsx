@@ -166,6 +166,7 @@ export const processBrew = (
   brew: BrewInterface,
   options: processOptionsInterface
 ): BrewInterface => {
+
   // Sort ingredients
   if (brew.fermentables) {
     brew.fermentables.sort(compareWeight);
@@ -219,14 +220,16 @@ export const processBrew = (
     });
     if (strike && index !== undefined) {
       if (brew.batchType === 'partialMash' && brew.totalGrainFermentables) {
+        // convert BACK to kg so these numbers are accurate!!
         brew.mash[index].strikeVolume = Calculator.strikeVolume(
-          brew.totalGrainFermentables,
+          options.units === 'metric' ? Calculator.lb2kg(brew.totalGrainFermentables) : brew.totalGrainFermentables,
           strike.waterToGrain
         );
       } else {
+        // convert BACK to kg so these numbers are accurate!!
         brew.mash[index].strikeVolume = Calculator.strikeVolume(
-          brew.totalFermentables,
-          strike.waterToGrain
+          options.units === 'metric' ? Calculator.lb2kg(brew.totalFermentables) : brew.totalFermentables,
+          strike.waterToGrain,
         );
       }
     }
@@ -497,10 +500,11 @@ export const processBrew = (
   ) {
     const step = brew.mash.find(item => item.spargeVolume);
     if (step) {
+      // convert BACK to kg so these numbers are accurate!!
       brew.topOff = Calculator.partialMashTopOff(
         brew.preBoilVolume,
         step.spargeVolume,
-        brew.totalGrainFermentables,
+        options.units === 'metric' ? Calculator.lb2kg(brew.totalGrainFermentables) : brew.totalGrainFermentables,
         options.absorptionRate
       );
     }
