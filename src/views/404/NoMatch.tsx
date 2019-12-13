@@ -15,11 +15,11 @@ const NoMatch = () => {
       <p>Not sure what happened here, but you can always head back to the dashboard, or of course, brew beer.</p>
       <p>
         <Link
-          to="dashboard"
+          to="/dashboard"
           className="button button--large button--red"
         >Dashboard</Link>
         <Link
-          to="brew"
+          to="/brew"
           className="button button--large button--yellow"
         >New Brew</Link></p>
     </section>

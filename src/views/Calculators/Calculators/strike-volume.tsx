@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { kg2lb, l2qt, gal2l } from '../../../resources/javascript/calculator';
+import { l2qt, gal2l } from '../../../resources/javascript/calculator';
 
 const StrikeVolume = (props: any) => {
   // STATE
@@ -16,12 +16,12 @@ const StrikeVolume = (props: any) => {
 
   const results = () => {
     const result = calculator(
-      weight ? units === 'metric' ? parseFloat(kg2lb(weight).toFixed(4)) : weight : undefined,
+      weight,
       ratio ? units === 'metric' ? parseFloat(l2qt(ratio).toFixed(4)) : ratio : undefined,
     );
     if (!isNaN(result) && isFinite(result) && result > 0) {
       label = props.labels.vol;
-      return units === 'metric' ? parseFloat(gal2l(result).toFixed(2)) : result;
+      return units === 'metric' ? parseFloat(gal2l(result).toFixed(1)) : result;
     }
   }
 
