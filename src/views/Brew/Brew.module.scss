@@ -132,6 +132,20 @@
           opacity: 1;
         }
       }
+
+      .userLink {
+        display: block;
+        font-size: px-to-rem(12px);
+        font-weight: $weight-semibold;
+        color: darken($link, 14%);
+        text-decoration: none;
+        transition: color 0.3s;
+
+        &:hover,
+        &:focus {
+          color: $button-shadow;
+        }
+      }
     }
   }
 

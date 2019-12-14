@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Prompt } from 'react-router'
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Link } from 'react-router-dom';
+import axios from 'axios';
 
 import styles from './Brew.module.scss';
 import Card from '../../components/Card/Card';
@@ -53,6 +54,8 @@ const Brew = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [shoudlBlock, setShoudlBlock] = useState(false);
+  const [currentUser, setCurrentUser] = useState(true);
+  const [userViewing, setUserViewing] = useState<any>({});
 
   // REFS
   const brewContainer = useRef<HTMLDivElement>(null);
@@ -84,32 +87,6 @@ const Brew = (props: Props) => {
     document.title = "BeerForge | New Brew";
     window.addEventListener('scroll', handleScroll, { passive: true });
     scrollToTop(0);
-
-    const getBrew = async (brewId: number) => {
-      setLoading(true);
-      await brewService.getBrew(brewId, user)
-        .then((res: any) => {
-          setLoading(false);
-          setNewBrew(false);
-          brewDispatch({
-            type: 'process',
-            payload: res.data.brew,
-            options: userSettings
-          });
-          return res;
-        })
-        .catch((error) => {
-          snackbarDispatch({type: 'show', payload: {
-            status: 'error',
-            message: error.message,
-          }});
-          if (isEmpty(user)) {
-            props.history.push('/');
-          } else {
-            props.history.push('/dashboard');
-          }
-        });
-    }
 
     // before we start using the current user, let's just make
     // sure they haven't expired, shall we?
@@ -188,6 +165,53 @@ const Brew = (props: Props) => {
       window.onbeforeunload = null;
     }
   });
+
+  const getBrew = async (brewId: number) => {
+    setLoading(true);
+    await brewService.getBrew(brewId, user)
+      .then((res: any) => {
+        setLoading(false);
+        setNewBrew(false);
+        if (res.data.brew.userId !== user.id) {
+          getUser(res.data.brew.userId);
+        }
+        brewDispatch({
+          type: 'process',
+          payload: res.data.brew,
+          options: userSettings
+        });
+        return res;
+      })
+      .catch((error) => {
+        snackbarDispatch({type: 'show', payload: {
+          status: 'error',
+          message: error.message,
+        }});
+        if (isEmpty(user)) {
+          props.history.push('/');
+        } else {
+          props.history.push('/dashboard');
+        }
+      });
+  }
+
+  const getUser = async (userId: number) => {
+    setLoading(true);
+    await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/users/${userId}`, {
+      headers: {'authorization': user ? user.token : null},
+    }).then(result => {
+      setLoading(false);
+      setCurrentUser(false);
+      setUserViewing(result.data);
+    })
+    .catch((error) => {
+      snackbarDispatch({type: 'show', payload: {
+        status: 'error',
+        message: error.message,
+      }});
+      props.history.push('/dashboard');
+    });
+  }
 
   const openSideBar = (
     choice: string = '',
@@ -378,6 +402,14 @@ const Brew = (props: Props) => {
                   onClick={openSideBar('settings')}
                 >{pen}</button>
               : null}
+              {!currentUser
+                && <Link
+                    to={`/user/${userViewing.id}`}
+                    className={styles.userLink}
+                  >
+                    {userViewing.username}
+                  </Link>
+              }
           </h1>
           <span>
             {!readOnly

@@ -22,12 +22,12 @@ function UserInfo({
   return(
     <div className={styles.user}>
       <div className={styles.avatarContainer}>
-        <Avatar user={user} />
+      {user.username && <Avatar user={user} />}
       </div>
       <div className={styles.infoContainer}>
-        <h1 className={styles.infoContainer__header}>
+        {user.username && <h1 className={styles.infoContainer__header}>
           {user.username ? user.username : `${user.first_name} ${user.last_name}`}
-        </h1>
+        </h1>}
         <p className={styles.infoContainer__stats}>
           Beers Brewed: <span>{brewsNum ? brewsNum : 0}</span> 
           {/* Badges Earned: <span>{user.badges ? user.badges : 0}</span> */}

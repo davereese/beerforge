@@ -64,7 +64,9 @@
   &.brews::before,
   &.old-brews::after,
   &.calculators::before,
-  &.old-calculators::after {
+  &.old-calculators::after,
+  &.user::before,
+  &.old-user::after {
     background-image: linear-gradient(125.4deg, $default-bg-1 0%, $default-bg-2 118.45%);
   }
 
