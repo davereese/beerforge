@@ -38,40 +38,84 @@ const Brews = (props: any) => {
   const [showTooltip, setShowTooltip] = useState<null | number>(null);
   // const [headerClass, setHeaderClass] = useState<null | string>(null);
   const [placeholderClass, setPlaceholderClass] = useState<undefined | CSSProperties>(undefined);
+  const [currentUser, setCurrentUser] = useState(false);
+  const [userViewing, setUserViewing] = useState<any>({});
 
   // REFS
   // const logHeader = React.createRef<HTMLDivElement>();
   const logHeader = useRef<HTMLDivElement>(null);
   const headerClass = useRef('');
 
+  const isMounted: any = useRef();
+
   // mount
   useEffect(() => {
     document.title = "BeerForge | All Brews";
-    listUserBrews(1);
-    scrollToTop(300);
+
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     // unmount
     return function cleanup() {
       window.removeEventListener('scroll', handleScroll);
+      isMounted.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    listUserBrews(1);
+    const userId = Number(window.location.pathname.split('/')[2]);
+    if (!isNaN(userId)) {
+      isMounted.current = true;
+      isMounted && getUserAndBrews(userId);
+    } else {
+      isMounted.current = true;
+      setCurrentUser(true);
+      isMounted && listUserBrews(1);
+    }
+
     scrollToTop(300);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.history.location.pathname]);
+
+  useEffect(() => {
+    if (isMounted && brews.length > 0) {
+      const id = currentUser ? user.id : userViewing.id;
+      listUserBrews(1, id);
+      scrollToTop(300);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  const listUserBrews = async (page: number) => {
+  const getUserAndBrews = async (userId: number) => {
+    setLoading(true);
+    await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/users/${userId}`, {
+      headers: {'authorization': user ? user.token : null},
+    }).then(result => {
+      setLoading(false);
+      setUserViewing(result.data);
+      document.title = `BeerForge | All ${result.data.username}'s Brews`;
+      setCurrentUser(false);
+      listUserBrews(1, userId);
+    })
+    .catch((error) => {
+      snackbarDispatch({type: 'show', payload: {
+        status: 'error',
+        message: error.message,
+      }});
+      props.history.push('/dashboard');
+    });
+  }
+
+  const listUserBrews = async (page: number, userId: number | null = null) => {
+    const id = userId ? userId : user.id;
     try {
       // double check current user hasn't expired
       userDispatch({type: 'load'});
       setLoading(true);
       const authHeaders = {'authorization': user ? user.token : null};
       await axios
-        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/?num=${numToShow}&page=${page}&search=${search}`, {
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/${id}?num=${numToShow}&page=${page}&search=${search}`, {
           headers: authHeaders,
         }).then(result => {
           setBrews(result.data.brews);
@@ -158,7 +202,6 @@ const Brews = (props: any) => {
       ? logHeader.current.getBoundingClientRect()
       : new DOMRect();
     if (headerClass.current === '' && rect.top > 49) {
-      // setHeaderClass(null);
       // @ts-ignore-line
       headerClass.current = '';
       setPlaceholderClass({
@@ -166,14 +209,12 @@ const Brews = (props: any) => {
         width: 0,
       });
     } else if (headerClass.current !== '' && rect.top > -20) {
-      // setHeaderClass(null);
       headerClass.current = '';
       setPlaceholderClass({
         height: 0,
         width: 0,
       });
     } else if (rect.top <= 49) {
-      // setHeaderClass(styles.fixedHeader);
       headerClass.current = styles.fixedHeader;
       setPlaceholderClass({
         width: '100%',
@@ -183,7 +224,7 @@ const Brews = (props: any) => {
   }
 
   const handleBrewClick = (brewId: number) => (event: any) => {
-    props.history.push(`brew/${brewId}`);
+    props.history.push(`/brew/${brewId}`);
   }
 
   const openMoreMenu = (index: number) => (event: any) => {
@@ -213,7 +254,7 @@ const Brews = (props: any) => {
   return (
     <section className={styles.allBrews}>
       <div className={styles.topRow}>
-        <h1 className={styles.allBrews__header}>All Brews</h1>
+        <h1 className={styles.allBrews__header}>{currentUser ? 'All Brews' : `All ${userViewing.username}'s Brews`}</h1>
         <input
           type="text"
           name="search"
@@ -221,10 +262,10 @@ const Brews = (props: any) => {
           placeholder="Search names and tags"
           onChange={({ target: { value } }) => onChange(value)}
         />
-        <Link
+        {currentUser && <Link
           to="brew"
           className="button button--large button--yellow"
-        >New Brew</Link>
+        >New Brew</Link>}
       </div>
       <div className={`${styles.brewLogHeader} ${headerClass.current}`}>
         <label className={styles.nameCol}>Name</label>
@@ -264,7 +305,7 @@ const Brews = (props: any) => {
                       : '--'}
                   </span>
                   <span className={styles.dateCol}><FormattedDate>{brew.date_brewed}</FormattedDate></span>
-                  <div className={styles.moreMenuWrapper}>
+                  {currentUser && <div className={styles.moreMenuWrapper}>
                     <div className={styles.kebab} onClick={openMoreMenu(index)}>
                       <span></span><span></span><span></span>
                     </div>
@@ -284,14 +325,20 @@ const Brews = (props: any) => {
                         onClick={exportBrew(brew)}
                       >Export</button>
                     </Tooltip>
-                  </div>
+                  </div>}
                 </ListItem>
               })
-              : <li className={styles.noBrews}>
-                  <Link
-                    to="brew"
-                    className={`button ${styles.brewLInk}`}
-                  >Get Brewing!</Link>
+              : currentUser
+                ? <li className={styles.noBrews}>
+                    <Link
+                      to="brew"
+                      className={`button ${styles.brewLInk}`}
+                    >Get Brewing!</Link>
+                  </li>
+                : <li className={styles.noBrews}>
+                    <p style={{textAlign: 'center', color: 'white'}}>
+                      {userViewing.username} doesn't have any brews saved.
+                    </p>
                 </li>
           }
         </List>

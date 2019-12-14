@@ -40,6 +40,16 @@ const App = (props: Props) => {
           />
           <PrivateRoute
             {...props}
+            path="/user/:userId/brews"
+            component={Brews}
+          />
+          <PrivateRoute
+            {...props}
+            path="/user"
+            component={Dashboard}
+          />
+          <PrivateRoute
+            {...props}
             path="/brew"
             component={Brew}
           />
