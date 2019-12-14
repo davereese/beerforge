@@ -244,10 +244,11 @@ export function targetPitchingRate(OG, vol, targetRate) {
 };
 
 // * Yeast Pitching Rate
-export function pitchingRate(type, cellCount, amount, date = null) {
+export function pitchingRate(type, cellCount, amount, dateBrewed, dateManufactured = null) {
+  const date = dateBrewed ? Date.parse(dateBrewed) : Date.now();
   let viableCells;
   if (type === 'liquid') {
-    const daysElapsed = Math.floor((Date.now() - Date.parse(date)) / 86400000);
+    const daysElapsed = Math.floor((date - Date.parse(dateManufactured)) / 86400000);
     const liquidCells = cellCount * amount * 1000000;
     viableCells = liquidCells - (liquidCells * ((daysElapsed * 0.7) / 100));
   } else if (type === 'dry') {

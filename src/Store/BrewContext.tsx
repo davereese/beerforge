@@ -470,6 +470,7 @@ export const processBrew = (
           item.type,
           item.cellCount,
           item.amount,
+          brew.dateBrewed,
           item.mfgDate
         );
       }
