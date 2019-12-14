@@ -112,7 +112,12 @@ function AddFermentableForm(props: Props) {
         >
           <option value="0">Choose One</option>
           {fermentables.map(fermentable => (
-            <option value={fermentable.id} key={fermentable.id}>{fermentable.name}</option>
+            <option
+              value={fermentable.id}
+              key={fermentable.id}
+            >
+              {fermentable.name} - {fermentable.origin} - {fermentable.lovibond}°L
+            </option>
           ))}
         </select>
       </label>

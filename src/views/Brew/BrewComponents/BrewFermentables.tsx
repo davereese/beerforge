@@ -44,6 +44,7 @@ const BrewFermentables = (props: Props) => {
             </span>
             <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>
             <span className={styles.thirdCol}>{fermentable.lovibond} °L</span>
+            <span className={styles.fourthCol}>{fermentable.origin}</span>
           </ListItem>
         ))}
       </List>
