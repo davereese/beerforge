@@ -244,11 +244,17 @@ const Brews = (props: any) => {
 
   const pagination = Array.from(Array(Math.ceil(brewsCount/numToShow)), (e, i) => {
     const currentPage = i+1;
-    return <button 
-        className={`button button--page ${page === currentPage ? 'on' : ''}`}
-        key={currentPage}
-        onClick={() => page !== currentPage ? listUserBrews(currentPage) : null}
-      >{currentPage}</button>;
+    return !currentUser
+      ? <button
+          className={`button button--page ${page === currentPage ? 'on' : ''}`}
+          key={currentPage}
+          onClick={() => page !== currentPage ? listUserBrews(currentPage, userViewing.id) : null}
+        >{currentPage}</button>
+      : <button
+          className={`button button--page ${page === currentPage ? 'on' : ''}`}
+          key={currentPage}
+          onClick={() => page !== currentPage ? listUserBrews(currentPage) : null}
+        >{currentPage}</button>;
   });
 
   return (
