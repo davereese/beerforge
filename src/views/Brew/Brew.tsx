@@ -53,7 +53,7 @@ const Brew = (props: Props) => {
   const [editingData, setEditingData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [shoudlBlock, setShoudlBlock] = useState(false);
+  const [shouldBlock, setShouldBlock] = useState(false);
   const [currentUser, setCurrentUser] = useState(true);
   const [userViewing, setUserViewing] = useState<any>({});
 
@@ -136,6 +136,10 @@ const Brew = (props: Props) => {
           setSideBarOpen(!sideBarOpen);
         }
       }
+    } else if (editingData === null && form !== '') {
+      if (sideBarMode === "fixed") {
+        openModalForm();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingData]);
@@ -159,7 +163,7 @@ const Brew = (props: Props) => {
 
   // Watch changes for prompt display
   useEffect(() => {
-    if (newBrew && shoudlBlock) {
+    if (newBrew && shouldBlock) {
       window.onbeforeunload = () => true;
     } else {
       window.onbeforeunload = null;
@@ -294,7 +298,7 @@ const Brew = (props: Props) => {
     newBrew
       ? await brewService.saveBrew(brew, user)
         .then((res: any) => {
-          setShoudlBlock(false);
+          setShouldBlock(false);
           setNewBrew(false);
           setReadOnly(false);
           props.history.push(`/brew/${res.data.brew.id}`);
@@ -338,8 +342,9 @@ const Brew = (props: Props) => {
   const handleUpdateBrew = (brew: BrewInterface) => {
     brewDispatch({type: 'update', payload: brew, options: userSettings});
     if (newBrew) {
-      setShoudlBlock(true);
+      setShouldBlock(true);
     }
+    // setEditingData(null);
   }
 
   const handleDeleteBrew = () => {
@@ -388,7 +393,7 @@ const Brew = (props: Props) => {
     >
       {!readOnly
         ? <Prompt
-            when={shoudlBlock}
+            when={shouldBlock}
             message='You have unsaved changes, are you sure you want to leave?'
           />
         : null}
