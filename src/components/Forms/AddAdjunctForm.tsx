@@ -173,7 +173,7 @@ function AddAdjunctsForm(props: Props) {
             })}
           </select>
         </label>
-        <label>Time (min)<br />
+        <label>Time ({formData.use === 'mash' || formData.use === 'boil' ? 'min' : 'days'})<br />
           <input
             type="number"
             step="0.01"

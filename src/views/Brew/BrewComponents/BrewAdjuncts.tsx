@@ -39,9 +39,15 @@ const BrewAdjuncts = (props: Props) => {
               {adjunct.amount} {adjunct.units}
             </span>
             <span className={styles.secondCol}>{adjunct.name ? adjunct.name : adjunct.custom}</span>
-            <span className={styles.thirdCol}>{adjunct.time ? `${adjunct.time} min` : null}</span>
+            <span className={styles.thirdCol}>
+              {adjunct.time
+                ? `${adjunct.time} ${adjunct.use === 'mash' || adjunct.use === 'boil'
+                  ? 'min'
+                  : 'days'}`
+                : null}
+            </span>
             <span className={styles.fourthCol}>{adjunct.use}</span>
-            <span className={styles.fifthCol}>{adjunct.type}</span>
+            <span className={styles.sixthCol}>{adjunct.type}</span>
           </ListItem>
         ))}
       </List>
