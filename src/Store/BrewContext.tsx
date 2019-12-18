@@ -419,22 +419,6 @@ export const processBrew = (
       );
     }
   }
-  if (
-    brew.batchType === 'partialMash' &&
-    brew.mash.some(item => item.strikeVolume)
-  ) {
-    const step = brew.mash.find(item => item.type === 'strike');
-    let index;
-    brew.mash.find((item, i) => {
-      if (item.type === 'sparge') {
-        index = i;
-      }
-      return null;
-    });
-    if (step && index !== undefined) {
-      brew.mash[index].spargeVolume = step.strikeVolume;
-    }
-  }
   if (brew.fermentables.length > 0 && brew.systemEfficiency && brew.batchSize) {
     brew.og = Calculator.OG(
       brew.fermentables,
@@ -496,15 +480,15 @@ export const processBrew = (
   if (
     brew.batchType === 'partialMash' &&
     brew.preBoilVolume &&
-    brew.mash.some(item => item.spargeVolume) &&
+    brew.mash.some(item => item.strikeVolume) &&
     brew.totalGrainFermentables
   ) {
-    const step = brew.mash.find(item => item.spargeVolume);
+    const step = brew.mash.find(item => item.strikeVolume);
     if (step) {
       // convert BACK to kg so these numbers are accurate!!
       brew.topOff = Calculator.partialMashTopOff(
         brew.preBoilVolume,
-        step.spargeVolume,
+        step.strikeVolume,
         options.units === 'metric' ? Calculator.lb2kg(brew.totalGrainFermentables) : brew.totalGrainFermentables,
         options.absorptionRate
       );

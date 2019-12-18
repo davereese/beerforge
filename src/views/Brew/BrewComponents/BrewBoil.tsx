@@ -26,15 +26,17 @@ const BrewBoil = (props: Props) => {
             ><span>Edit</span></button>
           : null}
       </div>
-      {brew.batchType === 'partialMash' && brew.preBoilVolume && brew.mash.some((item: MashInterface) => item.spargeVolume)
-        ? <div style={{padding: "15px 0 0 15px"}}>Top off with <strong>
-            {user.units === 'metric' ? parseFloat(gal2l(brew.topOff).toFixed(2)) : brew.topOff} {unitLabels.vol}
-          </strong></div>
-        : null}
       <div className={`${styles.section__values} ${styles.withStats}`}>
-        <span>{brew.preBoilVolume
-          ? <>Volume: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.preBoilVolume).toFixed(2)) : brew.preBoilVolume} {unitLabels.vol}</strong></>
-          : null}</span>
+        <span>
+          {brew.batchType === 'partialMash' && brew.preBoilVolume && brew.mash.some((item: MashInterface) => item.strikeVolume)
+          ? <>Top off with <strong>
+              {user.units === 'metric' ? parseFloat(gal2l(brew.topOff).toFixed(2)) : brew.topOff} {unitLabels.vol}
+            </strong><br /></>
+          : null}
+          {brew.preBoilVolume
+            ? <>{brew.batchType === 'partialMash' ? 'Total volume' : 'Volume'}: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.preBoilVolume).toFixed(2)) : brew.preBoilVolume} {unitLabels.vol}</strong></>
+            : null}
+        </span>
         <span>{brew.boilLength
           ? <>Time: <strong>{brew.boilLength} min</strong></>
           : null}</span>

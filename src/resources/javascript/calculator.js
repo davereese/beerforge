@@ -212,8 +212,8 @@ export function preBoilVol(totalWaterVol, grainVol, equipmentLoss, absorptionRat
 };
 
 // Partial Mash Top-off
-export function partialMashTopOff(preBoilVolume, spargeVolume, grainVol, absorptionRate) {
-  const result = preBoilVolume - ((spargeVolume * 2) - (grainVol * absorptionRate));
+export function partialMashTopOff(preBoilVolume, strikeVolume, grainVol, absorptionRate) {
+  const result = preBoilVolume - (strikeVolume - (grainVol * absorptionRate));
   return parseFloat(result).toFixed(2);
 };
 
