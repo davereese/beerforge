@@ -255,7 +255,7 @@ export function pitchingRate(type, cellCount, amount, dateBrewed, dateManufactur
     viableCells = cellCount * amount * 1000000;
   }
   const result = (viableCells / 1000000).toPrecision(3);
-  return parseFloat(result);
+  return result > cellCount * amount ? cellCount : parseFloat(result);
 };
 
 // * Final Gravity

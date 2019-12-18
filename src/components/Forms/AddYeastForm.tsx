@@ -67,13 +67,14 @@ function AddYeastForm(props: Props) {
       }
 
       data.viableCellCount = data.units === 'cells' || formData.units === 'cells'
-      ? data.amount
-      : pitchingRate(
-          data.type ? data.type : formData.type,
-          data.cellCount ? data.cellCount : formData.cellCount,
-          data.amount ? data.amount : formData.amount,
-          data.mfgDate ? data.mfgDate : formData.mfgDate
-      );
+        ? data.amount
+        : pitchingRate(
+            data.type ? data.type : formData.type,
+            data.cellCount ? data.cellCount : formData.cellCount,
+            data.amount ? data.amount : formData.amount,
+            props.brew.dateBrewed ? props.brew.dateBrewed : new Date(),
+            data.mfgDate ? data.mfgDate : formData.mfgDate
+        );
 
       setFormData({...formData, ...data});
     }
