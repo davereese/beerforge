@@ -62,13 +62,14 @@ function AddAdjunctsForm(props: Props) {
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
-    const adjunctsArray = props.brew.adjuncts ? [...props.brew.adjuncts] : [];
     let dataToSet: AdjunctInterface[] = [];
-    const index = adjunctsArray.findIndex(adjunct => adjunct === props.editingData);
+    const adjunctsArray = props.brew.adjuncts ? [...props.brew.adjuncts] : [];
+    const index = props.editingData && props.editingData.index ? props.editingData.index : -1;
 
     if (index > -1) {
-      dataToSet = adjunctsArray;
-      dataToSet.splice(index, 1, formData);
+      dataToSet = [...adjunctsArray];
+      // index is passed as +1, so we need to subtract 1
+      dataToSet.splice(index-1, 1, formData);
     } else {
       dataToSet = [...adjunctsArray, formData];
     }

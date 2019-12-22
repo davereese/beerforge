@@ -85,13 +85,14 @@ function AddHopForm(props: Props) {
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
-    const hopsArray = props.brew.hops ? [...props.brew.hops] : [];
     let dataToSet: HopInterface[] = [];
-    const index = hopsArray.findIndex(hop => hop === props.editingData);
+    const hopsArray = props.brew.hops ? [...props.brew.hops] : [];
+    const index = props.editingData && props.editingData.index ? props.editingData.index : -1;
 
     if (index > -1) {
-      dataToSet = hopsArray;
-      dataToSet.splice(index, 1, formData);
+      dataToSet = [...hopsArray];
+      // index is passed as +1, so we need to subtract 1
+      dataToSet.splice(index-1, 1, formData);
     } else {
       dataToSet = [...hopsArray, formData];
     }

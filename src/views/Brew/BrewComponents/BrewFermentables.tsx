@@ -36,7 +36,7 @@ const BrewFermentables = (props: Props) => {
         {brew && brew.fermentables.map((fermentable: FermentableInterface, index: number) => (
           <ListItem
             color="brew"
-            clicked={!readOnly ? openSideBar('fermentables', fermentable) : null}
+            clicked={!readOnly ? openSideBar('fermentables', {...fermentable, index: index + 1}) : null}
             key={`${fermentable.id}${index}`}
           >
             <span className={styles.firstCol}>

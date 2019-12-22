@@ -38,7 +38,7 @@ const BrewYeast = (props: Props) => {
         {brew && brew.yeast.map((item: YeastInterface, index: number) => (
           <ListItem
             color="brew"
-            clicked={!readOnly ? openSideBar('yeast', item) : null}
+            clicked={!readOnly ? openSideBar('yeast', {...item, index: index + 1}) : null}
             key={`${item.id}${index}`}
           >
             <span className={styles.firstCol}>

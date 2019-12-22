@@ -32,7 +32,7 @@ const BrewAdjuncts = (props: Props) => {
         {brew && brew.adjuncts.map((adjunct: AdjunctInterface, index: number) => (
           <ListItem
             color="brew"
-            clicked={!readOnly ? openSideBar('adjuncts', adjunct) : null}
+            clicked={!readOnly ? openSideBar('adjuncts', {...adjunct, index: index + 1}) : null}
             key={`${adjunct.id}${index}`}
           >
             <span className={styles.firstCol}>

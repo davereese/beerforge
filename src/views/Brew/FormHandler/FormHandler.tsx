@@ -14,7 +14,6 @@ import NotesForm from '../../../components/Forms/NotesForm';
 import { BrewInterface } from '../../../Store/BrewContext';
 import { useBrew } from '../../../Store/BrewContext';
 import TagsForm from '../../../components/Forms/TagsForm';
-import { isEquivalent } from '../../../resources/javascript/isEquivalent';
 
 interface Props {
   form: string;
@@ -91,10 +90,11 @@ function FormHandler({
     // @ts-ignore-line
     let editingArray = [...formData[form]];
     let dataToSet: any = [];
-    const index = editingArray.findIndex(entry => isEquivalent(entry, editingData));
+    const index = editingData.index ? editingData.index - 1 : -1;
+    console.log(editingArray);
 
     if (index > -1) {
-      dataToSet = editingArray;
+      dataToSet = [...editingArray];
       dataToSet.splice(index, 1);
     } else {
       dataToSet = [...editingArray, formData];

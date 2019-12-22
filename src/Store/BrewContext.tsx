@@ -21,6 +21,7 @@ export interface FermentableInterface {
   extract?: boolean;
   entryId?: number;
   origin?: string;
+  index?: number;
   [key: string]: string | number | boolean | undefined;
 };
 
@@ -37,6 +38,7 @@ export interface HopInterface {
   use?: 'boil' | 'dry hop' | 'mash' | 'first wort' | 'aroma';
   days?: number;
   multiplier?: number;
+  index?: number;
   [key: string]: string | number | undefined;
 };
 
@@ -52,6 +54,7 @@ export interface YeastInterface {
   averageAttenuation?: number;
   cellCount?: number;
   viableCellCount?: number;
+  index?: number;
   [key: string]: string | number | Date | undefined;
 };
 
@@ -64,6 +67,7 @@ export interface AdjunctInterface {
   type?: string;
   use?: string;
   time?: number;
+  index?: number;
   [key: string]: string | number | undefined;
 };
 

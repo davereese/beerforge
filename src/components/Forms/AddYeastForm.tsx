@@ -92,13 +92,14 @@ function AddYeastForm(props: Props) {
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
-    const yeastArray = props.brew.yeast ? [...props.brew.yeast] : [];
     let dataToSet: YeastInterface[] = [];
-    const index = yeastArray.findIndex(item => item === props.editingData);
+    const yeastArray = props.brew.yeast ? [...props.brew.yeast] : [];
+    const index = props.editingData && props.editingData.index ? props.editingData.index : -1;
 
     if (index > -1) {
-      dataToSet = yeastArray;
-      dataToSet.splice(index, 1, formData);
+      dataToSet = [...yeastArray];
+      // index is passed as +1, so we need to subtract 1
+      dataToSet.splice(index-1, 1, formData);
     } else {
       dataToSet = [...yeastArray, formData];
     }
