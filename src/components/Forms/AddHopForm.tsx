@@ -4,9 +4,8 @@ import axios from 'axios';
 import styles from './Forms.module.scss';
 import Info from "../Info/Info";
 import { BrewInterface, HopInterface } from '../../Store/BrewContext';
-import { IBU } from '../../resources/javascript/calculator';
 import { useUser } from '../../Store/UserContext';
-import { oz2g, g2oz } from '../../resources/javascript/calculator';
+import { oz2g, g2oz, IBU } from '../../resources/javascript/calculator';
 import { HOP_USE } from '../../resources/javascript/constants';
 
 interface Props {
@@ -35,6 +34,81 @@ function AddHopForm(props: Props) {
   const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState<HopInterface>({});
   const [hops, setHops] = useState<HopResults[]>([]);
+  const [projectedTotalIBU, setProjectedTotalIBU] = useState<number>(props.brew.ibu ? props.brew.ibu : 0);
+
+  useEffect(() => {
+    // when formData changes, update the data in formHandler component
+    let dataToSet: HopInterface[] = [];
+    const hopsArray = props.brew.hops ? [...props.brew.hops] : [];
+    const index = props.editingData && props.editingData.index ? props.editingData.index : -1;
+
+    if (index > -1) {
+      dataToSet = [...hopsArray];
+      // index is passed as +1, so we need to subtract 1
+      dataToSet.splice(index-1, 1, formData);
+    } else {
+      dataToSet = [...hopsArray, formData];
+    }
+
+    // Update the projected IBU
+    let hopsToCalculate = [...props.brew.hops];
+    // if we are editing a hop, remove it's index from the list here and add it back
+    // below so we don't end up with duplicates
+    if (props.editingData !== null) {
+      // @ts-ignore-line
+      hopsToCalculate.splice(props.editingData.index-1, 1);
+    }
+    if (formData.use === 'first wort') {
+      formData.lengthInBoil = props.brew.boilLength;
+    } else if (formData.use === 'mash') {
+      let mashLength = 0;
+      props.brew.mash.forEach(step => {
+        mashLength += step.stepLength ? Number(step.stepLength) : 0;
+      });
+      formData.lengthInBoil = mashLength;
+    }
+    const brewsHops = (formData.id && formData.id > 0) || (formData.custom && formData.custom.length > 0)
+      ? [...hopsToCalculate, {
+          ...formData,
+          alphaAcid: formData.alphaAcid ? formData.alphaAcid : 0,
+          weight: formData.weight ? formData.weight : 0,
+        }]
+      : hopsToCalculate;
+    // console.log(brewsHops);
+    const ibus = IBU(brewsHops, props.brew.og, props.brew.batchSize);
+    // console.log(ibus);
+    setProjectedTotalIBU(ibus ? ibus : 0);
+
+    // this lastIndex stuff is a chack to make sure we don't submit an empty selection
+    const lastIndex = dataToSet.length - 1;
+    const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
+    if (name && name.length > 0) {
+      props.dataUpdated({...props.brew, hops: dataToSet});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]);
+
+  useEffect(() => {
+    // load hops when component renders
+    listAllHops().then(result => {
+      setHops(result);
+    });
+  }, []);
+
+  useEffect(() => {
+    // reset form when submitted
+    setFormData({id: 0});
+  }, [props.brew]);
+
+  useEffect(() => {
+    // if the form's editingData changes, we've selected something to edit.
+    // set the form default valies to be the data we're editing.
+    if (props.editingData !== null) {
+      setFormData(props.editingData);
+    } else {
+      setFormData({id: 0});
+    }
+  }, [props.editingData]);
 
   const dataChanged = (type: string) => (event: any) => {
     let data: HopInterface = {};
@@ -82,51 +156,6 @@ function AddHopForm(props: Props) {
       setFormData({...formData, ...data});
     }
   };
-
-  useEffect(() => {
-    // when formData changes, update the data in formHandler component
-    let dataToSet: HopInterface[] = [];
-    const hopsArray = props.brew.hops ? [...props.brew.hops] : [];
-    const index = props.editingData && props.editingData.index ? props.editingData.index : -1;
-
-    if (index > -1) {
-      dataToSet = [...hopsArray];
-      // index is passed as +1, so we need to subtract 1
-      dataToSet.splice(index-1, 1, formData);
-    } else {
-      dataToSet = [...hopsArray, formData];
-    }
-
-    // this lastIndex stuff is a chack to make sure we don't submit an empty selection
-    const lastIndex = dataToSet.length - 1;
-    const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
-    if (name && name.length > 0) {
-      props.dataUpdated({...props.brew, hops: dataToSet});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]);
-
-  useEffect(() => {
-    // load hops when component renders
-    listAllHops().then(result => {
-      setHops(result);
-    });
-  }, []);
-
-  useEffect(() => {
-    // reset form when submitted
-    setFormData({id: 0});
-  }, [props.brew]);
-
-  useEffect(() => {
-    // if the form's editingData changes, we've selected something to edit.
-    // set the form default valies to be the data we're editing.
-    if (props.editingData !== null) {
-      setFormData(props.editingData);
-    } else {
-      setFormData({id: 0});
-    }
-  }, [props.editingData]);
 
   return(
     <>
@@ -236,6 +265,18 @@ function AddHopForm(props: Props) {
             </label>
           : null}
       </div>
+      <p className={styles.extra}>
+        {props.brew.ibu || (
+          formData.use
+          && (formData.lengthInBoil || formData.days)
+          && formData.form
+          && formData.alphaAcid
+          && formData.weight
+          && props.brew.og
+        )
+          ? <>Projected IBU: <strong>{projectedTotalIBU}</strong><br /></>
+          : null}
+      </p>
     </>
   );
 };

@@ -91,7 +91,6 @@ function FormHandler({
     let editingArray = [...formData[form]];
     let dataToSet: any = [];
     const index = editingData.index ? editingData.index - 1 : -1;
-    console.log(editingArray);
 
     if (index > -1) {
       dataToSet = [...editingArray];

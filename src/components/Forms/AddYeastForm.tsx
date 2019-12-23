@@ -222,10 +222,9 @@ function AddYeastForm(props: Props) {
       {props.brew.yeast.length > 0 || formData.viableCellCount
         ? <p className={styles.extra}>
             <strong>
-              {calculateViableCells()} bn cells {props.brew.targetPitchingCellCount
-                ? <>of {props.brew.targetPitchingCellCount} bn target</>
+              {calculateViableCells()} bn</strong> cells {props.brew.targetPitchingCellCount
+                ? <>of <strong>{props.brew.targetPitchingCellCount} bn</strong> target</>
                 : null}
-            </strong>
           </p>
         : null}
     </>

@@ -4,7 +4,7 @@ import axios from 'axios';
 import styles from './Forms.module.scss';
 import { BrewInterface, FermentableInterface } from '../../Store/BrewContext';
 import { useUser } from '../../Store/UserContext';
-import { lb2kg, kg2lb } from '../../resources/javascript/calculator';
+import { lb2kg, kg2lb, SRM, OG } from '../../resources/javascript/calculator';
 
 interface Props {
   brew: BrewInterface;
@@ -28,35 +28,8 @@ function AddFermentableForm(props: Props) {
   const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState<FermentableInterface>({});
   const [fermentables, setFermentables] = useState<FermentableInterface[]>([]);
-
-  const dataChanged = (type: string) => (event: any) => {
-    let data: FermentableInterface = {};
-    if (type === 'fermentable') {
-      const choice = fermentables.find(fermentable => fermentable.id === parseInt(event.currentTarget.value));
-      data = choice ? choice : {};
-    } else if (type === 'custom') {
-      data.custom = event.currentTarget.value;
-    } else if (type === 'weight') {
-      data.weight = user.units === 'metric' ? kg2lb(Number(event.currentTarget.value) + 0) : Number(event.currentTarget.value) + 0;
-    } else {
-      data[type] = Number(event.currentTarget.value) + 0;
-    }
-
-    if (data !== undefined) {
-      if (type === 'custom' && !formData['custom']) {
-        data['id'] = undefined;
-        data['extract'] = undefined;
-        data['lovibond'] = undefined;
-        data['name'] = '';
-        data['origin'] = '';
-        data['potential'] = undefined;
-      } else if (type === 'fermentable' && formData['custom']) {
-        data['custom'] = '';
-      }
-
-      setFormData({...formData, ...data});
-    }
-  };
+  const [projectedTotalSRM, setProjectedTotalSRM] = useState<number>(props.brew.srm ? props.brew.srm : 0);
+  const [projectedOG, setProjectedOG] = useState<number>(props.brew.og ? props.brew.og : 0);
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
@@ -71,6 +44,24 @@ function AddFermentableForm(props: Props) {
     } else {
       dataToSet = [...fermentablesArray, formData];
     }
+
+    // Update the projected SRM and OG
+    let fermentablesToCalculate = [...props.brew.fermentables];
+    // if we are editing a fermentable, remove it's index from the list here and add it back
+    // below so we don't end up with duplicates
+    if (props.editingData !== null) {
+      // @ts-ignore-line
+      fermentablesToCalculate.splice(props.editingData.index-1, 1);
+    }
+    const brewsMalts = (formData.id && formData.id > 0) || (formData.custom && formData.custom.length > 0)
+      ? [...fermentablesToCalculate, {
+          potential: formData.potential ? formData.potential : 0,
+          weight: formData.weight ? formData.weight : 0,
+          lovibond: formData.lovibond ? formData.lovibond : 0
+        }]
+      : fermentablesToCalculate;
+    setProjectedTotalSRM(SRM(brewsMalts, props.brew.batchSize));
+    setProjectedOG(OG(brewsMalts, props.brew.systemEfficiency, props.brew.batchSize));
 
     // this lastIndex stuff is a check to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
@@ -102,6 +93,35 @@ function AddFermentableForm(props: Props) {
       setFormData({id: 0});
     }
   }, [props.editingData]);
+
+  const dataChanged = (type: string) => (event: any) => {
+    let data: FermentableInterface = {};
+    if (type === 'fermentable') {
+      const choice = fermentables.find(fermentable => fermentable.id === parseInt(event.currentTarget.value));
+      data = choice ? choice : {};
+    } else if (type === 'custom') {
+      data.custom = event.currentTarget.value;
+    } else if (type === 'weight') {
+      data.weight = user.units === 'metric' ? kg2lb(Number(event.currentTarget.value) + 0) : Number(event.currentTarget.value) + 0;
+    } else {
+      data[type] = Number(event.currentTarget.value) + 0;
+    }
+
+    if (data !== undefined) {
+      if (type === 'custom' && !formData['custom']) {
+        data['id'] = undefined;
+        data['extract'] = undefined;
+        data['lovibond'] = undefined;
+        data['name'] = '';
+        data['origin'] = '';
+        data['potential'] = undefined;
+      } else if (type === 'fermentable' && formData['custom']) {
+        data['custom'] = '';
+      }
+
+      setFormData({...formData, ...data});
+    }
+  };
 
   return(
     <>
@@ -166,6 +186,14 @@ function AddFermentableForm(props: Props) {
           onChange={dataChanged('weight')}
         />
       </label>
+      <p className={styles.extra}>
+        {props.brew.srm || (formData.lovibond && formData.weight && props.brew.batchSize)
+          ? <>Projected SRM: <strong>{projectedTotalSRM}</strong><br /></>
+          : null}
+        {props.brew.srm || (formData.lovibond && formData.weight && props.brew.batchSize)
+        ? <>Projected OG: <strong>{projectedOG}</strong></>
+        : null}
+      </p>
     </>
   );
 };

@@ -309,12 +309,12 @@ export function IBU(hops, OG, vol, type = 'rager') {
       } else if (type === 'rager') {
         utilization = 18.11 + 13.86 * tanh((hops[i].lengthInBoil - 31.32) / 18.27);
         const adjustment = Math.max(0, (OG - 1.050) / 0.2);
-        IBU += oz2kg(hops[i].weight) * 100 * utilization * utilizationFactor * hops[i].alphaAcid / (gal2l(vol) * (1 + adjustment));
+        // multiply by the multiplyer for first wort calculations
+        IBU += (oz2kg(hops[i].weight) * 100 * utilization * utilizationFactor * hops[i].alphaAcid / (gal2l(vol) * (1 + adjustment))) * multiplier;
       }
     }
-    IBU = IBU * multiplier; // for first wort calculations
   }
-  
+
   return !isNaN(IBU) ? parseFloat(IBU.toFixed(2)) : undefined;
 };
 
