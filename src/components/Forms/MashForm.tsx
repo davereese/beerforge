@@ -66,9 +66,9 @@ function MashForm(props: Props) {
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
-    const stepsArray = props.brew.mash ? [...props.brew.mash] : [];
     let dataToSet: MashInterface[] = [];
-    const index = stepsArray.findIndex(step => step === props.editingData);
+    const stepsArray = props.brew.mash ? [...props.brew.mash] : [];
+    const index = props.editingData && props.editingData.index ? Number(props.editingData.index) : -1;
 
     // Take kettleSize out of the mash and put it in the main brew obj
     let kettleSize;
@@ -82,7 +82,7 @@ function MashForm(props: Props) {
 
     if (index > -1) {
       dataToSet = stepsArray;
-      dataToSet.splice(index, 1, newData);
+      dataToSet.splice(index-1, 1, newData);
     } else {
       dataToSet = [...stepsArray, newData];
     }

@@ -85,9 +85,9 @@ function FormHandler({
 
   const saveData = () => {
     // display message that we made a global change
-    if (optionData.units === 'percent' && brew.fermentableUnits !== 'percent') {
+    if (optionData && optionData.units === 'percent' && brew.fermentableUnits !== 'percent') {
       openModal('You have changed this brew\'s grain bill to percentages. This is a global change and will affect all fermentables. You won\'t need to set this again.');
-    } else if (optionData.units !== 'percent' && brew.fermentableUnits === 'percent') {
+    } else if (optionData && optionData.units !== 'percent' && brew.fermentableUnits === 'percent') {
       openModal('You have changed this brew\'s grain bill to weights. This is a global change and will affect all fermentables. You won\'t need to set this again.');
     } else {
       updateBrew({...formData});
@@ -130,7 +130,6 @@ function FormHandler({
     let editingArray = [...formData[form]];
     let dataToSet: any = [];
     const index = editingData.index ? editingData.index - 1 : -1;
-
     if (index > -1) {
       dataToSet = [...editingArray];
       dataToSet.splice(index, 1);

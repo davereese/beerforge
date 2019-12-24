@@ -36,7 +36,7 @@ const BrewMash = (props: Props) => {
       {brew && brew.mash.map((step: MashInterface, index: number) => (
         <div
           key={`step${index + 1}`} className={styles.mash_step}
-          onClick={!readOnly ? openSideBar('mash', step) : () => null}
+          onClick={!readOnly ? openSideBar('mash', {...step, index: index + 1}) : () => null}
         >
           <label className={styles.mash_label}>
             {index + 1}: {step.type ? step.type.toUpperCase() : ''}

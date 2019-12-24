@@ -44,7 +44,7 @@ const BrewFermentation = (props: Props) => {
       {brew && brew.fermentation && brew.fermentation.map((stage: FermentationInterface, index: number) => (
         <div
           key={`stage${index + 1}`} className={`${styles.fermentation_stage} ${index === 0 && styles.first}`}
-          onClick={!readOnly ? openSideBar('fermentation', stage) : () => null}
+          onClick={!readOnly ? openSideBar('fermentation', {...stage, index: index + 1}) : () => null}
         >
           <label className={styles.fermentation_label}>
             {stage.stageName ? stage.stageName.toUpperCase() : ''}
