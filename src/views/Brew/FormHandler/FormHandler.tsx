@@ -11,9 +11,10 @@ import BoilForm from '../../../components/Forms/BoilForm';
 import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
+import TagsForm from '../../../components/Forms/TagsForm';
 import { BrewInterface } from '../../../Store/BrewContext';
 import { useBrew } from '../../../Store/BrewContext';
-import TagsForm from '../../../components/Forms/TagsForm';
+import { useModal } from '../../../Store/ModalContext';
 
 interface Props {
   form: string;
@@ -38,8 +39,13 @@ function FormHandler({
   let title: string,
       component: ReactElement | null,
       submitText: string;
+  
+  // CONTEXT
   // eslint-disable-next-line
-  const [brew, brewDispatch] = useBrew();
+  const [modal, modalDispatch] = useModal();
+  const [brew] = useBrew();
+
+  // STATE
   const [formData, setFormData] = useState<BrewInterface | null>(null);
 
   // Stuff that isn't supposed to be part of the brew
@@ -78,8 +84,39 @@ function FormHandler({
   };
 
   const saveData = () => {
-    updateBrew({...formData});
+    // display message that we made a global change
+    if (optionData.units === 'percent' && brew.fermentableUnits !== 'percent') {
+      openModal('You have changed this brew\'s grain bill to percentages. This is a global change and will affect all fermentables. You won\'t need to set this again.');
+    } else if (optionData.units !== 'percent' && brew.fermentableUnits === 'percent') {
+      openModal('You have changed this brew\'s grain bill to weights. This is a global change and will affect all fermentables. You won\'t need to set this again.');
+    } else {
+      updateBrew({...formData});
+    }
   };
+
+  const openModal = (message: string) => {
+    modalDispatch({
+      type: 'show',
+      payload: {
+        body: <p>{message}</p>,
+        buttons: <>
+          <button
+            className="button button--brown"
+            onClick={() => {
+              modalDispatch({type: 'hide'});
+            }}
+          >Keep editing</button>
+          <button
+            className="button"
+            onClick={() => {
+              updateBrew({...formData});
+              modalDispatch({type: 'hide'});
+            }}
+          >Save &amp; Continue</button>
+        </>
+      }
+    });
+  }
 
   const handleNext = () => {
     if (formData !== null) {
