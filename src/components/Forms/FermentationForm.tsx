@@ -30,13 +30,13 @@ function FermentationForm(props: Props) {
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
-    const fermentationArray = props.brew.fermentation ? [...props.brew.fermentation] : [];
     let dataToSet: FermentationInterface[] = [];
-    const index = fermentationArray.findIndex(fermentation => fermentation === props.editingData);
+    const fermentationArray = props.brew.fermentation ? [...props.brew.fermentation] : [];
+    const index = props.editingData && props.editingData.index ? Number(props.editingData.index) : -1;
 
     if (index > -1) {
       dataToSet = fermentationArray;
-      dataToSet.splice(index, 1, formData);
+      dataToSet.splice(index-1, 1, formData);
     } else {
       dataToSet = [...fermentationArray, formData];
     }
