@@ -30,6 +30,58 @@
   line-height: 1.5;
 }
 
+.alignRight {
+  float: right;
+}
+
+input.inline {
+  display: inline;
+  width: 59px;
+  height: inherit;
+  min-width: inherit;
+  padding: 0 3px;
+  margin: 0;
+  font-weight: $weight-semibold;
+}
+
+.edit {
+  svg {
+    width: 15px;
+    height: 15px;
+    margin-left: 8px;
+    fill: darken($brew-callout, 9%);
+  }
+
+  &:hover {
+    svg {
+      fill: $text-dark;
+    }
+  }
+}
+
+.lock,
+.unlock {
+  svg {
+    width: 15px;
+    height: 17px;
+    margin-left: 8px;
+    stroke: darken($brew-callout, 9%);
+  }
+
+  &:hover {
+    svg {
+      stroke: $text-dark;
+    }
+  }
+}
+
+.unlock {
+  svg {
+    width: 15px;
+    height: 17px;
+  }
+}
+
 .fullButton {
   margin: 20px 0 20px;
   width: 100%;

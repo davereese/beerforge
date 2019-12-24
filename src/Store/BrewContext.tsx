@@ -15,13 +15,14 @@ export interface FermentableInterface {
   name?: string;
   custom?: string;
   weight?: number;
-  unit?: 'lbs' | 'oz';
+  calculatedWeight?: number; // if using percentage
   lovibond?: number;
   potential?: number;
   extract?: boolean;
   entryId?: number;
   origin?: string;
   index?: number;
+  units?: 'lb' | 'kg' | 'percent';
   [key: string]: string | number | boolean | undefined;
 };
 
@@ -134,10 +135,6 @@ export interface BrewInterface {
   preBoilVolume?: number;
   evaporationRate?: number;
   fermentation?: FermentationInterface[];
-  // primaryLength?: number;
-  // primaryTemp?: number;
-  // secondaryLength?: number;
-  // secondaryTemp?: number;
   packagingType?: string;
   carbonationMethod?: string;
   CO2VolumeTarget?: number;
@@ -152,6 +149,9 @@ export interface BrewInterface {
   fg?: number;
   attenuation?: number;
   alcoholContent?: number;
+  fermentableUnits?: 'weight' | 'percent';
+  totalFermentablesPercent?: number;
+  targetOG?: number;
 };
 
 const initialState: any = {
@@ -193,9 +193,27 @@ export const processBrew = (
 
   // Run Calculations
   if (brew.fermentables.length > 0) {
-    brew.totalFermentables = Calculator.totalFermentableWeight(
-      brew.fermentables
-    );
+    if (brew.fermentableUnits === 'percent' && brew.targetOG && brew.batchSize && brew.systemEfficiency) {
+      // Calculate the actual weights
+      const pointsNeeded = parseFloat((((Number(brew.targetOG) - 1) * 1000) * brew.batchSize).toPrecision(3));
+      const weightNeeded = parseFloat((pointsNeeded / ((brew.systemEfficiency / 100) * 36)).toFixed(2));
+      let totalWeight = 0;
+      let totalPercent = 0;
+      brew.fermentables.map(fermentable => {
+        const fermentableWeight = fermentable.weight ? fermentable.weight : 0;
+        const calculatedWeight = parseFloat((weightNeeded * (fermentableWeight / 100)).toFixed(2));
+        totalWeight += calculatedWeight;
+        totalPercent += fermentableWeight;
+        return fermentable.calculatedWeight = calculatedWeight;
+      });
+      brew.totalFermentables = parseFloat(totalWeight.toFixed(2));
+      brew.totalFermentablesPercent = totalPercent;
+    } else {
+      brew.totalFermentables = Calculator.totalFermentableWeight(
+        brew.fermentables,
+      );
+      brew.totalFermentablesPercent = undefined;
+    }
     if (brew.batchType === 'partialMash') {
       const nonExtractFermentablesArray = brew.fermentables.filter(
         fermentable => fermentable.extract !== true
@@ -206,7 +224,7 @@ export const processBrew = (
     }
   }
   if (brew.fermentables && brew.batchSize) {
-    brew.srm = Calculator.SRM(brew.fermentables, brew.batchSize);
+    brew.srm = Calculator.SRM(brew.fermentables, brew.batchSize, brew.fermentableUnits);
   }
   if (
     brew.batchType !== 'BIAB' &&
@@ -294,22 +312,6 @@ export const processBrew = (
       );
     }
   }
-  // if (brew.boilLength && brew.hops.length) {
-  //   let totalIbu = 0;
-  //   brew.hops = brew.hops.map(hop => {
-  //     if (hop.use === 'first wort') {
-  //       hop.lengthInBoil = brew.boilLength;
-  //       hop.ibu = Calculator.IBU(
-  //         [hop],
-  //         brew.og,
-  //         brew.batchSize,
-  //         options.ibuFormula
-  //       );
-  //     }
-  //     return hop;
-  //   });
-  //   brew.ibu = parseFloat(totalIbu.toFixed(2));
-  // }
   if (
     brew.batchSize &&
     brew.boilLength &&
@@ -424,7 +426,7 @@ export const processBrew = (
     }
   }
   if (brew.fermentables.length > 0 && brew.systemEfficiency && brew.batchSize) {
-    brew.og = Calculator.OG(
+    brew.og = brew.targetOG ? brew.targetOG : Calculator.OG(
       brew.fermentables,
       brew.systemEfficiency,
       brew.batchSize

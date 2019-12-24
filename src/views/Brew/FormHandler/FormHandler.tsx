@@ -55,6 +55,13 @@ function FormHandler({
 
   useEffect(() => {
     if (optionData && optionData.tagDeleted) { saveData() }
+    if (optionData && optionData.units === 'percent' && formData !== null) {
+      formData.fermentableUnits = optionData.units;
+      formData.targetOG = optionData.targetOG;
+    } else if (optionData && optionData.units !== 'percent' && formData !== null) {
+      formData.fermentableUnits = 'weight';
+      formData.targetOG = undefined;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [optionData]);
 
@@ -65,17 +72,12 @@ function FormHandler({
 
   const handleKeyDown = (e: any) => {
     // submit and go to the next form on 'enter' press
-    if (open && e.keyCode === 13) {
+    if (open && e.target.id !== 'editOG' && e.keyCode === 13) {
       handleNext();
     }
   };
 
   const saveData = () => {
-    // remove secondary fermentation data if it has been removed in the form
-    if (optionData && optionData.secondary === false && formData) {
-      // delete formData.secondaryLength;
-      // delete formData.secondaryTemp;
-    }
     updateBrew({...formData});
   };
 

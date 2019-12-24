@@ -29,14 +29,14 @@ const BrewFermentation = (props: Props) => {
       <div className={styles.section__stats}>
         <div className={styles.brew__stat}>
           <div>
-            <span className={styles.value}>{brew.og}</span>
+            <span className={styles.value}>{Number(brew.og).toFixed(3)}</span>
             <label className={styles.label}>OG</label>
           </div>
         </div>
         <span className={styles.arrow}></span>
         <div className={styles.brew__stat}>
           <div>
-            <span className={styles.value}>{brew.fg}</span>
+            <span className={styles.value}>{Number(brew.fg).toFixed(3)}</span>
             <label className={styles.label}>FG</label>
           </div>
         </div>

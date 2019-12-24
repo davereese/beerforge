@@ -319,14 +319,18 @@ export function IBU(hops, OG, vol, type = 'rager') {
 };
 
 // * SRM
-export function SRM(malts, vol) {
+export function SRM(malts, vol, units = 'weight') {
   // MCU = (grain_color * grain_weight_lbs) / volume_gallons - Malt Color Units
   // SRM = 1.4922 * [MCU ^ 0.6859] - The more accurate Morey equation
   let MCU = 0,
       SRM;
 
   for ( let i = 0; i < malts.length; i++ ) {
-    MCU += (malts[i].lovibond * malts[i].weight) / vol;
+    if (units === 'percent') {
+      MCU += (malts[i].lovibond * malts[i].calculatedWeight) / vol;
+    } else {
+      MCU += (malts[i].lovibond * malts[i].weight) / vol;
+    }
     MCU = Infinity === MCU ? 0 : MCU;
   }
 

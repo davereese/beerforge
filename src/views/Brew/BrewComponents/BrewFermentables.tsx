@@ -23,7 +23,7 @@ const BrewFermentables = (props: Props) => {
       <div className={styles.brew__header}>
         <h2>Fermentables</h2>
         {brew && brew.fermentables.length > 0
-          ? <span>Total: {user.units === 'metric' ? parseFloat(lb2kg(brew.totalFermentables).toFixed(2)) : brew.totalFermentables} {unitLabels.largeWeight}</span>
+          ? <span>Total: {user.units === 'metric' ? parseFloat(lb2kg(brew.totalFermentables).toFixed(2)) : brew.totalFermentables} {unitLabels.largeWeight}{brew.totalFermentablesPercent ? ` (${brew.totalFermentablesPercent}%)` : null}</span>
           : null}
         {!readOnly
           ? <button
@@ -40,7 +40,10 @@ const BrewFermentables = (props: Props) => {
             key={`${fermentable.id}${index}`}
           >
             <span className={styles.firstCol}>
-            {user.units === 'metric' ? parseFloat(lb2kg(fermentable.weight).toFixed(2)) : fermentable.weight} {unitLabels.largeWeight}
+            {brew.fermentableUnits === 'percent'
+              ? <>{user.units === 'metric' ? parseFloat(lb2kg(fermentable.calculatedWeight).toFixed(2)) : fermentable.calculatedWeight} {unitLabels.largeWeight} ({fermentable.weight}%)</>
+              : <>{user.units === 'metric' ? parseFloat(lb2kg(fermentable.weight).toFixed(2)) : fermentable.weight} {unitLabels.largeWeight}</>
+            }
             </span>
             <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>
             <span className={styles.thirdCol}>{fermentable.lovibond} °L</span>

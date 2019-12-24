@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import styles from './Forms.module.scss';
 import { BrewInterface, FermentableInterface } from '../../Store/BrewContext';
 import { useUser } from '../../Store/UserContext';
 import { lb2kg, kg2lb, SRM, OG } from '../../resources/javascript/calculator';
+import { pen } from '../../resources/javascript/penSvg.js';
 
 interface Props {
   brew: BrewInterface;
@@ -30,6 +31,14 @@ function AddFermentableForm(props: Props) {
   const [fermentables, setFermentables] = useState<FermentableInterface[]>([]);
   const [projectedTotalSRM, setProjectedTotalSRM] = useState<number>(props.brew.srm ? props.brew.srm : 0);
   const [projectedOG, setProjectedOG] = useState<number>(props.brew.og ? props.brew.og : 0);
+  const [editOG, setEditOG] = useState<boolean>(false);
+  const [targetOG, setTargetOG] = useState<number>(props.brew.fermentableUnits === 'percent'
+    ? props.brew.targetOG
+      ? props.brew.targetOG
+      : props.brew.og ? props.brew.og : 1.000
+    : props.brew.og ? props.brew.og : 1.000
+  );
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // when formData changes, update the data in formHandler component
@@ -53,46 +62,84 @@ function AddFermentableForm(props: Props) {
       // @ts-ignore-line
       fermentablesToCalculate.splice(props.editingData.index-1, 1);
     }
-    const brewsMalts = (formData.id && formData.id > 0) || (formData.custom && formData.custom.length > 0)
-      ? [...fermentablesToCalculate, {
-          potential: formData.potential ? formData.potential : 0,
-          weight: formData.weight ? formData.weight : 0,
-          lovibond: formData.lovibond ? formData.lovibond : 0
-        }]
-      : fermentablesToCalculate;
-    setProjectedTotalSRM(SRM(brewsMalts, props.brew.batchSize));
-    setProjectedOG(OG(brewsMalts, props.brew.systemEfficiency, props.brew.batchSize));
+    if (props.brew.systemEfficiency && props.brew.batchSize) {
+      const pointsNeeded = parseFloat((((targetOG - 1) * 1000) * props.brew.batchSize).toPrecision(3));
+      const weightNeeded = parseFloat((pointsNeeded / ((props.brew.systemEfficiency / 100) * 36)).toFixed(2));
+      if (formData.units === 'percent') {
+        fermentablesToCalculate.map(fermentable => {
+          const fermentableWeight = fermentable.weight ? fermentable.weight : 0;
+          return fermentable.calculatedWeight = parseFloat((weightNeeded * (fermentableWeight / 100)).toFixed(2));
+        });
+      }
+      const brewsMalts = (formData.id && formData.id > 0) || (formData.custom && formData.custom.length > 0)
+        ? [...fermentablesToCalculate, {
+            potential: formData.potential ? formData.potential : 0,
+            weight: formData.weight ? formData.weight : 0,
+            calculatedWeight: parseFloat((weightNeeded * ((formData.weight ? formData.weight : 0) / 100)).toFixed(2)),
+            lovibond: formData.lovibond ? formData.lovibond : 0
+          }]
+        : fermentablesToCalculate;
+      setProjectedTotalSRM(SRM(brewsMalts, props.brew.batchSize, formData.units));
+      setProjectedOG(OG(brewsMalts, props.brew.systemEfficiency, props.brew.batchSize));
+    }
 
     // this lastIndex stuff is a check to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
     const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
     if (name && name.length > 0) {
-      props.dataUpdated({...props.brew, fermentables: dataToSet});
+      props.dataUpdated(
+        {...props.brew, fermentables: dataToSet},
+        {targetOG: targetOG, units: formData.units}
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]);
+  }, [formData, targetOG]);
 
   useEffect(() => {
     // load fermentables when component renders
     listAllFermentables().then(result => {
       setFermentables(result);
     });
+    if (props.brew.fermentableUnits === 'percent') {
+      setFormData({...formData, units: 'percent'});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     // reset form when submitted
-    setFormData({id: 0});
+    if (props.brew.fermentableUnits === 'percent') {
+      setFormData({id: 0, units: 'percent'});
+    } else {
+      setFormData({id: 0});
+    }
   }, [props.brew]);
 
   useEffect(() => {
     // if the form's editingData changes, we've selected something to edit.
     // set the form default valies to be the data we're editing.
     if (props.editingData !== null) {
-      setFormData(props.editingData);
+      if (props.brew.fermentableUnits === 'percent') {
+        setFormData({...props.editingData, units: 'percent'});
+      } else {
+        setFormData(props.editingData);
+      }
     } else {
-      setFormData({id: 0});
+      if (props.brew.fermentableUnits === 'percent') {
+        setFormData({id: 0, units: 'percent'});
+      } else {
+        setFormData({id: 0});
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.editingData]);
+
+  useEffect(() => {
+    // focus on target og input
+    if (editOG === true && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [editOG]);
 
   const dataChanged = (type: string) => (event: any) => {
     let data: FermentableInterface = {};
@@ -102,7 +149,11 @@ function AddFermentableForm(props: Props) {
     } else if (type === 'custom') {
       data.custom = event.currentTarget.value;
     } else if (type === 'weight') {
-      data.weight = user.units === 'metric' ? kg2lb(Number(event.currentTarget.value) + 0) : Number(event.currentTarget.value) + 0;
+      data.weight = user.units === 'metric'
+        ? kg2lb(Number(event.currentTarget.value) + 0)
+        : Number(event.currentTarget.value) + 0;
+    } else if (type === 'units') {
+      data.units = event.currentTarget.value;
     } else {
       data[type] = Number(event.currentTarget.value) + 0;
     }
@@ -122,6 +173,23 @@ function AddFermentableForm(props: Props) {
       setFormData({...formData, ...data});
     }
   };
+
+  const editOGInput = <input
+      id="editOG"
+      className={styles.inline}
+      ref={inputRef}
+      type="number"
+      step="0.001"
+      placeholder="1.000"
+      value={targetOG}
+      onChange={(event) => setTargetOG(Number(event.currentTarget.value))}
+      onBlur={() => setEditOG(false)}
+      onKeyDown={(event) => {
+        if (event.keyCode === 13) {
+          setEditOG(false)
+        }
+      }}
+    />;
 
   return(
     <>
@@ -173,26 +241,57 @@ function AddFermentableForm(props: Props) {
             </label>
           </div>
         : null }
-      <label>Weight ({user.units === 'metric' ? 'kg' : 'lb'})<br />
-        <input
-          type="number"
-          step="0.01"
-          placeholder="0"
-          value={formData.weight
-            ? user.units === 'metric'
-              ? parseFloat(lb2kg(formData.weight).toFixed(5))
-              : formData.weight.toString() 
-            : ''}
-          onChange={dataChanged('weight')}
-        />
-      </label>
+      <div className={styles.row}>
+        <label>Weight ({formData.units === 'percent'
+          ? '%'
+          : user.units === 'metric' ? 'kg' : 'lb'})<br />
+          <input
+            type="number"
+            step="0.01"
+            placeholder="0"
+            value={formData.weight
+              ? user.units === 'metric'
+                ? parseFloat(lb2kg(formData.weight).toFixed(5))
+                : formData.weight.toString() 
+              : ''}
+            onChange={dataChanged('weight')}
+          />
+        </label>
+        <label>Units<br />
+          <select
+            onChange={dataChanged('units')}
+            value={formData.units
+              ? formData.units
+              : user.units === 'metric' ? 'kg' : 'lb'}
+          >
+            <option value={user.units === 'metric' ? 'kg' : 'lb'}>{user.units === 'metric' ? 'kg' : 'lb'}</option>;
+            <option value="percent">percent</option>
+          </select>
+        </label>
+      </div>
       <p className={styles.extra}>
         {props.brew.srm || (formData.lovibond && formData.weight && props.brew.batchSize)
           ? <>Projected SRM: <strong>{projectedTotalSRM}</strong><br /></>
           : null}
         {props.brew.srm || (formData.lovibond && formData.weight && props.brew.batchSize)
-        ? <>Projected OG: <strong>{projectedOG}</strong></>
-        : null}
+          ? formData.units === 'percent'
+              ? <>Target OG: <strong>{editOG === true ? editOGInput : Number(targetOG).toFixed(3)}</strong></>
+              : <>Projected OG: <strong>{Number(projectedOG).toFixed(3)}</strong></>
+          : null}
+        {(props.brew.srm || (formData.lovibond && formData.weight && props.brew.batchSize)) && formData.units === 'percent'
+          // if the brew is using percentages, show the OG editing buttons
+          ? <span className={styles.alignRight}>
+              <button
+                className={`button button--link ${styles.edit}`}
+                onClick={() => setEditOG(!editOG)}
+              >{pen}</button>
+              {/* // Not supporing unlocked OG if fermentable units is percent right now
+              <button
+                className={`button button--link ${lockOG ? styles.lock : styles.unlock}`}
+                onClick={() => setLockOG(!lockOG)}
+              >{lockOG ? locked : unlocked}</button> */}
+            </span>
+          : null}
       </p>
     </>
   );
