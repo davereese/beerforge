@@ -1,0 +1,15 @@
+{
+  "short_name": "BeerForge",
+  "name": "BeerForge",
+  "icons": [
+    {
+      "src": "images/android-chrome-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/login/?source=pwa",
+  "display": "standalone",
+  "theme_color": "#191919",
+  "background_color": "#191919"
+}

@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/static/css/main.0527b63f.chunk.css",
+    "main.js": "/static/js/main.fe3addae.chunk.js",
+    "main.js.map": "/static/js/main.fe3addae.chunk.js.map",
+    "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
+    "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
+    "static/js/2.b0e6c15a.chunk.js": "/static/js/2.b0e6c15a.chunk.js",
+    "static/js/2.b0e6c15a.chunk.js.map": "/static/js/2.b0e6c15a.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.dea58fb2a201152adf37a71d5a74c392.js": "/precache-manifest.dea58fb2a201152adf37a71d5a74c392.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/main.0527b63f.chunk.css.map": "/static/css/main.0527b63f.chunk.css.map",
+    "static/media/Brew.module.scss": "/static/media/tag.f4f98ff1.svg",
+    "static/media/beerforge_logo.svg": "/static/media/beerforge_logo.a43d5519.svg",
+    "static/media/beerforge_logo_white.svg": "/static/media/beerforge_logo_white.ae0b60b4.svg",
+    "static/media/calculators.svg": "/static/media/calculators.1ff56efe.svg",
+    "static/media/coins.svg": "/static/media/coins.439d30ef.svg",
+    "static/media/dashboard.png": "/static/media/dashboard.b8bf5c43.png",
+    "static/media/info.svg": "/static/media/info.6267e16c.svg",
+    "static/media/mobile_brew.png": "/static/media/mobile_brew.97558ffe.png",
+    "static/media/new_brew.png": "/static/media/new_brew.8a4c8701.png",
+    "static/media/rotate.svg": "/static/media/rotate.db4fa8b9.svg",
+    "static/media/Calculators.module.scss": "/static/media/search.849d1799.svg",
+    "static/media/Footer.module.scss": "/static/media/sm.027ead81.svg"
+  }
+}
