@@ -62,9 +62,9 @@ function AddFermentableForm(props: Props) {
       // @ts-ignore-line
       fermentablesToCalculate.splice(props.editingData.index-1, 1);
     }
-    if (props.brew.systemEfficiency && props.brew.batchSize) {
+    if (props.brew.mashEfficiency && props.brew.batchSize) {
       const pointsNeeded = parseFloat((((targetOG - 1) * 1000) * props.brew.batchSize).toPrecision(3));
-      const weightNeeded = parseFloat((pointsNeeded / ((props.brew.systemEfficiency / 100) * 36)).toFixed(2));
+      const weightNeeded = parseFloat((pointsNeeded / ((props.brew.mashEfficiency / 100) * 36)).toFixed(2));
       if (formData.units === 'percent') {
         fermentablesToCalculate.map(fermentable => {
           const fermentableWeight = fermentable.weight ? fermentable.weight : 0;
@@ -80,7 +80,7 @@ function AddFermentableForm(props: Props) {
           }]
         : fermentablesToCalculate;
       setProjectedTotalSRM(SRM(brewsMalts, props.brew.batchSize, formData.units));
-      setProjectedOG(OG(brewsMalts, props.brew.systemEfficiency, props.brew.batchSize));
+      setProjectedOG(OG(brewsMalts, props.brew.mashEfficiency, props.brew.batchSize));
     }
 
     // this lastIndex stuff is a check to make sure we don't submit an empty selection

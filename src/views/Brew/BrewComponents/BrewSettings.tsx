@@ -42,7 +42,7 @@ const BrewSettings = (props: Props) => {
               : null}
           </li>
           <li>
-            System Efficiency: {brew.systemEfficiency ? `${brew.systemEfficiency}%` : null}
+            Mash Efficiency: {brew.mashEfficiency ? `${brew.mashEfficiency}%` : null}
             {!readOnly
               ? <button
                   className={`button button--link ${styles.edit}`}
