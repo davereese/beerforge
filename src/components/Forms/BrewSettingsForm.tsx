@@ -54,8 +54,8 @@ function BrewSettingsForm(props: Props) {
   }, [formData, props]);
 
   useEffect(() => {
-    if (!formData.systemEfficiency) {
-      setFormData({...formData, systemEfficiency: user.mash_efficiency ? user.mash_efficiency : ''});
+    if (!formData.mashEfficiency) {
+      setFormData({...formData, mashEfficiency: user.mash_efficiency ? user.mash_efficiency : ''});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -142,8 +142,8 @@ function BrewSettingsForm(props: Props) {
           <input
             type="number"
             placeholder="75"
-            value={`${formData.systemEfficiency}`}
-            onChange={dataChanged("systemEfficiency")}
+            value={`${formData.mashEfficiency}`}
+            onChange={dataChanged("mashEfficiency")}
           />
         </label>
       </div>

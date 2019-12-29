@@ -105,14 +105,14 @@ function FormHandler({
             onClick={() => {
               modalDispatch({type: 'hide'});
             }}
-          >Keep editing</button>
+          >Go Back</button>
           <button
             className="button"
             onClick={() => {
               updateBrew({...formData});
               modalDispatch({type: 'hide'});
             }}
-          >Save &amp; Continue</button>
+          >Got It</button>
         </>
       }
     });

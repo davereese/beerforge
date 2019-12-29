@@ -115,7 +115,7 @@ export interface BrewInterface {
   dateBrewed?: Date;
   batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
   batchSize?: number;
-  systemEfficiency?: number;
+  mashEfficiency?: number;
   targetPitchingRate?: string;
   targetPitchingCellCount?: number;
   pitchCellCount?: number;
@@ -193,10 +193,10 @@ export const processBrew = (
 
   // Run Calculations
   if (brew.fermentables.length > 0) {
-    if (brew.fermentableUnits === 'percent' && brew.targetOG && brew.batchSize && brew.systemEfficiency) {
+    if (brew.fermentableUnits === 'percent' && brew.targetOG && brew.batchSize && brew.mashEfficiency) {
       // Calculate the actual weights
       const pointsNeeded = parseFloat((((Number(brew.targetOG) - 1) * 1000) * brew.batchSize).toPrecision(3));
-      const weightNeeded = parseFloat((pointsNeeded / ((brew.systemEfficiency / 100) * 36)).toFixed(2));
+      const weightNeeded = parseFloat((pointsNeeded / ((brew.mashEfficiency / 100) * 36)).toFixed(2));
       let totalWeight = 0;
       let totalPercent = 0;
       brew.fermentables.map(fermentable => {
@@ -425,10 +425,10 @@ export const processBrew = (
       );
     }
   }
-  if (brew.fermentables.length > 0 && brew.systemEfficiency && brew.batchSize) {
+  if (brew.fermentables.length > 0 && brew.mashEfficiency && brew.batchSize) {
     brew.og = brew.targetOG ? brew.targetOG : Calculator.OG(
       brew.fermentables,
-      brew.systemEfficiency,
+      brew.mashEfficiency,
       brew.batchSize
     );
   }

@@ -190,7 +190,7 @@ export function mashEfficiency(malts, volume, gravity) {
   malts.forEach(malt => {
     extraction += malt.potential * malt.grainVol;
   });
-  return ((extraction / (volume * (gravity * 1000 - 1000))) * 100).toFixed(0);
+  return (((volume * (gravity * 1000 - 1000)) / extraction) * 100).toFixed(0);
 };
 
 // * Pre-Boil Gravity
@@ -218,8 +218,8 @@ export function partialMashTopOff(preBoilVolume, strikeVolume, grainVol, absorpt
 };
 
 // * Original Gravity
-export function OG(malts, efficiency, volume) {
-  efficiency = parseFloat(efficiency);
+export function OG(malts, mashEfficiency, volume) {
+  mashEfficiency = parseFloat(mashEfficiency);
   volume = parseFloat(volume);
 
   let totalPoints = 0,
@@ -229,8 +229,8 @@ export function OG(malts, efficiency, volume) {
     totalPoints += malts[i].potential * malts[i].weight;
   }
 
-  // multiply by efficiency factor
-  OG = totalPoints * (efficiency/100) / volume;
+  // multiply by mash efficiency
+  OG = totalPoints * (mashEfficiency/100) / volume;
 
   // convert back to gravity units and return
   return convertToGravityUnits(OG);
