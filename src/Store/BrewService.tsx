@@ -34,9 +34,9 @@ export async function getBrew(brewId: number, user: UserInterface) {
   })
 }
 
-export async function deleteBrew(brewId: number, user: UserInterface) {
+export async function deleteBrew(brewId: number, user: UserInterface, parent: boolean = false) {
   const authHeaders = {'authorization': user ? user.token : null};
-  return await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brewId}`, {
+  return await axios.delete(`${process.env.REACT_APP_API_ENDPOINT}/brew/${brewId}?parent=${parent}`, {
     headers: authHeaders,
   });
 }

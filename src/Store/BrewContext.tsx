@@ -108,9 +108,23 @@ export interface processOptionsInterface {
   hopAbsorptionRate?: number;
 };
 
+export interface brewHistory {
+  id: number;
+  name: string;
+  dateBrewed: Date;
+  batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
+  batchSize?: number;
+  mashEfficiency?: number;
+  abv?: number;
+  srm?: number;
+  ibu?: number;
+  attenuation?: number;
+};
+
 export interface BrewInterface {
   id?: number;
   userId?: number;
+  parent?: number;
   name?: string;
   dateBrewed?: Date;
   batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
@@ -152,6 +166,7 @@ export interface BrewInterface {
   fermentableUnits?: 'weight' | 'percent';
   totalFermentablesPercent?: number;
   targetOG?: number;
+  history?: brewHistory[];
 };
 
 const initialState: any = {
@@ -543,6 +558,22 @@ const reducer = (state: any, action: any) => {
       return processBrew(state, action.options);
     case 'clear':
       return initialState;
+    case 'clone':
+      const clonedState = {...state};
+      delete clonedState.id;
+      delete clonedState.userId;
+      delete clonedState.dateBrewed;
+      delete clonedState.parent;
+      delete clonedState.history;
+      clonedState.name = '';
+      return clonedState;
+    case 'rebrew':
+      const rebrewState = {...state};
+      rebrewState.name = !rebrewState.name.endsWith('(re-brew)') ? `${rebrewState.name} (re-brew)` : rebrewState.name;
+      rebrewState.parent = rebrewState.parent ? rebrewState.parent : rebrewState.id;
+      delete rebrewState.id;
+      delete rebrewState.dateBrewed;
+      return rebrewState;
     default:
       throw new Error('Unexpected action');
   }

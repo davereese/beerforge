@@ -9,7 +9,7 @@ import FormHandler from './FormHandler/FormHandler';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
 import {
-  BrewInterface,
+  BrewInterface, brewHistory,
 } from '../../Store/BrewContext';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { pen } from '../../resources/javascript/penSvg.js';
@@ -20,7 +20,7 @@ import { useBrew, processOptionsInterface } from '../../Store/BrewContext';
 import { useModal } from '../../Store/ModalContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 import * as brewService from '../../Store/BrewService';
-import BrewSettings from './BrewComponents/BrewSettings';
+import BrewSettingsAndStats from './BrewComponents/BrewSettingsAndStats';
 import BrewFermentables from './BrewComponents/BrewFermentables';
 import BrewHops from './BrewComponents/BrewHops';
 import BrewAdjuncts from './BrewComponents/BrewAdjuncts';
@@ -30,6 +30,7 @@ import BrewBoil from './BrewComponents/BrewBoil';
 import BrewFermentation from './BrewComponents/BrewFermentation';
 import BrewPackaging from './BrewComponents/BrewPackaging';
 import BrewNotes from './BrewComponents/BrewNotes';
+import BrewHistoryNav from './BrewComponents/BrewHistoryNav';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -56,6 +57,9 @@ const Brew = (props: Props) => {
   const [shouldBlock, setShouldBlock] = useState(false);
   const [currentUser, setCurrentUser] = useState(true);
   const [userViewing, setUserViewing] = useState<any>({});
+  const [cloning, setCloning] = useState(false);
+  const [currentPageIndex, setCurrentPageIndex] = useState();
+  const [changeBrew, setChangeBrew] = useState(false);
 
   // REFS
   const brewContainer = useRef<HTMLDivElement>(null);
@@ -111,15 +115,31 @@ const Brew = (props: Props) => {
       document.title = `BeerForge | Viewing ${brew.name}`;
       setNewBrew(false);
       setReadOnly(readOnly);
+      setChangeBrew(false);
+    }
+
+    if (brew.history && brew.history.length > 0) {
+      const index = brew.history.findIndex((item: brewHistory) =>
+        item.id === brew.id
+      );
+      setCurrentPageIndex(index);
     }
 
     setEditingData(null);
 
-    if (prevBrew && prevBrew.id && !brew.id) {
-      // if we had a brew with an id, and all of a sudden we don't, we must
-      // have deleted it. Redirect to the dashboard.
+    if (!cloning && prevBrew && prevBrew.id && !brew.id) {
+      // if we aren't cloning and had a brew with an id, and all of a sudden we don't,
+      // we must have deleted it. Redirect to the dashboard.
       props.history.push('/dashboard');
+    } else if (cloning && prevBrew && prevBrew.id && !brew.id) {
+      // otherwise, we are cloning
+      props.history.push('/brew');
+      setNewBrew(true);
+      setShouldBlock(true);
+      setReadOnly(false);
+      setCurrentUser(true);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brew]);
 
@@ -161,8 +181,8 @@ const Brew = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
-  // Watch changes for prompt display
   useEffect(() => {
+    // Watch changes for prompt display
     if (newBrew && shouldBlock) {
       window.onbeforeunload = () => true;
     } else {
@@ -197,7 +217,7 @@ const Brew = (props: Props) => {
           props.history.push('/dashboard');
         }
       });
-  }
+  };
 
   const getUser = async (userId: number) => {
     setLoading(true);
@@ -215,7 +235,7 @@ const Brew = (props: Props) => {
       }});
       props.history.push('/dashboard');
     });
-  }
+  };
 
   const openSideBar = (
     choice: string = '',
@@ -259,7 +279,7 @@ const Brew = (props: Props) => {
     });
   }
 
-  const handleScroll = (event: Event) => {
+  const handleScroll = (event: any) => {
     const rect = brewContainer.current
       ? brewContainer.current.getBoundingClientRect()
       : new DOMRect();
@@ -291,7 +311,21 @@ const Brew = (props: Props) => {
     }
   }
 
-  const handleSaveBrew = async (e: any) => {
+  const handleHistoryNavClicked = (page: number) => () => {
+    if (page !== currentPageIndex) {
+      // change page
+      const brewId = brew.history[page].id;
+      setChangeBrew(true);
+      window.setTimeout(() => {
+        props.history.push(`/brew/${brewId}`);
+        getBrew(brewId);
+      }, 500);
+    } else {
+      // reveal history comparison
+    }
+  }
+
+  const handleSaveBrew = async (event: any) => {
     // double check current user hasn't expired
     userDispatch({type: 'load'});
     setSaving(true);
@@ -344,8 +378,41 @@ const Brew = (props: Props) => {
     if (newBrew) {
       setShouldBlock(true);
     }
-    // setEditingData(null);
   }
+
+  const handleCloneBrew = () => (event: any) => {
+    modalDispatch({
+      type: 'show',
+      payload: {
+        title: !readOnly ? 'Clone or Re-brew' : 'Clone Brew',
+        body: !readOnly
+          ? <p>Clone to duplicate the brew as a new recipe, or re-brew to preserve this recipe's history and track it over time.<br /><br /></p>
+          : <p>Clone this recipe to try it yourself.<br /><br /></p>,
+        buttons: <>
+          <button
+            className="button button--brown"
+            onClick={() => modalDispatch({type: 'hide'})}
+          >Cancel</button>
+          <button
+            className="button"
+            onClick={() => {
+              setCloning(true);
+              brewDispatch({type: 'clone'});
+              modalDispatch({type: 'hide'});
+            }}
+          >Clone</button>
+          {!readOnly && <button
+            className="button"
+            onClick={() => {
+              setCloning(true);
+              brewDispatch({type: 'rebrew'});
+              modalDispatch({type: 'hide'});
+            }}
+          >Re-brew</button>}
+        </>
+      }
+    });
+  };
 
   const handleDeleteBrew = () => {
     modalDispatch({
@@ -360,7 +427,7 @@ const Brew = (props: Props) => {
             <button
               className="button"
               onClick={async () => {
-                await brewService.deleteBrew(brew.id, user)
+                await brewService.deleteBrew(brew.id, user, currentPageIndex === 0 ? true : false)
                 .then((res: any) => {
                   snackbarDispatch({type: 'show', payload: {
                     status: 'success',
@@ -388,6 +455,7 @@ const Brew = (props: Props) => {
       className={`
         ${styles.brew}
         ${sideBarOpen ? styles.open : ''}
+        ${changeBrew ? styles.fadeOut : ''}
       `}
       ref={brewContainer}
     >
@@ -402,39 +470,40 @@ const Brew = (props: Props) => {
           <h1>
             {brew.name === '' ? 'New Brew' : brew.name}
             {!readOnly
-              ? <button
+              && <button
                   className={`button button--link ${styles.edit}`}
                   onClick={openSideBar('settings')}
                 >{pen}</button>
-              : null}
-              {!currentUser
-                && <Link
-                    to={`/user/${userViewing.id}`}
-                    className={styles.userLink}
-                  >
-                    {userViewing.username}
-                  </Link>
+            }
+            {!currentUser // not current user's brew (viewing someone else's)
+              && <Link
+                  to={`/user/${userViewing.id}`}
+                  className={styles.userLink}
+                >
+                  {userViewing.username}
+                </Link>
               }
           </h1>
-          <span>
-            {!readOnly
-              ? <button
-                  className={`button button--link ${styles.settings}`}
-                  onClick={openSideBar('settings')}
-                >Settings</button>
-              : null}
+          <div className={styles.pageHeading__items}>
+            {currentPageIndex !== null &&
+              <BrewHistoryNav
+                historyLength={brew.history ? brew.history.length : null}
+                currentPage={currentPageIndex}
+                pageClicked={handleHistoryNavClicked}
+              />}
             {!newBrew && brew.dateBrewed
               ? <FormattedDate className={styles.dateBrewed}>{brew.dateBrewed}</FormattedDate>
               : null}
-          </span>
+          </div>
         </div>
         {props.staticContext}
-        <BrewSettings
+        <BrewSettingsAndStats
           readOnly={readOnly}
           newBrew={newBrew}
           brew={brew}
           unitLabels={unitLabels}
           openSideBar={openSideBar}
+          clone={handleCloneBrew}
           user={user}
         />
         <BrewFermentables

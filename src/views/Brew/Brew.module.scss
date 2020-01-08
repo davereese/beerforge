@@ -11,7 +11,7 @@
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
-  transition: transform 0.5s, grid-template-columns 0.5s,;
+  transition: transform 0.5s, grid-template-columns 0.5s, opacity 0.3s;
   perspective: 1000px;
  
   // Safari has a problem with perspective
@@ -102,7 +102,9 @@
   }
 
   .dateBrewed {
-    margin-left: px-to-rem(20px);
+    @include for-tablet-landscape-up () {
+      margin-left: px-to-rem(20px);
+    }
   }
 
   &__pageHeading {
@@ -140,12 +142,24 @@
         color: darken($link, 14%);
         text-decoration: none;
         transition: color 0.3s;
-
+      }
+      a.userLink {
         &:hover,
         &:focus {
           color: $button-shadow;
         }
       }
+    }
+  }
+
+  .pageHeading__items {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 5px;
+
+    @include for-tablet-landscape-up () {
+      justify-content: flex-end;
     }
   }
 
@@ -176,7 +190,7 @@
 
   &__numbersList {
     padding: 0;
-    margin: 0;
+    margin: 0 0 10px;
     list-style-type: none;
 
     @include for-tablet-landscape-up () {
@@ -185,7 +199,7 @@
     }
 
     li {
-      margin: 12px 0;
+      margin: 3px 0;
       font-weight: $weight-semibold;
 
       button.edit {
@@ -197,6 +211,37 @@
         button.edit {
           opacity: 1;
         }
+      }
+    }
+  }
+
+  &__numbersMenu {
+    margin: 15px 0 25px;
+    min-width: 168px;
+
+    @include for-tablet-portrait-up () {
+      min-width: 200px;
+    }
+
+    @include for-tablet-landscape-up () {
+      min-width: 168px;
+    }
+
+    @media (min-width: 950px) {
+      min-width: 200px;
+    }
+
+    @include for-desktop-up () {
+      min-width: 250px;
+    }
+  }
+
+  &__menu {
+    button {
+      margin-right: 5px;
+
+      @media (min-width: 950px) {
+        margin-right: 10px;
       }
     }
   }
@@ -219,21 +264,22 @@
   &__stats {
     display: flex;
     margin: 0 0 20px;
+    flex-grow: 1;
+    justify-content: space-evenly;
 
     @include for-tablet-portrait-up () {
-      justify-content: center;
       margin: 10px 0 20px;
     }
 
     @include for-tablet-landscape-up () {
-      justify-content: flex-end;
+      flex-grow: 1;
       margin: 20px 0;
     }
   }
 
   &__stat {
     position: relative;
-    margin: 0 6px;
+    margin: 0;
     width: calc(25% - 12px);
     height: auto;
     padding-bottom: 21%;
@@ -242,19 +288,18 @@
     background-color: rgba($stat-background, 0.4);
     text-align: center;
 
-    @media (min-width: 725px) {
-      margin: 0 6px;
-      width: 75px;
-      height: 75px;
+    @include for-tablet-portrait-up () {
+      width: 100px;
+      height: 100px;
       padding-bottom: 0;
     }
 
-    @media (min-width: 1000px) {
-      margin: 0 12px;
+    @include for-tablet-landscape-up () {
+      width: 75px;
+      height: 75px;
     }
 
-    @media (min-width: 1050px) {
-      margin: 0 10px;
+    @media (min-width: 1075px) {
       width: 100px;
       height: 100px;
     }
@@ -281,7 +326,7 @@
         font-size: px-to-rem(17px);
       }
 
-      @media (min-width: 1050px) {
+      @media (min-width: 1075px) {
         font-size: px-to-rem(24px);
       }
     }
@@ -722,4 +767,8 @@
 .savingLoader {
   position: absolute;
   top: 4px;
+}
+
+.fadeOut {
+  opacity: 0;
 }
