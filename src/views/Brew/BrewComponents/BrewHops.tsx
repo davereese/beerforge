@@ -19,7 +19,7 @@ interface Props {
 const BrewHops = (props: Props) => {
   const {brew, newBrew, readOnly, unitLabels, openSideBar, user} = props;
   return (
-    <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
+    <Card color="brew" customClass={`${newBrew ? styles.new : styles.view} ${styles.brew__editingSection}`}>
       <div className={styles.brew__header}>
         <h2>Hops</h2>
         {brew && brew.hops.length > 0

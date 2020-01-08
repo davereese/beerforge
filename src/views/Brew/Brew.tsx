@@ -469,7 +469,7 @@ const Brew = (props: Props) => {
           openSideBar={openSideBar}
           user={user}
         />
-        <Card color="brew" customClass={newBrew? styles.newBrew: styles.view}>
+        <Card color="brew" customClass={newBrew ? styles.new : styles.view}>
           {brew.batchType && brew.batchType !== 'extract'
             ? <BrewMash
                 readOnly={readOnly}
