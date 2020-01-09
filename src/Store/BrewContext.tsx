@@ -115,10 +115,10 @@ export interface brewHistory {
   batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
   batchSize?: number;
   mashEfficiency?: number;
-  abv?: number;
+  alcoholContent?: number;
   srm?: number;
   ibu?: number;
-  attenuation?: number;
+  og?: number;
 };
 
 export interface BrewInterface {
@@ -569,7 +569,6 @@ const reducer = (state: any, action: any) => {
       return clonedState;
     case 'rebrew':
       const rebrewState = {...state};
-      rebrewState.name = !rebrewState.name.endsWith('(re-brew)') ? `${rebrewState.name} (re-brew)` : rebrewState.name;
       rebrewState.parent = rebrewState.parent ? rebrewState.parent : rebrewState.id;
       delete rebrewState.id;
       delete rebrewState.dateBrewed;

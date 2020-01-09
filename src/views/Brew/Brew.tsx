@@ -8,11 +8,8 @@ import Card from '../../components/Card/Card';
 import FormHandler from './FormHandler/FormHandler';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
-import {
-  BrewInterface, brewHistory,
-} from '../../Store/BrewContext';
+import { BrewInterface, brewHistory } from '../../Store/BrewContext';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
-import { pen } from '../../resources/javascript/penSvg.js';
 import { isEmpty } from '../../resources/javascript/isEmpty';
 import { usePrevious } from '../../resources/javascript/usePreviousHook';
 import { useUser } from '../../Store/UserContext';
@@ -31,6 +28,7 @@ import BrewFermentation from './BrewComponents/BrewFermentation';
 import BrewPackaging from './BrewComponents/BrewPackaging';
 import BrewNotes from './BrewComponents/BrewNotes';
 import BrewHistoryNav from './BrewComponents/BrewHistoryNav';
+import BrewHistoryList from './BrewComponents/BrewHistoryList';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -60,6 +58,7 @@ const Brew = (props: Props) => {
   const [cloning, setCloning] = useState(false);
   const [currentPageIndex, setCurrentPageIndex] = useState();
   const [changeBrew, setChangeBrew] = useState(false);
+  const [showBrewHistory, setShowBrewHistory] = useState(false);
 
   // REFS
   const brewContainer = useRef<HTMLDivElement>(null);
@@ -311,17 +310,24 @@ const Brew = (props: Props) => {
     }
   }
 
-  const handleHistoryNavClicked = (page: number) => () => {
+  const handleHistoryNavClicked = (page: number) => (e: any) => {
     if (page !== currentPageIndex) {
       // change page
       const brewId = brew.history[page].id;
+      const target = e.currentTarget.localName;
       setChangeBrew(true);
       window.setTimeout(() => {
+        if (target === 'div') {
+          setShowBrewHistory(false);
+        }
         props.history.push(`/brew/${brewId}`);
+        closeSidebar();
         getBrew(brewId);
       }, 500);
     } else {
       // reveal history comparison
+      closeSidebar();
+      setShowBrewHistory(!showBrewHistory);
     }
   }
 
@@ -467,14 +473,11 @@ const Brew = (props: Props) => {
         : null}
       <div className={styles.mainContent} role="main">
         <div className={styles.brew__pageHeading}>
-          <h1>
+          <h1
+            title={brew.name === '' ? 'New Brew' : brew.name}
+            className={showBrewHistory ? styles.showBrewHistory : ''}
+          >
             {brew.name === '' ? 'New Brew' : brew.name}
-            {!readOnly
-              && <button
-                  className={`button button--link ${styles.edit}`}
-                  onClick={openSideBar('settings')}
-                >{pen}</button>
-            }
             {!currentUser // not current user's brew (viewing someone else's)
               && <Link
                   to={`/user/${userViewing.id}`}
@@ -483,115 +486,132 @@ const Brew = (props: Props) => {
                   {userViewing.username}
                 </Link>
               }
+            {currentPageIndex !== undefined && !showBrewHistory &&
+              <span className={styles.brew__pageSubHeading}>Re-Brew</span>
+            }
+            {showBrewHistory &&
+              <span className={styles.brew__pageSubHeading}>Brew History</span>
+            }
           </h1>
           <div className={styles.pageHeading__items}>
+            {!newBrew && brew.dateBrewed
+              ? <FormattedDate
+                  className={`${styles.dateBrewed} ${showBrewHistory ? styles.fadeOut : ''}`}
+                >{brew.dateBrewed}</FormattedDate>
+              : null}
             {currentPageIndex !== null &&
               <BrewHistoryNav
                 historyLength={brew.history ? brew.history.length : null}
                 currentPage={currentPageIndex}
                 pageClicked={handleHistoryNavClicked}
               />}
-            {!newBrew && brew.dateBrewed
-              ? <FormattedDate className={styles.dateBrewed}>{brew.dateBrewed}</FormattedDate>
-              : null}
           </div>
         </div>
         {props.staticContext}
-        <BrewSettingsAndStats
-          readOnly={readOnly}
-          newBrew={newBrew}
-          brew={brew}
-          unitLabels={unitLabels}
-          openSideBar={openSideBar}
-          clone={handleCloneBrew}
-          user={user}
-        />
-        <BrewFermentables
-          readOnly={readOnly}
-          newBrew={newBrew}
-          brew={brew}
-          unitLabels={unitLabels}
-          openSideBar={openSideBar}
-          user={user}
-        />
-        <BrewHops
-          readOnly={readOnly}
-          newBrew={newBrew}
-          brew={brew}
-          unitLabels={unitLabels}
-          openSideBar={openSideBar}
-          user={user}
-        />
-        <BrewAdjuncts
-          readOnly={readOnly}
-          newBrew={newBrew}
-          brew={brew}
-          unitLabels={unitLabels}
-          openSideBar={openSideBar}
-          user={user}
-        />
-        <BrewYeast
-          readOnly={readOnly}
-          newBrew={newBrew}
-          brew={brew}
-          unitLabels={unitLabels}
-          openSideBar={openSideBar}
-          user={user}
-        />
-        <Card color="brew" customClass={newBrew ? styles.new : styles.view}>
-          {brew.batchType && brew.batchType !== 'extract'
-            ? <BrewMash
-                readOnly={readOnly}
-                newBrew={newBrew}
-                brew={brew}
-                unitLabels={unitLabels}
-                openSideBar={openSideBar}
-                user={user}
-              />
+        {showBrewHistory &&
+          <BrewHistoryList
+            brew={brew}
+            unitLabels={unitLabels}
+            user={user}
+            itemClicked={handleHistoryNavClicked}
+          />}
+        {!showBrewHistory &&
+          <><BrewSettingsAndStats
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            clone={handleCloneBrew}
+            user={user}
+          />
+          <BrewFermentables
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
+          <BrewHops
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
+          <BrewAdjuncts
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
+          <BrewYeast
+            readOnly={readOnly}
+            newBrew={newBrew}
+            brew={brew}
+            unitLabels={unitLabels}
+            openSideBar={openSideBar}
+            user={user}
+          />
+          <Card color="brew" customClass={newBrew ? styles.new : styles.view}>
+            {brew.batchType && brew.batchType !== 'extract'
+              ? <BrewMash
+                  readOnly={readOnly}
+                  newBrew={newBrew}
+                  brew={brew}
+                  unitLabels={unitLabels}
+                  openSideBar={openSideBar}
+                  user={user}
+                />
+              : null}
+            <BrewBoil
+              readOnly={readOnly}
+              newBrew={newBrew}
+              brew={brew}
+              unitLabels={unitLabels}
+              openSideBar={openSideBar}
+              user={user}
+            />
+            <BrewFermentation
+              readOnly={readOnly}
+              newBrew={newBrew}
+              brew={brew}
+              unitLabels={unitLabels}
+              openSideBar={openSideBar}
+              user={user}
+            />
+            <BrewPackaging
+              readOnly={readOnly}
+              newBrew={newBrew}
+              brew={brew}
+              unitLabels={unitLabels}
+              openSideBar={openSideBar}
+              user={user}
+            />
+            <BrewNotes
+              readOnly={readOnly}
+              newBrew={newBrew}
+              brew={brew}
+              unitLabels={unitLabels}
+              openSideBar={openSideBar}
+              user={user}
+            />
+          </Card>
+          {!readOnly
+            ? <button
+                type="submit"
+                className={`button button--large ${styles.saveButton} ${saving ? styles.saving : null}`}
+                onClick={handleSaveBrew}
+              >
+                {newBrew? <>Save &amp; Get Brewing!</> : <>Update Brew</>}
+                {saving ? <Loader className={styles.savingLoader} /> : null}
+              </button>
             : null}
-          <BrewBoil
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
-          />
-          <BrewFermentation
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
-          />
-          <BrewPackaging
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
-          />
-          <BrewNotes
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
-          />
-        </Card>
-        {!readOnly
-          ? <button
-              type="submit"
-              className={`button button--large ${styles.saveButton} ${saving ? styles.saving : null}`}
-              onClick={handleSaveBrew}
-            >
-              {newBrew? <>Save &amp; Get Brewing!</> : <>Update Brew</>}
-              {saving ? <Loader className={styles.savingLoader} /> : null}
-            </button>
-          : null}
+        </> /* !showBrewHistory */}
       </div>
       <div className={styles.sideBar} role="complementary" ref={formContainer}>
         <Card color="brew" customStyle={top} customClass={`${styles.formsContainer}`}>

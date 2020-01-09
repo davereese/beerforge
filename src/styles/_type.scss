@@ -11,6 +11,7 @@ h1,
   font-size: px-to-rem(25px);
   text-transform: none;
   letter-spacing: 0;
+  line-height: 1;
 
   @include for-tablet-landscape-up () {
     font-size: px-to-rem(28px);

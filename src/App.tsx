@@ -24,7 +24,7 @@ const App = (props: Props) => {
   return (
     <Fade>
       {window.location.pathname !== '/' ? <Header {...props} /> : null}
-      <main> 
+      <main>
         <Switch>
           <Route path="/" exact component={Home} />
           <Route path="/login" exact render={props => (

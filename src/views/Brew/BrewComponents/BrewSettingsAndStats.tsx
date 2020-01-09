@@ -25,17 +25,17 @@ const BrewSettingsAndStats = (props: Props) => {
         <div className={styles.brew__numbersMenu}>
           <ul className={styles.brew__numbersList}>
             <li>
-              Brew Method: {parseStringValues(brew.batchType)}
+              Brew Method: <strong>{parseStringValues(brew.batchType)}</strong>
             </li>
             <li>
-              Batch Size: {brew.batchSize
+              Batch Size: <strong>{brew.batchSize
                 ? `${user.units === 'metric'
                   ? parseFloat(gal2l(brew.batchSize).toFixed(2))
                   : brew.batchSize} ${unitLabels.vol}`
-                : null}
+                : null}</strong>
             </li>
             <li>
-              Mash Efficiency: {brew.mashEfficiency ? `${brew.mashEfficiency}%` : null}
+              Mash Efficiency: <strong>{brew.mashEfficiency ? `${brew.mashEfficiency}%` : null}</strong>
             </li>
           </ul>
        

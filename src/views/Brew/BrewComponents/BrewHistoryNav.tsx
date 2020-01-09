@@ -20,31 +20,31 @@ const BrewHistoryNav = (props: Props) => {
       {currentPage === 0 && <button
           className={`button button--link`}
           onClick={pageClicked(currentPage)}
-          title="Current"
+          title="Current - Toggle brew history"
         ><img src={first} alt="First" /></button>}
 
       {currentPage > 0 && <button
           className={`button button--link`}
           onClick={pageClicked(currentPage-1)}
-          title="Previous"
+          title="Previous - View the previous brew"
         ><img src={prev} alt="Previous" /></button>}
 
       {currentPage > 0 && historyLength > currentPage+1 && <button
           className={`button button--link`}
           onClick={pageClicked(currentPage)}
-          title="Current"
+          title="Current - Toggle brew history"
         ><img src={current} alt="Current" /></button>}
 
       {historyLength > currentPage+1 && <button
           className={`button button--link`}
           onClick={pageClicked(currentPage+1)}
-          title="Next"
+          title="Next - View the next brew"
         ><img src={next} alt="Next" /></button>}
 
       {historyLength === currentPage+1 && <button
           className={`button button--link`}
           onClick={pageClicked(currentPage)}
-          title="Current"
+          title="Current - Toggle brew gistory"
         ><img src={last} alt="Last" /></button>}
     </div>
   );
