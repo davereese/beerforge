@@ -165,6 +165,51 @@ input[type="checkbox"].toggle {
   }
 }
 
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"] {
+  +label {
+    display: flex;
+    align-items: center;
+    padding: 2px 0 4px;
+    height: 22px;
+    cursor: pointer;
+
+    &::before {
+      content: '';
+      position: relative;
+      display: block;
+      margin-right: 5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: rgba($button-brown-bg, 0.3);
+      transition: background-color 0.3s;
+    }
+  }
+
+  &:checked {
+    +label::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      width: 8px;
+      height: 8px;
+      background-color: $text-light;
+      border-radius: 50%;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    +label::before {
+      background-color: rgba($default-card-bg, 0.4);
+    }
+  }
+}
+
 input[type="file"] {
   width: 0.1px;
   height: 0.1px;
