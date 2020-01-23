@@ -11,17 +11,18 @@ interface Props {
   newBrew: boolean;
   brew: BrewInterface;
   unitLabels: any;
-  openSideBar: any;
+  openSideBar: Function;
   user: any;
+  brewdayResults: boolean;
 }
 
 const BrewAdjuncts = (props: Props) => {
-  const {brew, newBrew, readOnly, openSideBar} = props;
+  const {brew, newBrew, readOnly, openSideBar, brewdayResults} = props;
   return (
-    <Card color="brew" customClass={`${newBrew ? styles.new : styles.view} ${styles.brew__editingSection}`}>
+    <Card color="brew" customClass={`${newBrew ? styles.new : brewdayResults ? styles.res : styles.view} ${styles.brew__editingSection}`}>
       <div className={styles.brew__header}>
         <h2>Adjuncts</h2>
-        {!readOnly
+        {!readOnly && !brewdayResults
           ? <button
               className={`button button--icon plus ${styles.editButton}`}
               onClick={openSideBar('adjuncts')}
@@ -32,7 +33,7 @@ const BrewAdjuncts = (props: Props) => {
         {brew && brew.adjuncts.map((adjunct: AdjunctInterface, index: number) => (
           <ListItem
             color="brew"
-            clicked={!readOnly ? openSideBar('adjuncts', {...adjunct, index: index + 1}) : null}
+            clicked={!readOnly && !brewdayResults ? openSideBar('adjuncts', {...adjunct, index: index + 1}) : null}
             key={`${adjunct.id}${index}`}
           >
             <span className={styles.firstCol}>

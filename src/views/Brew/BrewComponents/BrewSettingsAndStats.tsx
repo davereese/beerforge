@@ -1,26 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import styles from '../Brew.module.scss';
+import componentStyles from './BrewComponents.module.scss';
 import Card from '../../../components/Card/Card';
 import { BrewInterface } from '../../../Store/BrewContext';
 import { parseStringValues } from '../BrewUtils';
 import { getSrmToRgb } from '../../../resources/javascript/srmToRgb';
-import { gal2l } from '../../../resources/javascript/calculator';
+import { gal2l, l2gal } from '../../../resources/javascript/calculator';
+import BrewEditableField from './BrewEditableField';
 
 interface Props {
   readOnly: boolean;
   newBrew: boolean;
   brew: BrewInterface;
   unitLabels: any;
-  openSideBar: any;
-  clone: any;
+  openSideBar: Function;
+  clone: Function;
+  brewdayResultsToggle: Function;
   user: any;
+  brewdayResults: boolean;
+  applyEdit: Function;
+  originalBrew: BrewInterface | null;
 }
 
 const BrewSettingsAndStats = (props: Props) => {
-  const {brew, newBrew, readOnly, unitLabels, openSideBar, clone, user} = props;
+  const {
+    brew,
+    newBrew,
+    readOnly,
+    unitLabels,
+    openSideBar,
+    clone,
+    brewdayResults,
+    user,
+    brewdayResultsToggle,
+    applyEdit,
+    originalBrew
+  } = props;
+
+  const [editing, setEditing] = useState(false);
+  const [showSwatch, setShowSwatch] = useState(true);
+
+  const editValue = (value: any, choice: string) => {
+    const editedBrew = {...brew};
+    let data;
+    if (choice === 'batchSize') {
+      data = user.units === 'metric' ? l2gal(value) : value;
+    } else {
+      data = value
+    }
+    editedBrew[choice] = data;
+    applyEdit(editedBrew);
+  }
+
+  const utilityProps = {
+    editValue,
+    editing,
+    setEditing,
+    brewdayResults
+  }
+
   return (
-    <Card color="brew" customClass={newBrew ? styles.new : styles.view}>
+    <Card color="brew" customClass={newBrew ? styles.new : brewdayResults ? styles.res : styles.view}>
       <div className={styles.brew__numbers}>
         <div className={styles.brew__numbersMenu}>
           <ul className={styles.brew__numbersList}>
@@ -28,14 +69,28 @@ const BrewSettingsAndStats = (props: Props) => {
               Brew Method: <strong>{parseStringValues(brew.batchType)}</strong>
             </li>
             <li>
-              Batch Size: <strong>{brew.batchSize
-                ? `${user.units === 'metric'
-                  ? parseFloat(gal2l(brew.batchSize).toFixed(2))
-                  : brew.batchSize} ${unitLabels.vol}`
-                : null}</strong>
+              Batch Size: <strong>
+                <BrewEditableField
+                  fieldName="batchSize"
+                  value={brew.batchSize
+                    ? user.units === 'metric' ? parseFloat(gal2l(brew.batchSize).toFixed(2)) : brew.batchSize
+                    : null}
+                  label={` ${unitLabels.vol}`}
+                  {...utilityProps}
+                />
+              </strong>
+              {originalBrew !== null && originalBrew.batchSize !== brew.batchSize &&
+              <span className={componentStyles.originalValue}>{originalBrew.batchSize}</span>}
             </li>
             <li>
-              Mash Efficiency: <strong>{brew.mashEfficiency ? `${brew.mashEfficiency}%` : null}</strong>
+              Mash Efficiency: <strong>
+                <BrewEditableField
+                  fieldName="mashEfficiency"
+                  value={brew.mashEfficiency ? brew.mashEfficiency : null}
+                  label="%"
+                  {...utilityProps}
+                />
+              </strong>
             </li>
           </ul>
        
@@ -44,21 +99,23 @@ const BrewSettingsAndStats = (props: Props) => {
                 className={`button button--icon-large button--light-brown button--no-shadow gear`}
                 onClick={openSideBar('settings')}
                 title="Settings"
+                disabled={brewdayResults}
               ><span>Settings</span></button>}
               {!readOnly && <button
                 className={`button button--icon-large button--light-brown button--no-shadow eq`}
                 onClick={() =>{}}
                 title="Brew EQ"
+                disabled={brewdayResults}
               ><span>Brew&nbsp;EQ</span></button>}
               <button
                 className={`button button--icon-large button--light-brown button--no-shadow clone`}
                 onClick={clone()}
                 title="Clone"
-                disabled={newBrew}
+                disabled={newBrew || brewdayResults}
               ><span>Clone</span></button>
               {!readOnly && <button
                 className={`button button--icon-large button--light-brown button--no-shadow results`}
-                onClick={() =>{}}
+                onClick={brewdayResultsToggle()}
                 disabled={newBrew}
                 title="Brewday Results"
               ><span>Brewday&nbsp;Results</span></button>}
@@ -67,34 +124,66 @@ const BrewSettingsAndStats = (props: Props) => {
         <div className={styles.brew__stats}>
           <div className={styles.brew__stat}>
             <div>
-              <span className={styles.value}>{brew.alcoholContent ? `${brew.alcoholContent}%` : null}</span>
+              <span className={styles.value}>
+                <BrewEditableField
+                  fieldName="alcoholContent"
+                  value={brew.alcoholContent ? brew.alcoholContent : null}
+                  label="%"
+                  noInputLabel
+                  classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
+                  {...utilityProps}
+                />
+              </span>
               <label className={styles.label}>ABV</label>
             </div>
           </div>
           <div className={styles.brew__stat}>
             <div>
-              <span className={styles.value}>{brew.attenuation ? `${brew.attenuation}%` : null}</span>
+              <span className={styles.value}>
+                <BrewEditableField
+                  fieldName="attenuation"
+                  value={brew.attenuation ? brew.attenuation : null}
+                  label="%"
+                  noInputLabel
+                  classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
+                  {...utilityProps}
+                />
+              </span>
               <label className={styles.label}>ATTEN</label>
             </div>
           </div>
           <div className={styles.brew__stat}>
             <div>
-              <span className={styles.value}>{brew.ibu}</span>
+              <span className={styles.value}>
+                <BrewEditableField
+                  fieldName="ibu"
+                  value={brew.attenuation ? brew.attenuation : null}
+                  noInputLabel
+                  classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
+                  {...utilityProps}
+                />
+              </span>
               <label className={styles.label}>IBU</label>
             </div>
           </div>
           <div className={styles.brew__stat}>
             <div>
               <span className={styles.value}>
-                {brew.srm
-                  ? <>
-                      <div
-                        className={styles.srmSwatch}
-                        style={{backgroundColor: getSrmToRgb(brew.srm)}}
-                      />
-                      {brew.srm}
-                    </>
-                  : null }
+                {brew.srm && showSwatch && <div
+                  className={styles.srmSwatch}
+                  style={{backgroundColor: getSrmToRgb(brew.srm)}}
+                />}
+                <BrewEditableField
+                  fieldName="srm"
+                  value={brew.srm ? brew.srm : null}
+                  noInputLabel
+                  classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
+                  {...utilityProps}
+                  setEditing={(value: boolean) => {
+                    setEditing(value);
+                    setShowSwatch(!value);
+                  }}
+                />
               </span>
               <label className={styles.label}>SRM</label>
             </div>

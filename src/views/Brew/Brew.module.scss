@@ -96,6 +96,10 @@
     border-top: 5px solid $brew-card-bg-view;
   }
 
+  .res {
+    border-top: 5px solid $text-dark;
+  }
+
   .settings {
     color: $text-dark;
     font-weight: $weight-medium;
@@ -139,6 +143,7 @@
 
       .userLink {
         display: block;
+        margin: 4px 0 2px;
         font-size: px-to-rem(12px);
         font-weight: $weight-semibold;
         color: darken($link, 14%);
@@ -155,9 +160,26 @@
   }
 
   &__pageSubHeading {
-    display: block;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 7px;
+  }
+
+  .brewdayResultsLabel {
+    display: inline-block;
+    padding: 4px 5px 3px;
+    background-color: $text-dark;
+    border-radius: 4px;
+    font-size: px-to-rem(10px);
+    text-transform: uppercase;
+    color: $label-color;
+    font-weight: $weight-medium;
+  }
+
+  .subHeading {
     @extend h2;
-    margin: 7px 0 0 2px;
+    margin: 4px 20px 2px 2px;
     font-size: px-to-rem(12px);
   }
 
@@ -324,6 +346,7 @@
     }
 
     .value {
+      position: relative;
       font-size: px-to-rem(14px);
       font-weight: $weight-light;
 

@@ -36,6 +36,7 @@ interface Props extends RouteComponentProps {
 
 const Brew = (props: Props) => {
   // CONTEXT
+
   const [user, userDispatch] = useUser();
   const [brew, brewDispatch] = useBrew();
   // eslint-disable-next-line
@@ -44,8 +45,10 @@ const Brew = (props: Props) => {
   const [snackbar, snackbarDispatch] = useSnackbar();
 
   // STATE
+
   const [newBrew, setNewBrew] = useState(true);
   const [readOnly, setReadOnly] = useState(false);
+  const [brewdayResults, setBrewdayResults] = useState(false);
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const [topSpacing, setTopSpacing] = useState(0);
   const [form, setForm] = useState('');
@@ -59,8 +62,10 @@ const Brew = (props: Props) => {
   const [currentPageIndex, setCurrentPageIndex] = useState();
   const [changeBrew, setChangeBrew] = useState(false);
   const [showBrewHistory, setShowBrewHistory] = useState(false);
+  const [originalBrew, setOriginalBrew] = useState<BrewInterface | null>(null)
 
   // REFS
+
   const brewContainer = useRef<HTMLDivElement>(null);
   const formContainer = useRef<HTMLDivElement>(null);
 
@@ -84,6 +89,8 @@ const Brew = (props: Props) => {
     absorptionRate: user.absorption_rate,
     hopAbsorptionRate: user.hop_absorption_rate
   }
+
+  // USEEFFECT
 
   // mount
   useEffect(() => {
@@ -180,6 +187,22 @@ const Brew = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
+  // Brewday results toggle
+  useEffect(() => {
+    if (brewdayResults) {
+      setOriginalBrew(brew);
+      getBrewdayResults();
+      closeSidebar();
+    } else {
+      const brewId = Number(window.location.pathname.split('/')[2]);
+      if (!isNaN(brewId)) {
+        getBrew(brewId);
+        setOriginalBrew(null);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brewdayResults]);
+
   useEffect(() => {
     // Watch changes for prompt display
     if (newBrew && shouldBlock) {
@@ -188,6 +211,9 @@ const Brew = (props: Props) => {
       window.onbeforeunload = null;
     }
   });
+
+
+  // METHODS
 
   const getBrew = async (brewId: number) => {
     setLoading(true);
@@ -206,10 +232,7 @@ const Brew = (props: Props) => {
         return res;
       })
       .catch((error) => {
-        snackbarDispatch({type: 'show', payload: {
-          status: 'error',
-          message: error.message,
-        }});
+        showError(error);
         if (isEmpty(user)) {
           props.history.push('/');
         } else {
@@ -228,11 +251,23 @@ const Brew = (props: Props) => {
       setUserViewing(result.data);
     })
     .catch((error) => {
-      snackbarDispatch({type: 'show', payload: {
-        status: 'error',
-        message: error.message,
-      }});
+      showError(error);
       props.history.push('/dashboard');
+    });
+  };
+
+  const getBrewdayResults = async () =>{
+    brewService.getBrewResults(brew.id, user)
+    .then((res: any) => {
+      brewDispatch({type: 'replace', payload: res.data.brew, options: userSettings});
+      scrollToTop(300);
+    })
+    .catch((error) => {
+      // 404 if a brew hasn't had any results saved yet
+      if (error.response.status !== 404) {
+        showError(error);
+        setBrewdayResults(false);
+      }
     });
   };
 
@@ -272,13 +307,14 @@ const Brew = (props: Props) => {
             updateBrew={handleUpdateBrew}
             deleteBrew={handleDeleteBrew}
             open={sideBarOpen}
+            brewdayResults={brewdayResults}
           />,
         classOverride: styles.mobileFormHandler
       }
     });
   }
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (e: any) => {
     const rect = brewContainer.current
       ? brewContainer.current.getBoundingClientRect()
       : new DOMRect();
@@ -296,7 +332,7 @@ const Brew = (props: Props) => {
     }
   }
 
-  const nextForm = (event: any) => {
+  const nextForm = (e: any) => {
     const formOrder = [
       'settings', 'fermentables', 'hops', 'adjuncts', 'yeast',
       'mash', 'boil', 'fermentation', 'packaging', 'notes', 'tags'];
@@ -331,12 +367,12 @@ const Brew = (props: Props) => {
     }
   }
 
-  const handleSaveBrew = async (event: any) => {
+  const handleSaveBrew = async (e: any) => {
     // double check current user hasn't expired
     userDispatch({type: 'load'});
     setSaving(true);
-    newBrew
-      ? await brewService.saveBrew(brew, user)
+    if (newBrew) {
+      await brewService.saveBrew(brew, user)
         .then((res: any) => {
           setShouldBlock(false);
           setNewBrew(false);
@@ -359,34 +395,42 @@ const Brew = (props: Props) => {
                 : error.message,
           }});
           setSaving(false);
-        })
-      : await brewService.updateBrew(brew, user)
-        .then((res: any) => {
-          snackbarDispatch({type: 'show', payload: {
-            status: 'success',
-            message: `Successfully updated: ${brew.name}!`
-          }});
-          scrollToTop(300);
-          setSaving(false);
-        })
-        .catch((error) => {
-          snackbarDispatch({type: 'show', payload: {
-            status: 'error',
-            message: error.message,
-          }});
-          setSaving(false);
-        })
-      ;
+        });
+    } else {
+      !brewdayResults
+        ? await brewService.updateBrew(brew, user)
+          .then((res: any) => {
+            updateSuccess()
+          })
+          .catch((error) => {
+            showError(error);
+            setSaving(false);
+          })
+        : await brewService.updateBrewResults(brew, user)
+          .then((res: any) => {
+            updateSuccess()
+            brewDispatch({type: 'replace', payload: res.data.brew, options: userSettings});
+          })
+          .catch((error) => {
+            console.log(error);
+            showError(error);
+            setSaving(false);
+          })
+        ;
+    }
   }
 
   const handleUpdateBrew = (brew: BrewInterface) => {
-    brewDispatch({type: 'update', payload: brew, options: userSettings});
+    const action = brewdayResults ? 'replace' : 'update';
+    if (Object.entries(brew).length !== 0 && brew.constructor === Object) {
+      brewDispatch({type: action, payload: brew, options: userSettings});
+    }
     if (newBrew) {
       setShouldBlock(true);
     }
   }
 
-  const handleCloneBrew = () => (event: any) => {
+  const handleCloneBrew = () => (e: any) => {
     modalDispatch({
       type: 'show',
       payload: {
@@ -420,6 +464,33 @@ const Brew = (props: Props) => {
     });
   };
 
+  const handleAddBrewdayResults = () => (e: any) => {
+    // if (!readOnly && !brewdayResults) {
+    //   modalDispatch({
+    //     type: 'show',
+    //     payload: {
+    //       title: 'View & Edit Brewday Results',
+    //       body: <p>Brewday Results mode helps track what was planned vs. what actually happened. In this mode, all numbers are editable except for the ingredients. <strong>Just click on the number to edit.</strong> Mash and Fermentation can be fully edited, but no automatic calculations will be made.<br /><br /></p>,
+    //       buttons: <>
+    //         <button
+    //           className="button button--brown"
+    //           onClick={() => modalDispatch({type: 'hide'})}
+    //         >Go Back</button>
+    //         <button
+    //           className="button"
+    //           onClick={async () => {
+    //             modalDispatch({type: 'hide'});
+    //             setBrewdayResults(true);
+    //           }}
+    //         >Got it</button>
+    //       </>
+    //     }
+    //   })
+    // } else {
+      setBrewdayResults(!brewdayResults);
+    // }
+  };
+
   const handleDeleteBrew = () => {
     modalDispatch({
       type: 'show',
@@ -443,10 +514,7 @@ const Brew = (props: Props) => {
                   brewDispatch({type: 'clear'});
                 })
                 .catch((error) => {
-                  snackbarDispatch({type: 'show', payload: {
-                    status: 'error',
-                    message: error.message,
-                  }});
+                  showError(error);
                   modalDispatch({type: 'hide'});
                 });
               }}
@@ -455,6 +523,24 @@ const Brew = (props: Props) => {
       }
     });
   }
+
+  const updateSuccess = () => {
+    snackbarDispatch({type: 'show', payload: {
+      status: 'success',
+      message: `Successfully updated: ${brew.name}!`
+    }});
+    scrollToTop(300);
+    setSaving(false);
+  }
+
+  const showError = (error: any) => {
+    snackbarDispatch({type: 'show', payload: {
+      status: 'error',
+      message: error.message,
+    }});
+  }
+
+  // TEMPLATE
 
   return loading ? <Loader className={styles.loader} color="#000" /> : (
     <section
@@ -478,20 +564,25 @@ const Brew = (props: Props) => {
             className={showBrewHistory ? styles.showBrewHistory : ''}
           >
             {brew.name === '' ? 'New Brew' : brew.name}
-            {!currentUser // not current user's brew (viewing someone else's)
-              && <Link
-                  to={`/user/${userViewing.id}`}
-                  className={styles.userLink}
-                >
-                  {userViewing.username}
-                </Link>
+            <div className={styles.brew__pageSubHeading}>
+              {!currentUser // not current user's brew (viewing someone else's)
+                && <Link
+                    to={`/user/${userViewing.id}`}
+                    className={styles.userLink}
+                  >
+                    @{userViewing.username}
+                  </Link>
+                }
+              {currentPageIndex !== undefined && !showBrewHistory &&
+                <span className={styles.subHeading}>{currentPageIndex === 0 ? 'Initial Brew' : 'Re-Brew'}</span>
               }
-            {currentPageIndex !== undefined && !showBrewHistory &&
-              <span className={styles.brew__pageSubHeading}>Re-Brew</span>
-            }
-            {showBrewHistory &&
-              <span className={styles.brew__pageSubHeading}>Brew History</span>
-            }
+              {brewdayResults && !showBrewHistory &&
+                <span className={styles.brewdayResultsLabel}>Brewday Results</span>
+              }
+              {showBrewHistory &&
+                <span className={styles.subHeading}>Brew History</span>
+              }
+            </div>
           </h1>
           <div className={styles.pageHeading__items}>
             {!newBrew && brew.dateBrewed
@@ -499,7 +590,7 @@ const Brew = (props: Props) => {
                   className={`${styles.dateBrewed} ${showBrewHistory ? styles.fadeOut : ''}`}
                 >{brew.dateBrewed}</FormattedDate>
               : null}
-            {currentPageIndex !== null &&
+            {currentPageIndex !== undefined && !brewdayResults &&
               <BrewHistoryNav
                 historyLength={brew.history ? brew.history.length : null}
                 currentPage={currentPageIndex}
@@ -519,15 +610,20 @@ const Brew = (props: Props) => {
           <><BrewSettingsAndStats
             readOnly={readOnly}
             newBrew={newBrew}
+            brewdayResults={brewdayResults}
             brew={brew}
+            originalBrew={originalBrew}
             unitLabels={unitLabels}
             openSideBar={openSideBar}
             clone={handleCloneBrew}
+            brewdayResultsToggle={handleAddBrewdayResults}
             user={user}
+            applyEdit={handleUpdateBrew}
           />
           <BrewFermentables
             readOnly={readOnly}
             newBrew={newBrew}
+            brewdayResults={brewdayResults}
             brew={brew}
             unitLabels={unitLabels}
             openSideBar={openSideBar}
@@ -536,6 +632,7 @@ const Brew = (props: Props) => {
           <BrewHops
             readOnly={readOnly}
             newBrew={newBrew}
+            brewdayResults={brewdayResults}
             brew={brew}
             unitLabels={unitLabels}
             openSideBar={openSideBar}
@@ -544,6 +641,7 @@ const Brew = (props: Props) => {
           <BrewAdjuncts
             readOnly={readOnly}
             newBrew={newBrew}
+            brewdayResults={brewdayResults}
             brew={brew}
             unitLabels={unitLabels}
             openSideBar={openSideBar}
@@ -552,54 +650,61 @@ const Brew = (props: Props) => {
           <BrewYeast
             readOnly={readOnly}
             newBrew={newBrew}
+            brewdayResults={brewdayResults}
             brew={brew}
             unitLabels={unitLabels}
             openSideBar={openSideBar}
             user={user}
           />
-          <Card color="brew" customClass={newBrew ? styles.new : styles.view}>
+          <Card color="brew" customClass={newBrew ? styles.new : brewdayResults ? styles.res : styles.view}>
             {brew.batchType && brew.batchType !== 'extract'
               ? <BrewMash
                   readOnly={readOnly}
                   newBrew={newBrew}
+                  brewdayResults={brewdayResults}
                   brew={brew}
                   unitLabels={unitLabels}
                   openSideBar={openSideBar}
                   user={user}
+                  applyEdit={handleUpdateBrew}
                 />
               : null}
             <BrewBoil
               readOnly={readOnly}
               newBrew={newBrew}
+              brewdayResults={brewdayResults}
               brew={brew}
               unitLabels={unitLabels}
               openSideBar={openSideBar}
               user={user}
+              applyEdit={handleUpdateBrew}
             />
             <BrewFermentation
               readOnly={readOnly}
               newBrew={newBrew}
+              brewdayResults={brewdayResults}
               brew={brew}
               unitLabels={unitLabels}
               openSideBar={openSideBar}
               user={user}
+              applyEdit={handleUpdateBrew}
             />
-            <BrewPackaging
-              readOnly={readOnly}
-              newBrew={newBrew}
-              brew={brew}
-              unitLabels={unitLabels}
-              openSideBar={openSideBar}
-              user={user}
-            />
-            <BrewNotes
-              readOnly={readOnly}
-              newBrew={newBrew}
-              brew={brew}
-              unitLabels={unitLabels}
-              openSideBar={openSideBar}
-              user={user}
-            />
+            {!brewdayResults &&<BrewPackaging
+                readOnly={readOnly}
+                newBrew={newBrew}
+                brew={brew}
+                unitLabels={unitLabels}
+                openSideBar={openSideBar}
+                user={user}
+              />}
+            {!brewdayResults && <BrewNotes
+                readOnly={readOnly}
+                newBrew={newBrew}
+                brew={brew}
+                unitLabels={unitLabels}
+                openSideBar={openSideBar}
+                user={user}
+              />}
           </Card>
           {!readOnly
             ? <button
@@ -607,7 +712,7 @@ const Brew = (props: Props) => {
                 className={`button button--large ${styles.saveButton} ${saving ? styles.saving : null}`}
                 onClick={handleSaveBrew}
               >
-                {newBrew? <>Save &amp; Get Brewing!</> : <>Update Brew</>}
+                {newBrew? <>Save &amp; Get Brewing!</> : <>Update {brewdayResults ? 'Results' : 'Brew'}</>}
                 {saving ? <Loader className={styles.savingLoader} /> : null}
               </button>
             : null}
@@ -623,6 +728,7 @@ const Brew = (props: Props) => {
             updateBrew={handleUpdateBrew}
             deleteBrew={handleDeleteBrew}
             open={sideBarOpen}
+            brewdayResults={brewdayResults}
           />
         </Card>
       </div>

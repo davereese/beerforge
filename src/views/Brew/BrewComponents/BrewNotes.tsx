@@ -9,7 +9,7 @@ interface Props {
   newBrew: boolean;
   brew: BrewInterface;
   unitLabels: any;
-  openSideBar: any;
+  openSideBar: Function;
   user: any;
 }
 

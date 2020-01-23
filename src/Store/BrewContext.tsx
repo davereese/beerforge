@@ -125,6 +125,7 @@ export interface BrewInterface {
   id?: number;
   userId?: number;
   parent?: number;
+  recipe?: number;
   name?: string;
   dateBrewed?: Date;
   batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
@@ -167,6 +168,7 @@ export interface BrewInterface {
   totalFermentablesPercent?: number;
   targetOG?: number;
   history?: brewHistory[];
+  [key: string]: any;
 };
 
 const initialState: any = {
@@ -181,11 +183,7 @@ const initialState: any = {
 
 export const BrewContext = React.createContext(initialState);
 
-export const processBrew = (
-  brew: BrewInterface,
-  options: processOptionsInterface
-): BrewInterface => {
-
+export const sortBrew = (brew: BrewInterface): BrewInterface => {
   // Sort ingredients
   if (brew.fermentables) {
     brew.fermentables.sort(compareWeight);
@@ -205,6 +203,16 @@ export const processBrew = (
   if (brew.mash) {
     brew.mash.sort(compareStep);
   }
+
+  return brew;
+}
+
+export const processBrew = (
+  brew: BrewInterface,
+  options: processOptionsInterface
+): BrewInterface => {
+
+  brew = sortBrew(brew);
 
   // Run Calculations
   if (brew.fermentables.length > 0) {
@@ -573,6 +581,11 @@ const reducer = (state: any, action: any) => {
       delete rebrewState.id;
       delete rebrewState.dateBrewed;
       return rebrewState;
+    case 'replace':
+      state = {
+        ...action.payload
+      };
+      return sortBrew(state);
     default:
       throw new Error('Unexpected action');
   }

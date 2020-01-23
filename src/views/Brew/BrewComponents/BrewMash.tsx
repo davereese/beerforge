@@ -1,20 +1,62 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import styles from '../Brew.module.scss';
 import { BrewInterface, MashInterface } from '../../../Store/BrewContext';
-import { gal2l, f2c, qt2l } from '../../../resources/javascript/calculator';
+import { gal2l, f2c, qt2l, l2gal, c2f, l2qt } from '../../../resources/javascript/calculator';
+import BrewEditableField from './BrewEditableField';
 
 interface Props {
   readOnly: boolean;
   newBrew: boolean;
   brew: BrewInterface;
   unitLabels: any;
-  openSideBar: any;
+  openSideBar: Function;
   user: any;
+  brewdayResults: boolean;
+  applyEdit: Function;
 }
 
 const BrewMash = (props: Props) => {
-  const {brew, readOnly, unitLabels, openSideBar, user} = props;
+  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit} = props;
+
+  const [editing, setEditing] = useState(false);
+
+  const editValue = (value: any, choice: string, index: number) => {
+    const editedBrew = {...brew};
+    let data;
+    switch (choice) {
+      case 'strikeVolume':
+      case 'spargeVolume':
+        data = user.units === 'metric' ? l2gal(value) : value;
+        break;
+      case 'strikeTemp':
+      case 'targetStepTemp':
+      case 'totalMashVolume':
+      case 'infusionWaterTemp':
+      case 'spargeTemp':
+        data = user.units === 'metric' ? c2f(value) : value;
+        break;
+      case 'infusionWaterVol':
+        data = user.units === 'metric' ? l2qt(value) : value;
+        break;
+      default:
+        data = value;
+    }
+    if (editedBrew.mash && choice !== 'totalWater') {
+      editedBrew.mash[index][choice] = data;
+    } else {
+      editedBrew[choice] = Number(data);
+    }
+    applyEdit(editedBrew);
+  }
+
+  const utilityProps = {
+    editValue,
+    editing,
+    setEditing,
+    brewdayResults
+  }
+
   return (
     <div className={`${styles.brew__section} ${styles.mash}`}>
       <div className={styles.brew__header}>
@@ -46,24 +88,98 @@ const BrewMash = (props: Props) => {
               ? <>
                 <span>
                   {step.strikeVolume && brew.batchType !== 'BIAB' && step.strikeTemp
-                    ? <>Strike with <strong>{user.units === 'metric' ? parseFloat(gal2l(step.strikeVolume).toFixed(1)) : step.strikeVolume} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.strikeTemp).toFixed(1)) : step.strikeTemp} °{unitLabels.temp}</strong></>
+                    ? <>Strike with <strong>
+                          <BrewEditableField
+                            fieldName="strikeVolume"
+                            value={user.units === 'metric'
+                              ? parseFloat(gal2l(step.strikeVolume).toFixed(2))
+                              : step.strikeVolume}
+                            label={` ${unitLabels.vol}`}
+                            {...utilityProps}
+                            editValue={(value: any, fieldName: any) => {
+                              editValue(value, fieldName, index)
+                            }}
+                          />
+                        </strong> at <strong>
+                          <BrewEditableField
+                            fieldName="strikeTemp"
+                            value={user.units === 'metric'
+                              ? parseFloat(f2c(step.strikeTemp).toFixed(2))
+                              : step.strikeTemp}
+                            label={` °${unitLabels.temp}`}
+                            {...utilityProps}
+                            editValue={(value: any, fieldName: any) => {
+                              editValue(value, fieldName, index)
+                            }}
+                          />
+                        </strong></>
                     : null}
                   {brew.totalWater && brew.batchType === 'BIAB' && step.strikeTemp
-                    ? <>Strike with <strong>{brew.totalWater.toFixed(2)} {unitLabels.vol}</strong> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.strikeTemp).toFixed(2)) : step.strikeTemp} °{unitLabels.temp}</strong></>
+                    ? <>Strike with <strong>
+                          <BrewEditableField
+                            fieldName="totalWater"
+                            value={brew.totalWater.toFixed(2)}
+                            label={` ${unitLabels.vol}`}
+                            {...utilityProps}
+                          />
+                        &nbsp;</strong>at <strong>
+                          <BrewEditableField
+                            fieldName="strikeTemp"
+                            value={user.units === 'metric'
+                              ? parseFloat(f2c(step.strikeTemp).toFixed(1))
+                              : step.strikeTemp}
+                            label={` °${unitLabels.temp}`}
+                            {...utilityProps}
+                            editValue={(value: any, fieldName: any) => {
+                              editValue(value, fieldName, index)
+                            }}
+                          />
+                        </strong></>
                     : null}
                 </span>
                 <span>
                   {step.targetStepTemp
-                    ? <>Mash at <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
+                    ? <>Mash at <strong>
+                        <BrewEditableField
+                          fieldName="targetStepTemp"
+                          value={user.units === 'metric'
+                            ? parseFloat(f2c(step.targetStepTemp).toFixed(1))
+                            : step.targetStepTemp}
+                          label={` °${unitLabels.temp}`}
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                 </span>
                 <span>
                   {step.stepLength
-                    ? <>Hold for <strong>{step.stepLength} min</strong></>
+                    ? <>Hold for <strong>
+                        <BrewEditableField
+                          fieldName="stepLength"
+                          value={step.stepLength}
+                          label=" min"
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                 </span>
                 {brew.totalMashVolume && brew.batchType === 'BIAB'
-                  ? <span>Total Mash Vol: <strong>{user.units === 'metric' ? parseFloat(gal2l(brew.totalMashVolume).toFixed(2)) : brew.totalMashVolume} {unitLabels.vol}</strong></span>
+                  ? <span>Total Mash Vol: <strong>
+                        <BrewEditableField
+                          fieldName="totalMashVolume"
+                          value={user.units === 'metric'
+                            ? parseFloat(gal2l(brew.totalMashVolume).toFixed(2))
+                            : brew.totalMashVolume}
+                          label={` ${unitLabels.vol}`}
+                          {...utilityProps}
+                        />
+                      </strong></span>
                   : null}
               </>
               : null}
@@ -71,12 +187,34 @@ const BrewMash = (props: Props) => {
               ? <>
                 <span>
                   {step.targetStepTemp
-                    ? <>Raise to <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
+                    ? <>Raise to <strong>
+                        <BrewEditableField
+                          fieldName="targetStepTemp"
+                          value={user.units === 'metric'
+                            ? parseFloat(f2c(step.targetStepTemp).toFixed(1))
+                            : step.targetStepTemp}
+                          label={` °${unitLabels.temp}`}
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                 </span>
                 <span>
                   {step.stepLength
-                    ? <>Hold for <strong>{step.stepLength} min</strong></>
+                    ? <>Hold for <strong>
+                        <BrewEditableField
+                          fieldName="stepLength"
+                          value={step.stepLength}
+                          label=" min"
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                 </span>
                 </>
@@ -85,20 +223,66 @@ const BrewMash = (props: Props) => {
               ? <>
                 <span>
                   {step.infusionWaterVol
-                    ? <>Add <strong>{user.units === 'metric' ? parseFloat(qt2l(step.infusionWaterVol).toFixed(2)) : step.infusionWaterVol} {unitLabels.smallVol}</strong></>
+                    ? <>Add <strong>
+                        <BrewEditableField
+                          fieldName="infusionWaterVol"
+                          value={user.units === 'metric'
+                            ? parseFloat(qt2l(step.infusionWaterVol).toFixed(2))
+                            : step.infusionWaterVol}
+                          label={` ${unitLabels.smallVol}`}
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                   {step.infusionWaterTemp
-                    ? <> at <strong>{user.units === 'metric' ? parseFloat(f2c(step.infusionWaterTemp).toFixed(1)) : step.infusionWaterTemp} °{unitLabels.temp}</strong></>
+                    ? <> at <strong>
+                        <BrewEditableField
+                          fieldName="infusionWaterTemp"
+                          value={user.units === 'metric'
+                            ? parseFloat(f2c(step.infusionWaterTemp).toFixed(2))
+                            : step.infusionWaterTemp}
+                          label={` °${unitLabels.temp}`}
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                 </span>
                 <span>
                   {step.targetStepTemp
-                    ? <> Bring to <strong>{user.units === 'metric' ? parseFloat(f2c(step.targetStepTemp).toFixed(1)) : step.targetStepTemp} °{unitLabels.temp}</strong></>
+                    ? <> Bring to <strong>
+                        <BrewEditableField
+                          fieldName="targetStepTemp"
+                          value={user.units === 'metric'
+                            ? parseFloat(f2c(step.targetStepTemp).toFixed(2))
+                            : step.targetStepTemp}
+                          label={` °${unitLabels.temp}`}
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                 </span>
                 <span>
                   {step.stepLength
-                    ? <>Hold for <strong>{step.stepLength} min</strong></>
+                    ? <>Hold for <strong>
+                        <BrewEditableField
+                          fieldName="stepLength"
+                          value={step.stepLength}
+                          label=" min"
+                          {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue(value, fieldName, index)
+                          }}
+                        />
+                      </strong></>
                     : null}
                 </span>
                 </>
@@ -108,9 +292,33 @@ const BrewMash = (props: Props) => {
                 {step.spargeTemp
                   ? <>Sparge&nbsp;
                     {step.spargeVolume
-                      ? <>with <strong>{user.units === 'metric' ? parseFloat(gal2l(step.spargeVolume).toFixed(2)) : step.spargeVolume} {unitLabels.vol}</strong> </>
+                      ? <>with <strong>
+                          <BrewEditableField
+                            fieldName="spargeVolume"
+                            value={user.units === 'metric'
+                              ? parseFloat(gal2l(step.spargeVolume).toFixed(2))
+                              : step.spargeVolume}
+                            label={` ${unitLabels.vol}`}
+                            {...utilityProps}
+                            editValue={(value: any, fieldName: any) => {
+                              editValue(value, fieldName, index)
+                            }}
+                          />
+                        </strong> </>
                       : null}
-                    at <strong>{user.units === 'metric' ? parseFloat(f2c(step.spargeTemp).toFixed(1)) : step.spargeTemp} °{unitLabels.temp}</strong></>
+                    at <strong>
+                      <BrewEditableField
+                        fieldName="spargeTemp"
+                        value={user.units === 'metric'
+                          ? parseFloat(f2c(step.spargeTemp).toFixed(1))
+                          : step.spargeTemp}
+                        label={` °${unitLabels.temp}`}
+                        {...utilityProps}
+                        editValue={(value: any, fieldName: any) => {
+                          editValue(value, fieldName, index)
+                        }}
+                      />
+                    </strong></>
                   : null}
               </span>
               : null}

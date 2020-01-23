@@ -40,3 +40,23 @@ export async function deleteBrew(brewId: number, user: UserInterface, parent: bo
     headers: authHeaders,
   });
 }
+
+export async function getBrewResults(brewId: number, user: UserInterface) {
+  const authHeaders = {'authorization': user ? user.token : null};
+  return await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/brew/results/${brewId}`, {
+    headers: authHeaders,
+  })
+}
+
+export async function updateBrewResults(brew: BrewInterface, user: UserInterface) {
+  const authHeaders = {'authorization': user ? user.token : null};
+  if (brew.recipe) { // update
+    return await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/brew/results/${brew.id}`, {brew: brew}, {
+      headers: authHeaders,
+    });
+  } else { // create
+    return await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/brew/results`, {brew: brew}, {
+      headers: authHeaders,
+    });
+  }
+}
