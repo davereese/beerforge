@@ -80,7 +80,9 @@ const BrewSettingsAndStats = (props: Props) => {
                 />
               </strong>
               {originalBrew !== null && originalBrew.batchSize !== brew.batchSize &&
-              <span className={componentStyles.originalValue}>{originalBrew.batchSize}</span>}
+                <span className={componentStyles.originalValue}>
+                  Batch Size: <strong>{originalBrew.batchSize} {unitLabels.vol}</strong>
+                </span>}
             </li>
             <li>
               Mash Efficiency: <strong>
@@ -91,6 +93,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   {...utilityProps}
                 />
               </strong>
+              {originalBrew !== null && originalBrew.mashEfficiency !== brew.mashEfficiency &&
+                <span className={componentStyles.originalValue}>
+                  Mash Efficiency: <strong>{originalBrew.mashEfficiency}%</strong>
+                </span>}
             </li>
           </ul>
        
@@ -134,6 +140,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   {...utilityProps}
                 />
               </span>
+              {originalBrew !== null && originalBrew.alcoholContent !== brew.alcoholContent &&
+                <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
+                  <strong>{originalBrew.alcoholContent}%</strong>
+                </span>}
               <label className={styles.label}>ABV</label>
             </div>
           </div>
@@ -149,6 +159,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   {...utilityProps}
                 />
               </span>
+              {originalBrew !== null && originalBrew.attenuation !== brew.attenuation &&
+                <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
+                  <strong>{originalBrew.attenuation}%</strong>
+                </span>}
               <label className={styles.label}>ATTEN</label>
             </div>
           </div>
@@ -157,12 +171,16 @@ const BrewSettingsAndStats = (props: Props) => {
               <span className={styles.value}>
                 <BrewEditableField
                   fieldName="ibu"
-                  value={brew.attenuation ? brew.attenuation : null}
+                  value={brew.ibu ? brew.ibu : null}
                   noInputLabel
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                 />
               </span>
+              {originalBrew !== null && originalBrew.ibu !== brew.ibu &&
+                <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
+                  <strong>{originalBrew.ibu}</strong>
+                </span>}
               <label className={styles.label}>IBU</label>
             </div>
           </div>
@@ -185,6 +203,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   }}
                 />
               </span>
+              {originalBrew !== null && originalBrew.srm !== brew.srm &&
+                <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
+                  <strong>{originalBrew.srm}</strong>
+                </span>}
               <label className={styles.label}>SRM</label>
             </div>
           </div>

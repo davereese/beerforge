@@ -15,10 +15,20 @@ interface Props {
   openSideBar: Function;
   user: any;
   brewdayResults: boolean;
+  originalBrew: BrewInterface | null;
 }
 
 const BrewFermentables = (props: Props) => {
-  const {brew, newBrew, readOnly, unitLabels, openSideBar, user, brewdayResults} = props;
+  const {brew, newBrew, readOnly, unitLabels, openSideBar, user, brewdayResults, originalBrew} = props;
+
+  const calculatedWeight = (index: number) => {
+    if (brewdayResults && originalBrew) {
+      return originalBrew.fermentables[index].calculatedWeight;
+    } else {
+      return brew.fermentables[index].calculatedWeight;
+    }
+  };
+
   return (
     <Card color="brew" customClass={`${newBrew ? styles.new : brewdayResults ? styles.res : styles.view} ${styles.brew__editingSection}`}>
       <div className={styles.brew__header}>
@@ -42,8 +52,12 @@ const BrewFermentables = (props: Props) => {
           >
             <span className={styles.firstCol}>
             {brew.fermentableUnits === 'percent'
-              ? <>{user.units === 'metric' ? parseFloat(lb2kg(fermentable.calculatedWeight).toFixed(2)) : fermentable.calculatedWeight} {unitLabels.largeWeight} ({fermentable.weight}%)</>
-              : <>{user.units === 'metric' ? parseFloat(lb2kg(fermentable.weight).toFixed(2)) : fermentable.weight} {unitLabels.largeWeight}</>
+              ? <>{user.units === 'metric'
+                  ? parseFloat(lb2kg(calculatedWeight(index)).toFixed(2))
+                  : calculatedWeight(index)} {unitLabels.largeWeight} ({fermentable.weight}%)</>
+              : <>{user.units === 'metric'
+                  ? parseFloat(lb2kg(fermentable.weight).toFixed(2))
+                  : fermentable.weight} {unitLabels.largeWeight}</>
             }
             </span>
             <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>

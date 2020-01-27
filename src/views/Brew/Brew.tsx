@@ -190,7 +190,8 @@ const Brew = (props: Props) => {
   // Brewday results toggle
   useEffect(() => {
     if (brewdayResults) {
-      setOriginalBrew(brew);
+      const copiedBrew= JSON.parse(JSON.stringify(brew));
+      setOriginalBrew(copiedBrew);
       getBrewdayResults();
       closeSidebar();
     } else {
@@ -212,10 +213,9 @@ const Brew = (props: Props) => {
     }
   });
 
-
   // METHODS
 
-  const getBrew = async (brewId: number) => {
+  const getBrew = async (brewId: number, callback: Function | null = null) => {
     setLoading(true);
     await brewService.getBrew(brewId, user)
       .then((res: any) => {
@@ -229,10 +229,10 @@ const Brew = (props: Props) => {
           payload: res.data.brew,
           options: userSettings
         });
-        return res;
+        callback !== null && callback();
       })
       .catch((error) => {
-        showError(error);
+        showBasicError(error);
         if (isEmpty(user)) {
           props.history.push('/');
         } else {
@@ -251,7 +251,7 @@ const Brew = (props: Props) => {
       setUserViewing(result.data);
     })
     .catch((error) => {
-      showError(error);
+      showBasicError(error);
       props.history.push('/dashboard');
     });
   };
@@ -265,7 +265,7 @@ const Brew = (props: Props) => {
     .catch((error) => {
       // 404 if a brew hasn't had any results saved yet
       if (error.response.status !== 404) {
-        showError(error);
+        showBasicError(error);
         setBrewdayResults(false);
       }
     });
@@ -403,7 +403,7 @@ const Brew = (props: Props) => {
             updateSuccess()
           })
           .catch((error) => {
-            showError(error);
+            showBasicError(error);
             setSaving(false);
           })
         : await brewService.updateBrewResults(brew, user)
@@ -413,21 +413,19 @@ const Brew = (props: Props) => {
           })
           .catch((error) => {
             console.log(error);
-            showError(error);
+            showBasicError(error);
             setSaving(false);
           })
         ;
     }
   }
 
-  const handleUpdateBrew = (brew: BrewInterface) => {
+  const handleUpdateBrew = (updatedBrew: BrewInterface) => {
     const action = brewdayResults ? 'replace' : 'update';
-    if (Object.entries(brew).length !== 0 && brew.constructor === Object) {
-      brewDispatch({type: action, payload: brew, options: userSettings});
+    if (Object.entries(updatedBrew).length !== 0 && updatedBrew.constructor === Object) {
+      brewDispatch({type: action, payload: updatedBrew, options: userSettings});
     }
-    if (newBrew) {
-      setShouldBlock(true);
-    }
+    setShouldBlock(true);
   }
 
   const handleCloneBrew = () => (e: any) => {
@@ -447,16 +445,16 @@ const Brew = (props: Props) => {
             className="button"
             onClick={() => {
               setCloning(true);
-              brewDispatch({type: 'clone'});
               modalDispatch({type: 'hide'});
+              checkShouldBlock(() => brewDispatch({type: 'clone'}));
             }}
           >Clone</button>
           {!readOnly && <button
             className="button"
             onClick={() => {
               setCloning(true);
-              brewDispatch({type: 'rebrew'});
               modalDispatch({type: 'hide'});
+              checkShouldBlock(() => brewDispatch({type: 'rebrew'}))
             }}
           >Re-brew</button>}
         </>
@@ -465,31 +463,81 @@ const Brew = (props: Props) => {
   };
 
   const handleAddBrewdayResults = () => (e: any) => {
-    // if (!readOnly && !brewdayResults) {
-    //   modalDispatch({
-    //     type: 'show',
-    //     payload: {
-    //       title: 'View & Edit Brewday Results',
-    //       body: <p>Brewday Results mode helps track what was planned vs. what actually happened. In this mode, all numbers are editable except for the ingredients. <strong>Just click on the number to edit.</strong> Mash and Fermentation can be fully edited, but no automatic calculations will be made.<br /><br /></p>,
-    //       buttons: <>
-    //         <button
-    //           className="button button--brown"
-    //           onClick={() => modalDispatch({type: 'hide'})}
-    //         >Go Back</button>
-    //         <button
-    //           className="button"
-    //           onClick={async () => {
-    //             modalDispatch({type: 'hide'});
-    //             setBrewdayResults(true);
-    //           }}
-    //         >Got it</button>
-    //       </>
-    //     }
-    //   })
-    // } else {
-      setBrewdayResults(!brewdayResults);
-    // }
+    checkShouldBlock(() => triggerBrewdayResults())
+  }
+
+  const checkShouldBlock = (func: Function) => {
+    if (shouldBlock) {
+      modalDispatch({
+        type: 'show',
+        payload: {
+          title: 'You have unsaved changes to this brew.',
+          body: <p>Do you want to save and continue, or proceed without saving?<br /><br /></p>,
+          buttons: <>
+            <button
+              className="button button--brown"
+              onClick={() => modalDispatch({type: 'hide'})}
+            >Cancel</button>
+            <button
+              className="button"
+              onClick={async () => {
+                const promise = !brewdayResults
+                  ? brewService.updateBrew(brew, user)
+                  : brewService.updateBrewResults(brew, user)
+                await promise
+                  .then((res: any) => {
+                    modalDispatch({type: 'hide'});
+                    setShouldBlock(false);
+                    func()
+                  })
+                  .catch((error) => {
+                    modalDispatch({type: 'hide'});
+                    showBasicError(error);
+                  });
+              }}
+            >Save</button>
+            <button
+              className="button"
+              onClick={() => {
+                !brewdayResults ? getBrew(brew.id, () => func()) : func();
+                modalDispatch({type: 'hide'});
+                setShouldBlock(false);
+              }}
+            >Don't Save</button>
+          </>
+        }
+      });
+    } else {
+      func();
+    }
   };
+
+  const triggerBrewdayResults = () => {
+      if (!readOnly && !brewdayResults) {
+        modalDispatch({
+          type: 'show',
+          payload: {
+            title: 'View & Edit Brewday Results',
+            body: <p>Brewday Results mode helps track what was planned vs. what actually happened. In this mode, all numbers are editable except for the ingredients. <strong>Just click on the number to edit.</strong><br /><br /></p>,
+            buttons: <>
+              <button
+                className="button button--brown"
+                onClick={() => modalDispatch({type: 'hide'})}
+              >Go Back</button>
+              <button
+                className="button"
+                onClick={async () => {
+                  modalDispatch({type: 'hide'});
+                  setBrewdayResults(true);
+                }}
+              >Got it</button>
+            </>
+          }
+        })
+      } else {
+        setBrewdayResults(!brewdayResults);
+      }
+  }
 
   const handleDeleteBrew = () => {
     modalDispatch({
@@ -514,7 +562,7 @@ const Brew = (props: Props) => {
                   brewDispatch({type: 'clear'});
                 })
                 .catch((error) => {
-                  showError(error);
+                  showBasicError(error);
                   modalDispatch({type: 'hide'});
                 });
               }}
@@ -531,9 +579,10 @@ const Brew = (props: Props) => {
     }});
     scrollToTop(300);
     setSaving(false);
+    setShouldBlock(false);
   }
 
-  const showError = (error: any) => {
+  const showBasicError = (error: any) => {
     snackbarDispatch({type: 'show', payload: {
       status: 'error',
       message: error.message,
@@ -541,6 +590,17 @@ const Brew = (props: Props) => {
   }
 
   // TEMPLATE
+
+  const commonProps = {
+    readOnly,
+    newBrew,
+    brewdayResults,
+    brew,
+    unitLabels,
+    openSideBar,
+    user,
+    originalBrew
+  }
 
   return loading ? <Loader className={styles.loader} color="#000" /> : (
     <section
@@ -554,7 +614,7 @@ const Brew = (props: Props) => {
       {!readOnly
         ? <Prompt
             when={shouldBlock}
-            message='You have unsaved changes, are you sure you want to leave?'
+            message='You have unsaved changes. Are you sure you want to leave?'
           />
         : null}
       <div className={styles.mainContent} role="main">
@@ -608,102 +668,43 @@ const Brew = (props: Props) => {
           />}
         {!showBrewHistory &&
           <><BrewSettingsAndStats
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brewdayResults={brewdayResults}
-            brew={brew}
-            originalBrew={originalBrew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
             clone={handleCloneBrew}
             brewdayResultsToggle={handleAddBrewdayResults}
-            user={user}
             applyEdit={handleUpdateBrew}
+            {...commonProps}
           />
           <BrewFermentables
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brewdayResults={brewdayResults}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
+            {...commonProps}
           />
           <BrewHops
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brewdayResults={brewdayResults}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
+            {...commonProps}
           />
           <BrewAdjuncts
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brewdayResults={brewdayResults}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
+            {...commonProps}
           />
           <BrewYeast
-            readOnly={readOnly}
-            newBrew={newBrew}
-            brewdayResults={brewdayResults}
-            brew={brew}
-            unitLabels={unitLabels}
-            openSideBar={openSideBar}
-            user={user}
+            {...commonProps}
           />
           <Card color="brew" customClass={newBrew ? styles.new : brewdayResults ? styles.res : styles.view}>
             {brew.batchType && brew.batchType !== 'extract'
               ? <BrewMash
-                  readOnly={readOnly}
-                  newBrew={newBrew}
-                  brewdayResults={brewdayResults}
-                  brew={brew}
-                  unitLabels={unitLabels}
-                  openSideBar={openSideBar}
-                  user={user}
                   applyEdit={handleUpdateBrew}
+                  {...commonProps}
                 />
               : null}
             <BrewBoil
-              readOnly={readOnly}
-              newBrew={newBrew}
-              brewdayResults={brewdayResults}
-              brew={brew}
-              unitLabels={unitLabels}
-              openSideBar={openSideBar}
-              user={user}
               applyEdit={handleUpdateBrew}
+              {...commonProps}
             />
             <BrewFermentation
-              readOnly={readOnly}
-              newBrew={newBrew}
-              brewdayResults={brewdayResults}
-              brew={brew}
-              unitLabels={unitLabels}
-              openSideBar={openSideBar}
-              user={user}
               applyEdit={handleUpdateBrew}
+              {...commonProps}
             />
             {!brewdayResults &&<BrewPackaging
-                readOnly={readOnly}
-                newBrew={newBrew}
-                brew={brew}
-                unitLabels={unitLabels}
-                openSideBar={openSideBar}
-                user={user}
+                {...commonProps}
               />}
             {!brewdayResults && <BrewNotes
-                readOnly={readOnly}
-                newBrew={newBrew}
-                brew={brew}
-                unitLabels={unitLabels}
-                openSideBar={openSideBar}
-                user={user}
+                {...commonProps}
               />}
           </Card>
           {!readOnly

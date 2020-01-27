@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import styles from '../Brew.module.scss';
+import componentStyles from './BrewComponents.module.scss';
 import { BrewInterface, MashInterface } from '../../../Store/BrewContext';
 import { gal2l, f2c, qt2l, l2gal, c2f, l2qt } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
@@ -14,10 +15,11 @@ interface Props {
   user: any;
   brewdayResults: boolean;
   applyEdit: Function;
+  originalBrew: BrewInterface | null;
 }
 
 const BrewMash = (props: Props) => {
-  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit} = props;
+  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit, originalBrew} = props;
 
   const [editing, setEditing] = useState(false);
 
@@ -42,7 +44,7 @@ const BrewMash = (props: Props) => {
       default:
         data = value;
     }
-    if (editedBrew.mash && choice !== 'totalWater') {
+    if (editedBrew.mash && (choice !== 'totalWater' && choice !== 'totalMashVolume')) {
       editedBrew.mash[index][choice] = data;
     } else {
       editedBrew[choice] = Number(data);
@@ -68,17 +70,19 @@ const BrewMash = (props: Props) => {
             ? <>Warning: Total mash volume exceeds kettle size</>
             : null}
         </span>
-        {!readOnly
+        {!readOnly && !brewdayResults
           ? <button
               className={`button button--icon pen ${styles.editButton}`}
               onClick={openSideBar('mash')}
             ><span>Edit</span></button>
           : null}
       </div>
-      {brew && brew.mash.map((step: MashInterface, index: number) => (
+      {brew && brew.mash.map((step: MashInterface, index: number) => {
+        const originalStep = originalBrew !== null ? {...originalBrew.mash[index]} : null;
+        return (
         <div
           key={`step${index + 1}`} className={styles.mash_step}
-          onClick={!readOnly ? openSideBar('mash', {...step, index: index + 1}) : () => null}
+          onClick={!readOnly && !brewdayResults ? openSideBar('mash', {...step, index: index + 1}) : () => null}
         >
           <label className={styles.mash_label}>
             {index + 1}: {step.type ? step.type.toUpperCase() : ''}
@@ -112,7 +116,14 @@ const BrewMash = (props: Props) => {
                               editValue(value, fieldName, index)
                             }}
                           />
-                        </strong></>
+                        </strong>
+                        {((originalStep !== null && originalStep.strikeVolume !== step.strikeVolume) ||
+                        (originalStep !== null && originalStep.strikeTemp !== step.strikeTemp)) &&
+                          <span className={componentStyles.originalValue}>
+                            Strike with <strong>{originalStep.strikeVolume} {unitLabels.vol} </strong>
+                            at <strong>{originalStep.strikeTemp} °{unitLabels.temp}</strong>
+                          </span>}
+                      </>
                     : null}
                   {brew.totalWater && brew.batchType === 'BIAB' && step.strikeTemp
                     ? <>Strike with <strong>
@@ -134,7 +145,14 @@ const BrewMash = (props: Props) => {
                               editValue(value, fieldName, index)
                             }}
                           />
-                        </strong></>
+                        </strong>
+                        {((originalBrew !== null && originalBrew.totalWater !== brew.totalWater) ||
+                        (originalStep !== null && originalStep.strikeTemp !== step.strikeTemp)) &&
+                          <span className={componentStyles.originalValue}>
+                            Strike with <strong>{originalBrew && originalBrew.totalWater} {unitLabels.vol} </strong>
+                            at <strong>{originalStep && originalStep.strikeTemp} °{unitLabels.temp}</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 <span>
@@ -151,7 +169,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.targetStepTemp !== step.targetStepTemp &&
+                          <span className={componentStyles.originalValue}>
+                            Mash at <strong>{originalStep.targetStepTemp} °{unitLabels.temp}</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 <span>
@@ -166,7 +189,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.stepLength !== step.stepLength &&
+                          <span className={componentStyles.originalValue}>
+                            Hold for <strong>{originalStep.stepLength} min</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 {brew.totalMashVolume && brew.batchType === 'BIAB'
@@ -179,7 +207,12 @@ const BrewMash = (props: Props) => {
                           label={` ${unitLabels.vol}`}
                           {...utilityProps}
                         />
-                      </strong></span>
+                      </strong>
+                      {originalBrew !== null && originalBrew.totalMashVolume !== brew.totalMashVolume &&
+                        <span className={componentStyles.originalValue}>
+                          Total Mash Vol: <strong>{originalBrew.totalMashVolume} min</strong>
+                        </span>}
+                    </span>
                   : null}
               </>
               : null}
@@ -199,7 +232,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.targetStepTemp !== step.targetStepTemp &&
+                          <span className={componentStyles.originalValue}>
+                            Raise to <strong>{originalStep.targetStepTemp} °{unitLabels.temp}</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 <span>
@@ -214,7 +252,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.stepLength !== step.stepLength &&
+                          <span className={componentStyles.originalValue}>
+                            Hold for <strong>{originalStep.stepLength} min</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 </>
@@ -235,7 +278,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.infusionWaterVol !== step.infusionWaterVol &&
+                          <span className={componentStyles.originalValue}>
+                            Add <strong>{originalStep.infusionWaterVol} {unitLabels.smallVol}</strong>
+                          </span>}
+                      </>
                     : null}
                   {step.infusionWaterTemp
                     ? <> at <strong>
@@ -250,7 +298,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.infusionWaterTemp !== step.infusionWaterTemp &&
+                          <span className={componentStyles.originalValue}>
+                            at <strong>{originalStep.infusionWaterTemp} °{unitLabels.temp}</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 <span>
@@ -267,7 +320,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.targetStepTemp !== step.targetStepTemp &&
+                          <span className={componentStyles.originalValue}>
+                            Bring to <strong>{originalStep.targetStepTemp} °{unitLabels.temp}</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 <span>
@@ -282,7 +340,12 @@ const BrewMash = (props: Props) => {
                             editValue(value, fieldName, index)
                           }}
                         />
-                      </strong></>
+                        </strong>
+                        {originalStep !== null && originalStep.stepLength !== step.stepLength &&
+                          <span className={componentStyles.originalValue}>
+                            Hold For <strong>{originalStep.stepLength} min</strong>
+                          </span>}
+                      </>
                     : null}
                 </span>
                 </>
@@ -304,9 +367,10 @@ const BrewMash = (props: Props) => {
                               editValue(value, fieldName, index)
                             }}
                           />
-                        </strong> </>
+                          </strong>
+                        </>
                       : null}
-                    at <strong>
+                    &nbsp;at <strong>
                       <BrewEditableField
                         fieldName="spargeTemp"
                         value={user.units === 'metric'
@@ -318,13 +382,22 @@ const BrewMash = (props: Props) => {
                           editValue(value, fieldName, index)
                         }}
                       />
-                    </strong></>
+                      </strong>
+                      {((originalStep !== null && originalStep.spargeVolume !== step.spargeVolume) ||
+                        (originalStep !== null && originalStep.spargeTemp !== step.spargeTemp)) &&
+                          <span className={componentStyles.originalValue}>
+                            Sparge with <strong>{originalStep.spargeVolume} {unitLabels.vol} </strong>
+                            at <strong>{originalStep.spargeTemp} °{unitLabels.temp}</strong>
+                          </span>}
+                    </>
                   : null}
               </span>
               : null}
           </div>
         </div>
-      ))}
+        );
+      }
+    )}
     </div>
   );
 }

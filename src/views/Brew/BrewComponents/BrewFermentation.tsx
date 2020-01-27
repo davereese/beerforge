@@ -15,10 +15,11 @@ interface Props {
   user: any;
   brewdayResults: boolean;
   applyEdit: Function;
+  originalBrew: BrewInterface | null;
 }
 
 const BrewFermentation = (props: Props) => {
-  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit} = props;
+  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit, originalBrew} = props;
 
   const [editing, setEditing] = useState(false);
 
@@ -66,6 +67,10 @@ const BrewFermentation = (props: Props) => {
                 classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
                 {...utilityProps}
               />
+              {originalBrew !== null && Number(originalBrew.og).toFixed(3) !== Number(brew.og).toFixed(3) &&
+                <span className={componentStyles.originalValue}>
+                  <strong>{originalBrew.og}</strong>
+                </span>}
             </span>
             <label className={styles.label}>OG</label>
           </div>
@@ -80,12 +85,20 @@ const BrewFermentation = (props: Props) => {
                 classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
                 {...utilityProps}
               />
+              {originalBrew !== null && Number(originalBrew.fg).toFixed(3) !== Number(brew.fg).toFixed(3) &&
+                <span className={componentStyles.originalValue}>
+                  <strong>{originalBrew.fg}</strong>
+                </span>}
             </span>
             <label className={styles.label}>FG</label>
           </div>
         </div>
       </div>
-      {brew && brew.fermentation && brew.fermentation.map((stage: FermentationInterface, index: number) => (
+      {brew && brew.fermentation && brew.fermentation.map((stage: FermentationInterface, index: number) => {
+        const originalStage = originalBrew !== null && originalBrew.fermentation !== undefined
+          ? {...originalBrew.fermentation[index]}
+          : null;
+        return (
         <div
           key={`stage${index + 1}`} className={`${styles.fermentation_stage} ${index === 0 && styles.first}`}
           onClick={!readOnly && !brewdayResults ? openSideBar('fermentation', {...stage, index: index + 1}) : () => null}
@@ -97,16 +110,20 @@ const BrewFermentation = (props: Props) => {
             <span>
               {stage.stageLength
                 ? <>Length: <strong>
-                  <BrewEditableField
-                    fieldName="stageLength"
-                    value={stage.stageLength}
-                    label=" days"
-                    {...utilityProps}
-                    editValue={(value: any, fieldName: any) => {
-                      editValue(value, fieldName, index)
-                    }}
-                  />
-                  </strong></>
+                    <BrewEditableField
+                      fieldName="stageLength"
+                      value={stage.stageLength}
+                      label=" days"
+                      {...utilityProps}
+                      editValue={(value: any, fieldName: any) => {
+                        editValue(value, fieldName, index)
+                      }}
+                    /></strong>
+                    {originalStage !== null && originalStage.stageLength !== stage.stageLength &&
+                      <span className={componentStyles.originalValue}>
+                        Length: <strong>{originalStage.stageLength} days</strong>
+                      </span>}
+                  </>
                 : null}
             </span>
             <span>
@@ -124,12 +141,18 @@ const BrewFermentation = (props: Props) => {
                       }}
                     />
                     </strong>
+                    {originalStage !== null && originalStage.stageTemp !== stage.stageTemp &&
+                      <span className={componentStyles.originalValue}>
+                        Temp: <strong>{originalStage.stageTemp} °{unitLabels.temp}</strong>
+                      </span>}
                   </>
                 : null}
             </span>
           </div>
         </div>
-      ))}
+        );
+      }
+      )}
     </div>
   );
 }

@@ -74,3 +74,14 @@ input.editInput {
     }
   }
 }
+
+.originalValue {
+  display: block;
+  font-size: px-to-rem(10px);
+  color: $placeholder-dark;
+  line-height: 1;
+}
+
+.bottomSpacing {
+  margin-bottom: 4px;
+}

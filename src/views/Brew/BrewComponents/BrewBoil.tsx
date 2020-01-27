@@ -15,10 +15,11 @@ interface Props {
   user: any;
   brewdayResults: boolean;
   applyEdit: Function;
+  originalBrew: BrewInterface | null;
 }
 
 const BrewBoil = (props: Props) => {
-  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit} = props;
+  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit, originalBrew} = props;
 
   const [editing, setEditing] = useState(false);
 
@@ -67,7 +68,12 @@ const BrewBoil = (props: Props) => {
                 label={` ${unitLabels.vol}`}
                 {...utilityProps}
               />
-            </strong><br /></>
+              </strong><br />
+              {originalBrew !== null && originalBrew.topOff !== brew.topOff &&
+                <span className={componentStyles.originalValue}>
+                  Top off with <strong>{originalBrew.topOff} {unitLabels.vol}</strong>
+                </span>}
+            </>
           : null}
           {brew.preBoilVolume
             ? <>{brew.batchType === 'partialMash' ? 'Total volume' : 'Volume'}: <strong>
@@ -79,7 +85,12 @@ const BrewBoil = (props: Props) => {
                   label={` ${unitLabels.vol}`}
                   {...utilityProps}
                 />
-              </strong></>
+                </strong>
+                {originalBrew !== null && originalBrew.preBoilVolume !== brew.preBoilVolume &&
+                <span className={componentStyles.originalValue}>
+                  {brew.batchType === 'partialMash' ? 'Total volume' : 'Volume'}: <strong>{originalBrew.preBoilVolume} {unitLabels.vol}</strong>
+                </span>}
+              </>
             : null}
         </span>
         <span>{brew.boilLength
@@ -90,7 +101,12 @@ const BrewBoil = (props: Props) => {
                 label=" min"
                 {...utilityProps}
               />
-            </strong></>
+              </strong>
+              {originalBrew !== null && originalBrew.boilLength !== brew.boilLength &&
+                <span className={componentStyles.originalValue}>
+                  Time: <strong>{originalBrew.boilLength} min</strong>
+                </span>}
+            </>
           : null}</span>
         {brew.batchType !== 'partialMash'
           ? <span></span>
@@ -106,6 +122,10 @@ const BrewBoil = (props: Props) => {
                   {...utilityProps}
                 />
               </span>
+              {originalBrew !== null && Number(originalBrew.preBoilG).toFixed(3) !== Number(brew.preBoilG).toFixed(3) &&
+                <span className={componentStyles.originalValue}>
+                  <strong>{originalBrew.preBoilG}</strong>
+                </span>}
               <label className={styles.label}>PRE</label>
             </div>
           </div>
@@ -120,6 +140,10 @@ const BrewBoil = (props: Props) => {
                   {...utilityProps}
                 />
               </span>
+              {originalBrew !== null && Number(originalBrew.og).toFixed(3) !== Number(brew.og).toFixed(3) &&
+                <span className={componentStyles.originalValue}>
+                  <strong>{originalBrew.og}</strong>
+                </span>}
               <label className={styles.label}>OG</label>
             </div>
           </div>
