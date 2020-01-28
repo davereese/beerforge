@@ -216,6 +216,7 @@ export const processBrew = (
 
   // Run Calculations
   if (brew.fermentables.length > 0) {
+    brew.targetOG = brew.fermentableUnits === 'percent' ? brew.targetOG : undefined;
     if (brew.fermentableUnits === 'percent' && brew.targetOG && brew.batchSize && brew.mashEfficiency) {
       // Calculate the actual weights
       const pointsNeeded = parseFloat((((Number(brew.targetOG) - 1) * 1000) * brew.batchSize).toPrecision(3));

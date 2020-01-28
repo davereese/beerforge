@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
 import { BrewInterface, FermentationInterface } from '../../../Store/BrewContext';
-import { f2c, c2f } from '../../../resources/javascript/calculator';
+import { f2c, c2f, OG, FG } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 
 interface Props {
@@ -65,6 +65,10 @@ const BrewFermentation = (props: Props) => {
                 fieldName="og"
                 value={brew.og ? Number(brew.og).toFixed(3) : null}
                 classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
+                calculate={() => {
+                  const value = OG(brew.fermentables, brew.mashEfficiency, brew.batchSize);
+                  editValue(value, 'og');
+                }}
                 {...utilityProps}
               />
               {originalBrew !== null && Number(originalBrew.og).toFixed(3) !== Number(brew.og).toFixed(3) &&
@@ -83,6 +87,10 @@ const BrewFermentation = (props: Props) => {
                 fieldName="fg"
                 value={brew.fg ? Number(brew.fg).toFixed(3) : null}
                 classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
+                calculate={() => {
+                  const value = FG(brew.og, brew.attenuation);
+                  editValue(value, 'fg');
+                }}
                 {...utilityProps}
               />
               {originalBrew !== null && Number(originalBrew.fg).toFixed(3) !== Number(brew.fg).toFixed(3) &&

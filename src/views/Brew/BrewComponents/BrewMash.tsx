@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
-import { BrewInterface, MashInterface } from '../../../Store/BrewContext';
-import { gal2l, f2c, qt2l, l2gal, c2f, l2qt } from '../../../resources/javascript/calculator';
+import { BrewInterface, MashInterface, processOptionsInterface } from '../../../Store/BrewContext';
+import { gal2l, f2c, qt2l, l2gal, c2f, l2qt, lb2kg, strikeVolume, strikeTemp } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 
 interface Props {
@@ -16,10 +16,21 @@ interface Props {
   brewdayResults: boolean;
   applyEdit: Function;
   originalBrew: BrewInterface | null;
+  options: processOptionsInterface;
 }
 
 const BrewMash = (props: Props) => {
-  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit, originalBrew} = props;
+  const {
+    brew,
+    readOnly,
+    unitLabels,
+    openSideBar,
+    user,
+    brewdayResults,
+    applyEdit,
+    originalBrew,
+    options
+  } = props;
 
   const [editing, setEditing] = useState(false);
 
@@ -50,6 +61,11 @@ const BrewMash = (props: Props) => {
       editedBrew[choice] = Number(data);
     }
     applyEdit(editedBrew);
+  }
+
+  const calculateRatio = (strikeVolume: number | undefined = 0, totalFermentables: number | undefined = 0) => {
+    let value = (strikeVolume * 4) / totalFermentables;
+    return value;
   }
 
   const utilityProps = {
@@ -99,6 +115,25 @@ const BrewMash = (props: Props) => {
                               ? parseFloat(gal2l(step.strikeVolume).toFixed(2))
                               : step.strikeVolume}
                             label={` ${unitLabels.vol}`}
+                            calculate={() => {
+                              let value;
+                              if (brew.batchType === 'partialMash') {
+                                value = strikeVolume(
+                                  originalBrew && (options.units === 'metric'
+                                    ? lb2kg(originalBrew.totalGrainFermentables)
+                                    : originalBrew.totalGrainFermentables),
+                                    step.waterToGrain
+                                );
+                              } else {
+                                value = strikeVolume(
+                                  originalBrew && (options.units === 'metric'
+                                    ? lb2kg(originalBrew.totalFermentables)
+                                    : originalBrew.totalFermentables),
+                                    step.waterToGrain
+                                );
+                              }
+                              editValue(value, 'strikeVolume', index);
+                            }}
                             {...utilityProps}
                             editValue={(value: any, fieldName: any) => {
                               editValue(value, fieldName, index)
@@ -111,14 +146,26 @@ const BrewMash = (props: Props) => {
                               ? parseFloat(f2c(step.strikeTemp).toFixed(2))
                               : step.strikeTemp}
                             label={` °${unitLabels.temp}`}
+                            calculate={() => {
+                              const value = strikeTemp(
+                                step.grainTemp,
+                                step.targetStepTemp,
+                                calculateRatio(
+                                  step.strikeVolume,
+                                  originalBrew && originalBrew.totalFermentables ? originalBrew.totalFermentables : 0
+                                ),
+                                options.strikeFactor
+                              );
+                              editValue(value, 'strikeTemp', index);
+                            }}
                             {...utilityProps}
                             editValue={(value: any, fieldName: any) => {
                               editValue(value, fieldName, index)
                             }}
                           />
                         </strong>
-                        {((originalStep !== null && originalStep.strikeVolume !== step.strikeVolume) ||
-                        (originalStep !== null && originalStep.strikeTemp !== step.strikeTemp)) &&
+                        {((originalStep !== null && Number(originalStep.strikeVolume) !== Number(step.strikeVolume)) ||
+                        (originalStep !== null && Number(originalStep.strikeTemp) !== Number(step.strikeTemp))) &&
                           <span className={componentStyles.originalValue}>
                             Strike with <strong>{originalStep.strikeVolume} {unitLabels.vol} </strong>
                             at <strong>{originalStep.strikeTemp} °{unitLabels.temp}</strong>

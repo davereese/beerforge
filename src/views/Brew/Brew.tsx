@@ -388,11 +388,9 @@ const Brew = (props: Props) => {
         .catch((error) => {
           snackbarDispatch({type: 'show', payload: {
             status: 'error',
-            message: error.response.data
-              && error.response.data.length > 0
-              && !error.response.data.startsWith("<!")
-                ? error.response.data
-                : error.message,
+            message: typeof error.response.data === 'object'
+              ? error.response.statusText
+              : error.response.data
           }});
           setSaving(false);
         });
@@ -689,11 +687,13 @@ const Brew = (props: Props) => {
             {brew.batchType && brew.batchType !== 'extract'
               ? <BrewMash
                   applyEdit={handleUpdateBrew}
+                  options={userSettings}
                   {...commonProps}
                 />
               : null}
             <BrewBoil
               applyEdit={handleUpdateBrew}
+              options={userSettings}
               {...commonProps}
             />
             <BrewFermentation

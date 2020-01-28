@@ -79,7 +79,8 @@ function AddFermentableForm(props: Props) {
             lovibond: formData.lovibond ? formData.lovibond : 0
           }]
         : fermentablesToCalculate;
-      setProjectedTotalSRM(SRM(brewsMalts, props.brew.batchSize, formData.units));
+      const srm = SRM(brewsMalts, props.brew.batchSize, formData.units);
+      setProjectedTotalSRM(srm ? srm : 0);
       setProjectedOG(OG(brewsMalts, props.brew.mashEfficiency, props.brew.batchSize));
     }
 

@@ -5,13 +5,13 @@ import { l2gal, kg2lb } from '../../../resources/javascript/calculator';
 
 interface malt {
   potential: number | '';
-  grainVol: number | '';
+  weight: number | '';
 };
 
 const MashEfficiency = (props: any) => {
   // STATE
   const [units, setUnits] = useState(props.units);
-  const [malts, setMalts] = useState<malt[]>([{potential: '', grainVol: ''}]);
+  const [malts, setMalts] = useState<malt[]>([{potential: '', weight: ''}]);
   const [volume, setVolume] = useState('');
   const [gravity, setGravity] = useState('');
 
@@ -22,7 +22,7 @@ const MashEfficiency = (props: any) => {
     setUnits(props.units);
   }, [props]);
 
-  const addMalt = (index: number, type: 'potential' | 'grainVol') => (e: any) => {
+  const addMalt = (index: number, type: 'potential' | 'weight') => (e: any) => {
     const maltsArray = [...malts];
     maltsArray[index][type] = e.target.value;
     setMalts(maltsArray);
@@ -31,7 +31,7 @@ const MashEfficiency = (props: any) => {
   const results = () => {
     const result = calculator(
       malts ? units === 'metric' ? malts.map(malt => {
-        parseFloat(kg2lb(malt.grainVol).toFixed(4));
+        parseFloat(kg2lb(malt.weight).toFixed(4));
         return malt;
       }) : malts : malts,
       volume ? units === 'metric' ? parseFloat(l2gal(volume).toFixed(4)) : volume : undefined,
@@ -57,17 +57,17 @@ const MashEfficiency = (props: any) => {
                 value={malts[index].potential}
                 onChange={addMalt(index, 'potential')}
               ></input></label>
-            <label htmlFor="grainVol">Weight ({props.labels.largeWeight})
+            <label htmlFor="weight">Weight ({props.labels.largeWeight})
               <input
-                name="grainVol"
+                name="weight"
                 type="number"
-                value={malts[index].grainVol}
-                onChange={addMalt(index, 'grainVol')}
+                value={malts[index].weight}
+                onChange={addMalt(index, 'weight')}
               ></input></label>
             {index+1 === malts.length
               ? <button
                   className="button button--icon"
-                  onClick={(e) => setMalts([...malts, {potential: '', grainVol: ''}])}
+                  onClick={(e) => setMalts([...malts, {potential: '', weight: ''}])}
                 >+</button>
               : <button
                   className="button button--icon"

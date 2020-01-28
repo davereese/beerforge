@@ -10,6 +10,7 @@ interface Props {
   editing: boolean;
   setEditing: Function;
   brewdayResults: boolean;
+  calculate?: Function;
   label?: string;
   noInputLabel?: boolean; // do not display a label when input is visible
   classes?: any;
@@ -25,7 +26,8 @@ const BrewEditableField = (props: Props) => {
     editing,
     setEditing,
     noInputLabel,
-    brewdayResults
+    brewdayResults,
+    calculate
   } = props;
 
   const [showTooltip, setShowTooltip] = useState(false);
@@ -50,6 +52,12 @@ const BrewEditableField = (props: Props) => {
     setEditing(true);
   }
 
+  const handleCalculate = (event: any) => {
+    event.stopPropagation();
+    calculate && calculate();
+    setShowTooltip(false);
+  }
+
   return (
     <span
       onMouseEnter={openEditMenu}
@@ -65,11 +73,11 @@ const BrewEditableField = (props: Props) => {
           className={`button button--link button--small ${componentStyles.moreButton}`}
           onClick={handleEdit}
         >Edit</button>
-        <hr className={componentStyles.divider} />
-        <button
-          className={`button button--link button--small ${componentStyles.moreButton}`}
-          // onClick={}
-        >Calculate</button>
+        {calculate && <><hr className={componentStyles.divider} />
+          <button
+            className={`button button--link button--small ${componentStyles.moreButton}`}
+            onClick={handleCalculate}
+          >Calculate</button></>}
       </Tooltip>
 
       {showInput
@@ -93,7 +101,7 @@ const BrewEditableField = (props: Props) => {
               }}
             />{!noInputLabel && label ? label : ''}
           </>
-        : `${value}${label ? label : ''}`}
+        : value !== null ? `${value}${label ? label : ''}` : ''}
     </span>
   );
 }

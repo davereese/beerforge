@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
-import { BrewInterface, MashInterface } from '../../../Store/BrewContext';
-import { gal2l, l2gal } from '../../../resources/javascript/calculator';
+import { BrewInterface, MashInterface, processOptionsInterface } from '../../../Store/BrewContext';
+import { gal2l, l2gal, preBoilVol, OG, preBoilG, partialMashTopOff, lb2kg } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 
 interface Props {
@@ -16,10 +16,21 @@ interface Props {
   brewdayResults: boolean;
   applyEdit: Function;
   originalBrew: BrewInterface | null;
+  options: processOptionsInterface;
 }
 
 const BrewBoil = (props: Props) => {
-  const {brew, readOnly, unitLabels, openSideBar, user, brewdayResults, applyEdit, originalBrew} = props;
+  const {
+    brew,
+    readOnly,
+    unitLabels,
+    openSideBar,
+    user,
+    brewdayResults,
+    applyEdit,
+    originalBrew,
+    options
+  }= props;
 
   const [editing, setEditing] = useState(false);
 
@@ -66,10 +77,21 @@ const BrewBoil = (props: Props) => {
                   ? parseFloat(gal2l(brew.topOff).toFixed(2))
                   : brew.topOff}
                 label={` ${unitLabels.vol}`}
+                calculate={() => {
+                  const value = partialMashTopOff(
+                    brew.preBoilVolume,
+                    brew.mash[0].strikeVolume,
+                    originalBrew && (options.units === 'metric'
+                      ? lb2kg(originalBrew.totalGrainFermentables)
+                      : originalBrew.totalGrainFermentables),
+                    options.absorptionRate
+                  );
+                  editValue(value, 'topOff');
+                }}
                 {...utilityProps}
               />
               </strong><br />
-              {originalBrew !== null && originalBrew.topOff !== brew.topOff &&
+              {originalBrew !== null && Number(originalBrew.topOff) !== Number(brew.topOff) &&
                 <span className={componentStyles.originalValue}>
                   Top off with <strong>{originalBrew.topOff} {unitLabels.vol}</strong>
                 </span>}
@@ -83,10 +105,20 @@ const BrewBoil = (props: Props) => {
                     ? parseFloat(gal2l(brew.preBoilVolume).toFixed(2))
                     : brew.preBoilVolume}
                   label={` ${unitLabels.vol}`}
+                  calculate={() => {
+                    const value = preBoilVol(
+                      originalBrew && originalBrew.totalWater,
+                      originalBrew && originalBrew.totalFermentables,
+                      options.equipmentLoss,
+                      options.absorptionRate,
+                      brew.batchType
+                    );
+                    editValue(value, 'preBoilVolume');
+                  }}
                   {...utilityProps}
                 />
                 </strong>
-                {originalBrew !== null && originalBrew.preBoilVolume !== brew.preBoilVolume &&
+                {originalBrew !== null && Number(originalBrew.preBoilVolume) !== Number(brew.preBoilVolume) &&
                 <span className={componentStyles.originalValue}>
                   {brew.batchType === 'partialMash' ? 'Total volume' : 'Volume'}: <strong>{originalBrew.preBoilVolume} {unitLabels.vol}</strong>
                 </span>}
@@ -119,6 +151,18 @@ const BrewBoil = (props: Props) => {
                   fieldName="preBoilG"
                   value={brew.preBoilG ? Number(brew.preBoilG).toFixed(3) : null}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
+                  calculate={() => {
+                    const value = preBoilG(
+                      brew.og,
+                      originalBrew && originalBrew.totalFermentables,
+                      originalBrew && originalBrew.totalWater,
+                      brew.batchSize,
+                      options.equipmentLoss,
+                      options.absorptionRate,
+                      brew.batchType
+                    );
+                    editValue(value, 'preBoilG');
+                  }}
                   {...utilityProps}
                 />
               </span>
@@ -137,6 +181,10 @@ const BrewBoil = (props: Props) => {
                   fieldName="og"
                   value={brew.og ? Number(brew.og).toFixed(3) : null}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
+                  calculate={() => {
+                    const value = OG(brew.fermentables, brew.mashEfficiency, brew.batchSize);
+                    editValue(value, 'og');
+                  }}
                   {...utilityProps}
                 />
               </span>

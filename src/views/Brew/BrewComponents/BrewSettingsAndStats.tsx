@@ -6,7 +6,7 @@ import Card from '../../../components/Card/Card';
 import { BrewInterface } from '../../../Store/BrewContext';
 import { parseStringValues } from '../BrewUtils';
 import { getSrmToRgb } from '../../../resources/javascript/srmToRgb';
-import { gal2l, l2gal } from '../../../resources/javascript/calculator';
+import { gal2l, l2gal, mashEfficiency, attenuation, alcoholContent, IBU, SRM } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 
 interface Props {
@@ -90,6 +90,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   fieldName="mashEfficiency"
                   value={brew.mashEfficiency ? brew.mashEfficiency : null}
                   label="%"
+                  calculate={() => {
+                    const value = mashEfficiency(brew.fermentables, brew.batchSize, brew.preBoilG);
+                    editValue(value, 'mashEfficiency');
+                  }}
                   {...utilityProps}
                 />
               </strong>
@@ -136,6 +140,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   value={brew.alcoholContent ? brew.alcoholContent : null}
                   label="%"
                   noInputLabel
+                  calculate={() => {
+                    const value = alcoholContent(brew.og, brew.fg);
+                    editValue(value, 'alcoholContent');
+                  }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                 />
@@ -155,6 +163,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   value={brew.attenuation ? brew.attenuation : null}
                   label="%"
                   noInputLabel
+                  calculate={() => {
+                    const value = attenuation(brew.og, brew.fg);
+                    editValue(value, 'attenuation');
+                  }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                 />
@@ -173,6 +185,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   fieldName="ibu"
                   value={brew.ibu ? brew.ibu : null}
                   noInputLabel
+                  calculate={() => {
+                    const value = IBU(brew.hops, brew.og, brew.batchSize);
+                    editValue(value, 'ibu');
+                  }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                 />
@@ -195,6 +211,10 @@ const BrewSettingsAndStats = (props: Props) => {
                   fieldName="srm"
                   value={brew.srm ? brew.srm : null}
                   noInputLabel
+                  calculate={() => {
+                    const value = SRM(brew.fermentables, brew.batchSize);
+                    editValue(value, 'srm');
+                  }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                   setEditing={(value: boolean) => {
