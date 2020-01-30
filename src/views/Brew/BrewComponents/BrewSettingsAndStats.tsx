@@ -107,7 +107,11 @@ const BrewSettingsAndStats = (props: Props) => {
               </strong>
               {originalBrew !== null && Number(originalBrew.batchSize) !== Number(brew.batchSize) &&
                 <span className={componentStyles.originalValue}>
-                  Batch Size: <strong>{originalBrew.batchSize} {unitLabels.vol}</strong>
+                  Batch Size: <strong>
+                    {user.units === 'metric'
+                      ? parseFloat(gal2l(originalBrew.batchSize).toFixed(2))
+                      : originalBrew.batchSize} {unitLabels.vol}
+                  </strong>
                 </span>}
             </li>
             <li>

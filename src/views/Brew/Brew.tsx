@@ -29,6 +29,7 @@ import BrewPackaging from './BrewComponents/BrewPackaging';
 import BrewNotes from './BrewComponents/BrewNotes';
 import BrewHistoryNav from './BrewComponents/BrewHistoryNav';
 import BrewHistoryList from './BrewComponents/BrewHistoryList';
+import { totalWater } from '../../resources/javascript/calculator';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -259,7 +260,15 @@ const Brew = (props: Props) => {
   const getBrewdayResults = async () =>{
     brewService.getBrewResults(brew.id, user)
     .then((res: any) => {
-      brewDispatch({type: 'replace', payload: res.data.brew, options: userSettings});
+      // add total water to brewday results brew
+      const brewdayBrew = res.data.brew;
+      brewdayBrew.totalWater = totalWater(
+        brewdayBrew.batchSize,
+        brewdayBrew.boilLength,
+        brewdayBrew.evaporationRate,
+        brew.totalFermentables,
+        userSettings);
+      brewDispatch({type: 'replace', payload: brewdayBrew, options: userSettings});
       scrollToTop(300);
     })
     .catch((error) => {

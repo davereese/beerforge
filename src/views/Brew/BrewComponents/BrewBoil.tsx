@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
 import { BrewInterface, MashInterface, processOptionsInterface } from '../../../Store/BrewContext';
-import { gal2l, l2gal, preBoilVol, OG, preBoilG, partialMashTopOff, lb2kg, totalBIABWater, totalWater } from '../../../resources/javascript/calculator';
+import { gal2l, l2gal, preBoilVol, OG, preBoilG, partialMashTopOff, totalBIABWater, totalWater } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 
 interface Props {
@@ -80,22 +80,26 @@ const BrewBoil = (props: Props) => {
                   : brew.topOff}
                 label={` ${unitLabels.vol}`}
                 calculate={() => {
-                  const value = partialMashTopOff(
+                  let value = partialMashTopOff(
                     brew.preBoilVolume,
                     brew.mash[0].strikeVolume,
-                    originalBrew && (options.units === 'metric'
-                      ? lb2kg(originalBrew.totalGrainFermentables)
-                      : originalBrew.totalGrainFermentables),
+                    originalBrew && originalBrew.totalGrainFermentables,
                     options.absorptionRate
                   );
+                  value = options.units === 'metric' ? gal2l(value) : value;
                   editValue([{value: value, choice: 'topOff'}]);
                 }}
                 {...utilityProps}
+                editValue={(value: any, fieldName: any) => {
+                  editValue([{value: value, choice: fieldName}])
+                }}
               />
               </strong><br />
               {originalBrew !== null && Number(originalBrew.topOff) !== Number(brew.topOff) &&
                 <span className={componentStyles.originalValue}>
-                  Top off with <strong>{originalBrew.topOff} {unitLabels.vol}</strong>
+                  Top off with <strong>{user.units === 'metric'
+                    ? parseFloat(gal2l(originalBrew.topOff).toFixed(2))
+                    : originalBrew.topOff} {unitLabels.vol}</strong>
                 </span>}
             </>
           : null}
@@ -108,21 +112,27 @@ const BrewBoil = (props: Props) => {
                     : brew.preBoilVolume}
                   label={` ${unitLabels.vol}`}
                   calculate={() => {
-                    const value = preBoilVol(
+                    let value = preBoilVol(
                       brew.totalWater,
                       originalBrew && originalBrew.totalFermentables,
                       options.equipmentLoss,
                       options.absorptionRate,
                       brew.batchType
                     );
+                    value = user.units === 'metric' ? gal2l(value) : value;
                     editValue([{value: value, choice: 'preBoilVolume'}]);
                   }}
                   {...utilityProps}
+                  editValue={(value: any, fieldName: any) => {
+                    editValue([{value: value, choice: fieldName}])
+                  }}
                 />
                 </strong>
                 {originalBrew !== null && Number(originalBrew.preBoilVolume) !== Number(brew.preBoilVolume) &&
                 <span className={componentStyles.originalValue}>
-                  {brew.batchType === 'partialMash' ? 'Total volume' : 'Volume'}: <strong>{originalBrew.preBoilVolume} {unitLabels.vol}</strong>
+                  {brew.batchType === 'partialMash' ? 'Total volume' : 'Volume'}: <strong>{user.units === 'metric'
+                    ? parseFloat(gal2l(originalBrew.preBoilVolume).toFixed(2))
+                    : originalBrew.preBoilVolume} {unitLabels.vol}</strong>
                 </span>}
               </>
             : null}
@@ -188,6 +198,9 @@ const BrewBoil = (props: Props) => {
                     editValue([{value: value, choice: 'preBoilG'}]);
                   }}
                   {...utilityProps}
+                  editValue={(value: any, fieldName: any) => {
+                    editValue([{value: value, choice: fieldName}])
+                  }}
                 />
               </span>
               {originalBrew !== null && Number(originalBrew.preBoilG).toFixed(3) !== Number(brew.preBoilG).toFixed(3) &&
@@ -210,6 +223,9 @@ const BrewBoil = (props: Props) => {
                     editValue([{value: value, choice: 'og'}]);
                   }}
                   {...utilityProps}
+                  editValue={(value: any, fieldName: any) => {
+                    editValue([{value: value, choice: fieldName}])
+                  }}
                 />
               </span>
               {originalBrew !== null && Number(originalBrew.og).toFixed(3) !== Number(brew.og).toFixed(3) &&

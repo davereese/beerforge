@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
 import { BrewInterface, MashInterface, processOptionsInterface } from '../../../Store/BrewContext';
-import { gal2l, f2c, qt2l, l2gal, c2f, l2qt, lb2kg, strikeVolume, strikeTemp, spargeVolume } from '../../../resources/javascript/calculator';
+import { gal2l, f2c, qt2l, l2gal, c2f, l2qt, strikeVolume, strikeTemp, spargeVolume } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 
 interface Props {
@@ -41,11 +41,12 @@ const BrewMash = (props: Props) => {
       switch (change.choice) {
         case 'strikeVolume':
         case 'spargeVolume':
+        case 'totalWater':
+        case 'totalMashVolume':
           data = user.units === 'metric' ? l2gal(change.value) : change.value;
           break;
         case 'strikeTemp':
         case 'targetStepTemp':
-        case 'totalMashVolume':
         case 'infusionWaterTemp':
         case 'spargeTemp':
           data = user.units === 'metric' ? c2f(change.value) : change.value;
@@ -121,19 +122,16 @@ const BrewMash = (props: Props) => {
                               let value;
                               if (brew.batchType === 'partialMash') {
                                 value = strikeVolume(
-                                  originalBrew && (options.units === 'metric'
-                                    ? lb2kg(originalBrew.totalGrainFermentables)
-                                    : originalBrew.totalGrainFermentables),
-                                    step.waterToGrain
+                                  originalBrew && originalBrew.totalGrainFermentables,
+                                  step.waterToGrain
                                 );
                               } else {
                                 value = strikeVolume(
-                                  originalBrew && (options.units === 'metric'
-                                    ? lb2kg(originalBrew.totalFermentables)
-                                    : originalBrew.totalFermentables),
-                                    step.waterToGrain
+                                  originalBrew && originalBrew.totalFermentables,
+                                  step.waterToGrain
                                 );
                               }
+                              value = user.units === 'metric' ? gal2l(value) : value;
                               editValue([{value: value, choice: 'strikeVolume', index: index}]);
                             }}
                             {...utilityProps}
@@ -149,7 +147,7 @@ const BrewMash = (props: Props) => {
                               : step.strikeTemp}
                             label={` °${unitLabels.temp}`}
                             calculate={() => {
-                              const value = strikeTemp(
+                              let value = strikeTemp(
                                 step.grainTemp,
                                 step.targetStepTemp,
                                 calculateRatio(
@@ -158,6 +156,7 @@ const BrewMash = (props: Props) => {
                                 ),
                                 options.strikeFactor
                               );
+                              value = user.units === 'metric' ? f2c(value) : value;
                               editValue([{value: value, choice: 'strikeTemp', index: index}]);
                             }}
                             {...utilityProps}
@@ -169,8 +168,12 @@ const BrewMash = (props: Props) => {
                         {((originalStep !== null && Number(originalStep.strikeVolume) !== Number(step.strikeVolume)) ||
                         (originalStep !== null && Number(originalStep.strikeTemp) !== Number(step.strikeTemp))) &&
                           <span className={componentStyles.originalValue}>
-                            Strike with <strong>{originalStep.strikeVolume} {unitLabels.vol} </strong>
-                            at <strong>{originalStep.strikeTemp} °{unitLabels.temp}</strong>
+                            Strike with <strong>{user.units === 'metric'
+                              ? parseFloat(gal2l(originalStep.strikeVolume).toFixed(2))
+                              : originalStep.strikeVolume} {unitLabels.vol} </strong>
+                            at <strong>{user.units === 'metric'
+                              ? parseFloat(f2c(originalStep.strikeTemp).toFixed(2))
+                              : originalStep.strikeTemp} °{unitLabels.temp}</strong>
                           </span>}
                       </>
                     : null}
@@ -178,9 +181,14 @@ const BrewMash = (props: Props) => {
                     ? <>Strike with <strong>
                           <BrewEditableField
                             fieldName="totalWater"
-                            value={brew.totalWater.toFixed(2)}
+                            value={user.units === 'metric'
+                            ? parseFloat(gal2l(brew.totalWater).toFixed(2))
+                            : brew.totalWater.toFixed(2)}
                             label={` ${unitLabels.vol}`}
                             {...utilityProps}
+                            editValue={(value: any, fieldName: any) => {
+                              editValue([{value: value, choice: fieldName, index: index}])
+                            }}
                           />
                         &nbsp;</strong>at <strong>
                           <BrewEditableField
@@ -198,8 +206,12 @@ const BrewMash = (props: Props) => {
                         {((originalBrew !== null && Number(originalBrew.totalWater) !== Number(brew.totalWater)) ||
                         (originalStep !== null && Number(originalStep.strikeTemp) !== Number(step.strikeTemp))) &&
                           <span className={componentStyles.originalValue}>
-                            Strike with <strong>{originalBrew && originalBrew.totalWater} {unitLabels.vol} </strong>
-                            at <strong>{originalStep && originalStep.strikeTemp} °{unitLabels.temp}</strong>
+                            Strike with <strong>{originalBrew && user.units === 'metric'
+                              ? parseFloat(gal2l(originalBrew.totalWater).toFixed(2))
+                              : originalBrew && originalBrew.totalWater && originalBrew.totalWater.toFixed(2)} {unitLabels.vol} </strong>
+                            at <strong>{originalStep && user.units === 'metric'
+                              ? parseFloat(f2c(originalStep.strikeTemp).toFixed(1))
+                              : originalStep && originalStep.strikeTemp} °{unitLabels.temp}</strong>
                           </span>}
                       </>
                     : null}
@@ -221,7 +233,9 @@ const BrewMash = (props: Props) => {
                         </strong>
                         {originalStep !== null && Number(originalStep.targetStepTemp) !== Number(step.targetStepTemp) &&
                           <span className={componentStyles.originalValue}>
-                            Mash at <strong>{originalStep.targetStepTemp} °{unitLabels.temp}</strong>
+                            Mash at <strong>{user.units === 'metric'
+                              ? parseFloat(f2c(originalStep.targetStepTemp).toFixed(1))
+                              : originalStep && originalStep.targetStepTemp} °{unitLabels.temp}</strong>
                           </span>}
                       </>
                     : null}
@@ -255,11 +269,16 @@ const BrewMash = (props: Props) => {
                             : brew.totalMashVolume}
                           label={` ${unitLabels.vol}`}
                           {...utilityProps}
+                          editValue={(value: any, fieldName: any) => {
+                            editValue([{value: value, choice: fieldName, index: index}])
+                          }}
                         />
                       </strong>
                       {originalBrew !== null && Number(originalBrew.totalMashVolume) !== Number(brew.totalMashVolume) &&
                         <span className={componentStyles.originalValue}>
-                          Total Mash Vol: <strong>{originalBrew.totalMashVolume} min</strong>
+                          Total Mash Vol: <strong>{user.units === 'metric'
+                            ? parseFloat(gal2l(originalBrew.totalMashVolume).toFixed(2))
+                            : originalBrew.totalMashVolume} min</strong>
                         </span>}
                     </span>
                   : null}
@@ -284,7 +303,9 @@ const BrewMash = (props: Props) => {
                         </strong>
                         {originalStep !== null && Number(originalStep.targetStepTemp) !== Number(step.targetStepTemp) &&
                           <span className={componentStyles.originalValue}>
-                            Raise to <strong>{originalStep.targetStepTemp} °{unitLabels.temp}</strong>
+                            Raise to <strong>{user.units === 'metric'
+                            ? parseFloat(f2c(originalStep.targetStepTemp).toFixed(1))
+                            : originalStep.targetStepTemp} °{unitLabels.temp}</strong>
                           </span>}
                       </>
                     : null}
@@ -328,10 +349,6 @@ const BrewMash = (props: Props) => {
                           }}
                         />
                         </strong>
-                        {originalStep !== null && Number(originalStep.infusionWaterVol) !== Number(step.infusionWaterVol) &&
-                          <span className={componentStyles.originalValue}>
-                            Add <strong>{originalStep.infusionWaterVol} {unitLabels.smallVol}</strong>
-                          </span>}
                       </>
                     : null}
                   {step.infusionWaterTemp
@@ -348,12 +365,18 @@ const BrewMash = (props: Props) => {
                           }}
                         />
                         </strong>
-                        {originalStep !== null && Number(originalStep.infusionWaterTemp) !== Number(step.infusionWaterTemp) &&
-                          <span className={componentStyles.originalValue}>
-                            at <strong>{originalStep.infusionWaterTemp} °{unitLabels.temp}</strong>
-                          </span>}
                       </>
                     : null}
+                    {((originalStep && Number(originalStep.infusionWaterVol).toFixed(2) !== Number(step.infusionWaterVol).toFixed(2)) ||
+                    (originalStep && Number(originalStep.infusionWaterTemp).toFixed(2) !== Number(step.infusionWaterTemp).toFixed(2))) &&
+                      <span className={componentStyles.originalValue}>
+                        Add <strong>{user.units === 'metric'
+                        ? parseFloat(qt2l(originalStep.infusionWaterVol).toFixed(2))
+                        : originalStep.infusionWaterVol} {unitLabels.smallVol} </strong>
+                        at <strong>{user.units === 'metric'
+                        ? parseFloat(f2c(originalStep.infusionWaterTemp).toFixed(2))
+                        : originalStep.infusionWaterTemp} °{unitLabels.temp}</strong>
+                      </span>}
                 </span>
                 <span>
                   {step.targetStepTemp
@@ -372,7 +395,9 @@ const BrewMash = (props: Props) => {
                         </strong>
                         {originalStep !== null && Number(originalStep.targetStepTemp) !== Number(step.targetStepTemp) &&
                           <span className={componentStyles.originalValue}>
-                            Bring to <strong>{originalStep.targetStepTemp} °{unitLabels.temp}</strong>
+                            Bring to <strong>{user.units === 'metric'
+                            ? parseFloat(f2c(originalStep.targetStepTemp).toFixed(2))
+                            : originalStep.targetStepTemp} °{unitLabels.temp}</strong>
                           </span>}
                       </>
                     : null}
@@ -424,10 +449,11 @@ const BrewMash = (props: Props) => {
                                 }
                                 return null;
                               });
-                              const value = spargeVolume(
+                              let value = spargeVolume(
                                 brew.totalWater,
                                 Number(brew.mash[0].strikeVolume) + totalInfusionWaterVol
                               );
+                              value = user.units === 'metric' ? gal2l(value) : value;
                               editValue([{value: value, choice: 'spargeVolume', index: index}]);
                             }}
                             editValue={(value: any, fieldName: any) => {
@@ -453,8 +479,12 @@ const BrewMash = (props: Props) => {
                       {((originalStep !== null && Number(originalStep.spargeVolume) !== Number(step.spargeVolume)) ||
                         (originalStep !== null && Number(originalStep.spargeTemp) !== Number(step.spargeTemp))) &&
                           <span className={componentStyles.originalValue}>
-                            Sparge with <strong>{originalStep.spargeVolume} {unitLabels.vol} </strong>
-                            at <strong>{originalStep.spargeTemp} °{unitLabels.temp}</strong>
+                            Sparge with <strong>{user.units === 'metric'
+                              ? parseFloat(gal2l(originalStep.spargeVolume).toFixed(2))
+                              : originalStep.spargeVolume} {unitLabels.vol} </strong>
+                            at <strong>{user.units === 'metric'
+                          ? parseFloat(f2c(originalStep.spargeTemp).toFixed(1))
+                          : originalStep.spargeTemp} °{unitLabels.temp}</strong>
                           </span>}
                     </>
                   : null}

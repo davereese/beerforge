@@ -151,9 +151,11 @@ const BrewFermentation = (props: Props) => {
                       }}
                     />
                     </strong>
-                    {originalStage !== null && Number(originalStage.stageTemp) !== Number(stage.stageTemp) &&
+                    {originalStage !== null && Number(originalStage.stageTemp).toFixed(1) !== Number(stage.stageTemp).toFixed(1) &&
                       <span className={componentStyles.originalValue}>
-                        Temp: <strong>{originalStage.stageTemp} °{unitLabels.temp}</strong>
+                        Temp: <strong>{user.units === 'metric'
+                        ? parseFloat(f2c(originalStage.stageTemp).toFixed(1))
+                        : originalStage.stageTemp} °{unitLabels.temp}</strong>
                       </span>}
                   </>
                 : null}
