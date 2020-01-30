@@ -44,7 +44,7 @@ const BrewHistoryNav = (props: Props) => {
       {historyLength === currentPage+1 && <button
           className={`button button--link`}
           onClick={pageClicked(currentPage)}
-          title="Current - Toggle brew gistory"
+          title="Current - Toggle brew history"
         ><img src={last} alt="Last" /></button>}
     </div>
   );

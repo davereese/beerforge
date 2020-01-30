@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
 import Card from '../../../components/Card/Card';
-import { BrewInterface } from '../../../Store/BrewContext';
+import { BrewInterface, processOptionsInterface } from '../../../Store/BrewContext';
 import { parseStringValues } from '../BrewUtils';
 import { getSrmToRgb } from '../../../resources/javascript/srmToRgb';
-import { gal2l, l2gal, mashEfficiency, attenuation, alcoholContent, IBU, SRM } from '../../../resources/javascript/calculator';
+import { gal2l, l2gal, mashEfficiency, attenuation, alcoholContent, IBU, SRM, totalBIABWater, totalWater } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 
 interface Props {
@@ -21,6 +21,7 @@ interface Props {
   brewdayResults: boolean;
   applyEdit: Function;
   originalBrew: BrewInterface | null;
+  options: processOptionsInterface;
 }
 
 const BrewSettingsAndStats = (props: Props) => {
@@ -35,21 +36,24 @@ const BrewSettingsAndStats = (props: Props) => {
     user,
     brewdayResultsToggle,
     applyEdit,
-    originalBrew
+    originalBrew,
+    options
   } = props;
 
   const [editing, setEditing] = useState(false);
   const [showSwatch, setShowSwatch] = useState(true);
 
-  const editValue = (value: any, choice: string) => {
+  const editValue = (array: {value: any, choice: string}[]) => {
     const editedBrew = {...brew};
-    let data;
-    if (choice === 'batchSize') {
-      data = user.units === 'metric' ? l2gal(value) : value;
-    } else {
-      data = value
-    }
-    editedBrew[choice] = data;
+    array.forEach(change => {
+      let data;
+      if (change.choice === 'batchSize') {
+        data = user.units === 'metric' ? l2gal(change.value) : change.value;
+      } else {
+        data = change.value
+      }
+      editedBrew[change.choice] = data;
+    });
     applyEdit(editedBrew);
   }
 
@@ -77,9 +81,31 @@ const BrewSettingsAndStats = (props: Props) => {
                     : null}
                   label={` ${unitLabels.vol}`}
                   {...utilityProps}
+                  editValue={(value: any, fieldName: any) => {
+                    let totalWaterVol;
+                    if (originalBrew && brew.batchType === 'BIAB') {
+                      totalWaterVol = totalBIABWater(
+                        Number(value),
+                        brew.boilLength,
+                        brew.evaporationRate,
+                        originalBrew.totalFermentables,
+                        originalBrew.totalHops,
+                        options
+                      );
+                    } else if (originalBrew) {
+                      totalWaterVol = totalWater(
+                        Number(value),
+                        brew.boilLength,
+                        brew.evaporationRate,
+                        originalBrew.totalFermentables,
+                        options
+                      );
+                    }
+                    editValue([{value: Number(value), choice: fieldName}, {value: totalWaterVol, choice: 'totalWater'}]);
+                  }}
                 />
               </strong>
-              {originalBrew !== null && originalBrew.batchSize !== brew.batchSize &&
+              {originalBrew !== null && Number(originalBrew.batchSize) !== Number(brew.batchSize) &&
                 <span className={componentStyles.originalValue}>
                   Batch Size: <strong>{originalBrew.batchSize} {unitLabels.vol}</strong>
                 </span>}
@@ -91,13 +117,15 @@ const BrewSettingsAndStats = (props: Props) => {
                   value={brew.mashEfficiency ? brew.mashEfficiency : null}
                   label="%"
                   calculate={() => {
-                    const value = mashEfficiency(brew.fermentables, brew.batchSize, brew.preBoilG);
-                    editValue(value, 'mashEfficiency');
+                    if (brew.fermentables && brew.preBoilVolume && brew.preBoilG) {
+                      const value = mashEfficiency(brew.fermentables, Number(brew.preBoilVolume), Number(brew.preBoilG));
+                      editValue([{value: value, choice: 'mashEfficiency'}]);
+                    }
                   }}
                   {...utilityProps}
                 />
               </strong>
-              {originalBrew !== null && originalBrew.mashEfficiency !== brew.mashEfficiency &&
+              {originalBrew !== null && Number(originalBrew.mashEfficiency) !== Number(brew.mashEfficiency) &&
                 <span className={componentStyles.originalValue}>
                   Mash Efficiency: <strong>{originalBrew.mashEfficiency}%</strong>
                 </span>}
@@ -142,13 +170,13 @@ const BrewSettingsAndStats = (props: Props) => {
                   noInputLabel
                   calculate={() => {
                     const value = alcoholContent(brew.og, brew.fg);
-                    editValue(value, 'alcoholContent');
+                    editValue([{value: value, choice: 'alcoholContent'}]);
                   }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                 />
               </span>
-              {originalBrew !== null && originalBrew.alcoholContent !== brew.alcoholContent &&
+              {originalBrew !== null && Number(originalBrew.alcoholContent) !== Number(brew.alcoholContent) &&
                 <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
                   <strong>{originalBrew.alcoholContent}%</strong>
                 </span>}
@@ -165,13 +193,13 @@ const BrewSettingsAndStats = (props: Props) => {
                   noInputLabel
                   calculate={() => {
                     const value = attenuation(brew.og, brew.fg);
-                    editValue(value, 'attenuation');
+                    editValue([{value: value, choice: 'attenuation'}]);
                   }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                 />
               </span>
-              {originalBrew !== null && originalBrew.attenuation !== brew.attenuation &&
+              {originalBrew !== null && Number(originalBrew.attenuation) !== Number(brew.attenuation) &&
                 <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
                   <strong>{originalBrew.attenuation}%</strong>
                 </span>}
@@ -187,13 +215,13 @@ const BrewSettingsAndStats = (props: Props) => {
                   noInputLabel
                   calculate={() => {
                     const value = IBU(brew.hops, brew.og, brew.batchSize);
-                    editValue(value, 'ibu');
+                    editValue([{value: value, choice: 'ibu'}]);
                   }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
                 />
               </span>
-              {originalBrew !== null && originalBrew.ibu !== brew.ibu &&
+              {originalBrew !== null && Number(originalBrew.ibu) !== Number(brew.ibu) &&
                 <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
                   <strong>{originalBrew.ibu}</strong>
                 </span>}
@@ -213,7 +241,7 @@ const BrewSettingsAndStats = (props: Props) => {
                   noInputLabel
                   calculate={() => {
                     const value = SRM(brew.fermentables, brew.batchSize);
-                    editValue(value, 'srm');
+                    editValue([{value: value, choice: 'srm'}]);
                   }}
                   classes={`${componentStyles.editInputCenter} ${componentStyles.editInputLarge}`}
                   {...utilityProps}
@@ -223,7 +251,7 @@ const BrewSettingsAndStats = (props: Props) => {
                   }}
                 />
               </span>
-              {originalBrew !== null && originalBrew.srm !== brew.srm &&
+              {originalBrew !== null && Number(originalBrew.srm) !== Number(brew.srm) &&
                 <span className={`${componentStyles.originalValue} ${componentStyles.bottomSpacing}`}>
                   <strong>{originalBrew.srm}</strong>
                 </span>}

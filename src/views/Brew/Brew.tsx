@@ -432,7 +432,7 @@ const Brew = (props: Props) => {
       payload: {
         title: !readOnly ? 'Clone or Re-brew' : 'Clone Brew',
         body: !readOnly
-          ? <p>Clone to duplicate the brew as a new recipe, or re-brew to preserve this recipe's history and track it over time.<br /><br /></p>
+          ? <p>Select <strong>clone</strong> to duplicate the brew as a new recipe, or select <strong>re-brew</strong> to preserve this recipe's history and track it over time.<br /><br /></p>
           : <p>Clone this recipe to try it yourself.<br /><br /></p>,
         buttons: <>
           <button
@@ -516,7 +516,7 @@ const Brew = (props: Props) => {
           type: 'show',
           payload: {
             title: 'View & Edit Brewday Results',
-            body: <p>Brewday Results mode helps track what was planned vs. what actually happened. In this mode, all numbers are editable except for the ingredients. <strong>Just click on the number to edit.</strong><br /><br /></p>,
+            body: <p>Brewday Results mode helps track what was planned vs. what actually happened. In this mode, all numbers are editable except for the ingredients. <strong>Just click on the number to edit.</strong> Changes made here will not have any affect on the original brew.<br /><br /></p>,
             buttons: <>
               <button
                 className="button button--brown"
@@ -648,7 +648,7 @@ const Brew = (props: Props) => {
                   className={`${styles.dateBrewed} ${showBrewHistory ? styles.fadeOut : ''}`}
                 >{brew.dateBrewed}</FormattedDate>
               : null}
-            {currentPageIndex !== undefined && !brewdayResults &&
+            {currentPageIndex !== undefined && !brewdayResults && !newBrew &&
               <BrewHistoryNav
                 historyLength={brew.history ? brew.history.length : null}
                 currentPage={currentPageIndex}
@@ -669,6 +669,7 @@ const Brew = (props: Props) => {
             clone={handleCloneBrew}
             brewdayResultsToggle={handleAddBrewdayResults}
             applyEdit={handleUpdateBrew}
+            options={userSettings}
             {...commonProps}
           />
           <BrewFermentables

@@ -23,19 +23,21 @@ const BrewFermentation = (props: Props) => {
 
   const [editing, setEditing] = useState(false);
 
-  const editValue = (value: any, choice: string, index: number | null = null) => {
+  const editValue = (array: {value: any, choice: string, index: number | null}[]) => {
     const editedBrew = {...brew};
-    let data;
-    if (choice === 'stageTemp') {
-      data = user.units === 'metric' ? Number(c2f(value)) : Number(value);
-    } else {
-      data = value;
-    }
-    if (index !== null && editedBrew.fermentation) {
-      editedBrew.fermentation[index][choice] = data;
-    } else {
-      editedBrew[choice] = data;
-    }
+    array.forEach(change => {
+      let data;
+      if (change.choice === 'stageTemp') {
+        data = user.units === 'metric' ? Number(c2f(change.value)) : Number(change.value);
+      } else {
+        data = change.value;
+      }
+      if (change.index !== null && editedBrew.fermentation) {
+        editedBrew.fermentation[change.index][change.choice] = data;
+      } else {
+        editedBrew[change.choice] = data;
+      }
+    });
     applyEdit(editedBrew);
   }
 
@@ -67,7 +69,7 @@ const BrewFermentation = (props: Props) => {
                 classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
                 calculate={() => {
                   const value = OG(brew.fermentables, brew.mashEfficiency, brew.batchSize);
-                  editValue(value, 'og');
+                  editValue([{value: value, choice: 'og', index: null}]);
                 }}
                 {...utilityProps}
               />
@@ -89,7 +91,7 @@ const BrewFermentation = (props: Props) => {
                 classes={`${componentStyles.editInputCenter} ${componentStyles.editInputMedium}`}
                 calculate={() => {
                   const value = FG(brew.og, brew.attenuation);
-                  editValue(value, 'fg');
+                  editValue([{value: value, choice: 'fg', index: null}]);
                 }}
                 {...utilityProps}
               />
@@ -124,10 +126,10 @@ const BrewFermentation = (props: Props) => {
                       label=" days"
                       {...utilityProps}
                       editValue={(value: any, fieldName: any) => {
-                        editValue(value, fieldName, index)
+                        editValue([{value: value, choice: fieldName, index: index}])
                       }}
                     /></strong>
-                    {originalStage !== null && originalStage.stageLength !== stage.stageLength &&
+                    {originalStage !== null && Number(originalStage.stageLength) !== Number(stage.stageLength) &&
                       <span className={componentStyles.originalValue}>
                         Length: <strong>{originalStage.stageLength} days</strong>
                       </span>}
@@ -145,11 +147,11 @@ const BrewFermentation = (props: Props) => {
                       label={` °${unitLabels.temp}`}
                       {...utilityProps}
                       editValue={(value: any, fieldName: any) => {
-                        editValue(value, fieldName, index)
+                        editValue([{value: value, choice: fieldName, index: index}])
                       }}
                     />
                     </strong>
-                    {originalStage !== null && originalStage.stageTemp !== stage.stageTemp &&
+                    {originalStage !== null && Number(originalStage.stageTemp) !== Number(stage.stageTemp) &&
                       <span className={componentStyles.originalValue}>
                         Temp: <strong>{originalStage.stageTemp} °{unitLabels.temp}</strong>
                       </span>}
