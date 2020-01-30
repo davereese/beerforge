@@ -520,7 +520,11 @@ const Brew = (props: Props) => {
   };
 
   const triggerBrewdayResults = () => {
-      if (!readOnly && !brewdayResults) {
+      if (
+        !readOnly &&
+        !brewdayResults &&
+        document.cookie.replace(/(?:(?:^|.*;\s*)brewdayResults\s*=\s*([^;]*).*$)|^.*$/, "$1") !== "true"
+      ) {
         modalDispatch({
           type: 'show',
           payload: {
@@ -536,6 +540,9 @@ const Brew = (props: Props) => {
                 onClick={async () => {
                   modalDispatch({type: 'hide'});
                   setBrewdayResults(true);
+                  var future = new Date();
+                  new Date(future.setDate(future.getDate() + 30)).toString();
+                  document.cookie = `brewdayResults=true; expires=${future}`;
                 }}
               >Got it</button>
             </>
