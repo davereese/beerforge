@@ -562,6 +562,7 @@ const Brew = (props: Props) => {
           }
         })
       } else {
+        modalDispatch({type: 'hide'});
         setBrewdayResults(!brewdayResults);
       }
   }
