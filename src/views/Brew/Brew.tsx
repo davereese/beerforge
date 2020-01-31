@@ -386,6 +386,7 @@ const Brew = (props: Props) => {
           setShouldBlock(false);
           setNewBrew(false);
           setReadOnly(false);
+          setCloning(false);
           props.history.push(`/brew/${res.data.brew.id}`);
           snackbarDispatch({type: 'show', payload: {
             status: 'success',
@@ -393,6 +394,11 @@ const Brew = (props: Props) => {
           }});
           scrollToTop(300);
           setSaving(false);
+          brewDispatch({
+            type: 'process',
+            payload: res.data.brew,
+            options: userSettings
+          });
         })
         .catch((error) => {
           snackbarDispatch({type: 'show', payload: {
@@ -452,6 +458,7 @@ const Brew = (props: Props) => {
             className="button"
             onClick={() => {
               setCloning(true);
+              closeSidebar();
               modalDispatch({type: 'hide'});
               checkShouldBlock(() => brewDispatch({type: 'clone'}));
             }}
@@ -460,6 +467,7 @@ const Brew = (props: Props) => {
             className="button"
             onClick={() => {
               setCloning(true);
+              closeSidebar();
               modalDispatch({type: 'hide'});
               checkShouldBlock(() => brewDispatch({type: 'rebrew'}))
             }}
