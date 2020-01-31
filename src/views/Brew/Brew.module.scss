@@ -805,3 +805,14 @@
 .fadeOut {
   opacity: 0;
 }
+
+.modalImage,
+.modalImageSmaller {
+  float: right;
+  width: 150px;
+  margin: 10px 0 20px 30px;
+}
+
+.modalImageSmaller {
+  width: 100px;
+}

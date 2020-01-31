@@ -14,6 +14,7 @@ export interface ModalInterface {
   classOverride?: any;
   closing: Boolean;
   show: Boolean;
+  image: any;
 }
 
 const initialState: any = '';
@@ -31,6 +32,7 @@ const reducer = (state: any, action: any) => {
         buttons: action.payload.buttons,
         classOverride: action.payload.classOverride,
         closing: action.payload.closing,
+        image: action.payload.image
       }
       return state;
     case 'hide':
@@ -47,7 +49,8 @@ const reducer = (state: any, action: any) => {
         node: '',
         buttons: '',
         closing: false,
-        classOverride: ''
+        classOverride: '',
+        image: ''
       };
       return state;
     default:

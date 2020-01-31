@@ -30,6 +30,9 @@ import BrewNotes from './BrewComponents/BrewNotes';
 import BrewHistoryNav from './BrewComponents/BrewHistoryNav';
 import BrewHistoryList from './BrewComponents/BrewHistoryList';
 import { totalWater } from '../../resources/javascript/calculator';
+import cloneImg from '../../resources/images/clone.svg';
+import resultsImg from '../../resources/images/history.svg';
+import searchImg from '../../resources/images/searchDarker.svg';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -145,6 +148,7 @@ const Brew = (props: Props) => {
       setShouldBlock(true);
       setReadOnly(false);
       setCurrentUser(true);
+      modalDispatch({type: 'hide'});
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -449,6 +453,7 @@ const Brew = (props: Props) => {
         body: !readOnly
           ? <p>Select <strong>clone</strong> to duplicate the brew as a new recipe, or select <strong>re-brew</strong> to preserve this recipe's history and track it over time.<br /><br /></p>
           : <p>Clone this recipe to try it yourself.<br /><br /></p>,
+        image: <img src={cloneImg} alt="" className={styles.modalImage} />,
         buttons: <>
           <button
             className="button button--brown"
@@ -488,6 +493,7 @@ const Brew = (props: Props) => {
         payload: {
           title: 'You have unsaved changes to this brew.',
           body: <p>Do you want to save and continue, or proceed without saving?<br /><br /></p>,
+          image: <img src={searchImg} alt="" className={styles.modalImageSmaller} />,
           buttons: <>
             <button
               className="button button--brown"
@@ -501,7 +507,6 @@ const Brew = (props: Props) => {
                   : brewService.updateBrewResults(brew, user)
                 await promise
                   .then((res: any) => {
-                    modalDispatch({type: 'hide'});
                     setShouldBlock(false);
                     func()
                   })
@@ -515,7 +520,6 @@ const Brew = (props: Props) => {
               className="button"
               onClick={() => {
                 !brewdayResults ? getBrew(brew.id, () => func()) : func();
-                modalDispatch({type: 'hide'});
                 setShouldBlock(false);
               }}
             >Don't Save</button>
@@ -536,8 +540,9 @@ const Brew = (props: Props) => {
         modalDispatch({
           type: 'show',
           payload: {
-            title: 'View & Edit Brewday Results',
-            body: <p>Brewday Results mode helps track what was planned vs. what actually happened. In this mode, all numbers are editable except for the ingredients. <strong>Just click on the number to edit.</strong> Changes made here will not have any affect on the original brew.<br /><br /></p>,
+            title: 'Brewday Results',
+            body: <p>This mode helps track what was planned vs. what actually happened. All numbers are editable except for the ingredients. <strong>Just click on the number to edit.</strong> Changes made here will not have any affect on the original brew.<br /><br /></p>,
+            image: <img src={resultsImg} alt="" className={styles.modalImage} />,
             buttons: <>
               <button
                 className="button button--brown"

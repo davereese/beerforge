@@ -33,18 +33,17 @@ const Modal = () => {
       onMouseDown={closeModal}
     >
       <div className={styles.modal} ref={modalRef}>
-        {modal.title
-          ? <header dangerouslySetInnerHTML={{__html: modal.title}} />
-          : null}
+        {modal.image && modal.image}
+        {modal.title &&
+          <header dangerouslySetInnerHTML={{__html: modal.title}} />
+        }
         {modal.body}
-        {modal.node
-          ? modal.node
-          : null}
-        {modal.buttons
-          ? <div className={styles.modalButtons}>
-              {modal.buttons}
-            </div>
-          : null}
+        {modal.node && modal.node}
+        {modal.buttons &&
+          <div className={styles.modalButtons}>
+            {modal.buttons}
+          </div>
+        }
       </div>
     </div>
   ) : null;
