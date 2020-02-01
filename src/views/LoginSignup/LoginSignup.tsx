@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ReactGA from 'react-ga';
 
 import styles from './LoginSignup.module.scss';
 import Loader from '../../components/Loader/Loader';
@@ -106,7 +107,7 @@ const LoginSignup = (props: any) => {
     }
   }
 
-  const flipStyles = (direction: string) => (event: any) => {
+  const flipStyles = (direction: string) => {
     setFlip(styles[direction]);
   }
 
@@ -164,12 +165,18 @@ const LoginSignup = (props: any) => {
               <button
                 type="button"
                 className="button button--no-button"
-                onClick={flipStyles('back')}
+                onClick={() => flipStyles('back')}
               >Sign Up</button>
             </div>
           </form>
           <button
-            onClick={flipStyles('forgotBack')}
+            onClick={() => {
+              flipStyles('forgotBack');
+              ReactGA.event({
+                category: "Forgot Password",
+                action: "User pressed the forgot password button",
+              });
+            }}
             className={`button button--link button--small ${styles.forgotButton}`}
           >Forgot Password</button>
         </div>
@@ -246,7 +253,7 @@ const LoginSignup = (props: any) => {
               <button
                 type="button"
                 className="button button--no-button"
-                onClick={flipStyles('front')}
+                onClick={() => flipStyles('front')}
               >Log In</button>
             </div>
           </form>
@@ -299,7 +306,7 @@ const LoginSignup = (props: any) => {
               <button
                 type="button"
                 className="button button--no-button"
-                onClick={flipStyles('forgotFront')}
+                onClick={() => flipStyles('forgotFront')}
               >Log In</button>
             </div>
           </form>
