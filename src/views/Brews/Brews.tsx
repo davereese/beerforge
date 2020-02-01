@@ -46,7 +46,6 @@ const Brews = (props: any) => {
   // const logHeader = React.createRef<HTMLDivElement>();
   const logHeader = useRef<HTMLDivElement>(null);
   const headerClass = useRef('');
-
   const isMounted: any = useRef();
 
   // mount
@@ -86,10 +85,11 @@ const Brews = (props: any) => {
       scrollToTop(300);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search,]);
+  }, [search]);
 
   useEffect(() => {
-    listUserBrews(1, user.id);
+    const id = currentUser ? user.id : userViewing.id;
+    listUserBrews(1, id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numToShow, dateSort, displaySort]);
 

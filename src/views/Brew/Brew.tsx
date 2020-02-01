@@ -66,7 +66,8 @@ const Brew = (props: Props) => {
   const [currentPageIndex, setCurrentPageIndex] = useState();
   const [changeBrew, setChangeBrew] = useState(false);
   const [showBrewHistory, setShowBrewHistory] = useState(false);
-  const [originalBrew, setOriginalBrew] = useState<BrewInterface | null>(null)
+  const [originalBrew, setOriginalBrew] = useState<BrewInterface | null>(null);
+  const [deleted, setDeleted] = useState(false);
 
   // REFS
 
@@ -102,14 +103,6 @@ const Brew = (props: Props) => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     scrollToTop(0);
 
-    // before we start using the current user, let's just make
-    // sure they haven't expired, shall we?
-    userDispatch({type: 'load'});
-    const brewId = Number(window.location.pathname.split('/')[2]);
-    if (!isNaN(brewId)) {
-      getBrew(brewId);
-    }
-
     // unmount
     return function cleanup() {
       window.removeEventListener('scroll', handleScroll);
@@ -117,6 +110,32 @@ const Brew = (props: Props) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Initial page load brew fetching as well as
+  // brewday results toggle
+  useEffect(() => {
+    // before we start using the current user, let's just make
+    // sure they haven't expired, shall we?
+    userDispatch({type: 'load'});
+
+    if (brewdayResults) {
+      const copiedBrew= JSON.parse(JSON.stringify(brew));
+      setOriginalBrew(copiedBrew);
+      getBrewdayResults();
+      closeSidebar();
+    } else {
+      const brewId = Number(window.location.pathname.split('/')[2]);
+      if (!isNaN(brewId)) {
+        console.log('get brew');
+        getBrew(brewId);
+        setOriginalBrew(null);
+      } else if (!cloning) {
+        setNewBrew(true);
+        brewDispatch({type: 'clear'});
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brewdayResults, props.history.location.pathname]);
 
   // update
   useEffect(() => {
@@ -137,7 +156,7 @@ const Brew = (props: Props) => {
 
     setEditingData(null);
 
-    if (!cloning && prevBrew && prevBrew.id && !brew.id) {
+    if (deleted) {
       // if we aren't cloning and had a brew with an id, and all of a sudden we don't,
       // we must have deleted it. Redirect to the dashboard.
       props.history.push('/dashboard');
@@ -191,23 +210,6 @@ const Brew = (props: Props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
-
-  // Brewday results toggle
-  useEffect(() => {
-    if (brewdayResults) {
-      const copiedBrew= JSON.parse(JSON.stringify(brew));
-      setOriginalBrew(copiedBrew);
-      getBrewdayResults();
-      closeSidebar();
-    } else {
-      const brewId = Number(window.location.pathname.split('/')[2]);
-      if (!isNaN(brewId)) {
-        getBrew(brewId);
-        setOriginalBrew(null);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brewdayResults]);
 
   useEffect(() => {
     // Watch changes for prompt display
@@ -586,6 +588,7 @@ const Brew = (props: Props) => {
                     status: 'success',
                     message: `Sucessfully removed: ${brew.name}`
                   }});
+                  setDeleted(true);
                   modalDispatch({type: 'hide'});
                   brewDispatch({type: 'clear'});
                 })

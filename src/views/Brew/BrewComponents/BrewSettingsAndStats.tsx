@@ -143,12 +143,12 @@ const BrewSettingsAndStats = (props: Props) => {
                 title="Settings"
                 disabled={brewdayResults}
               ><span>Settings</span></button>}
-              {!readOnly && <button
+              {/* {!readOnly && <button
                 className={`button button--icon-large button--light-brown button--no-shadow eq`}
                 onClick={() =>{}}
                 title="Brew EQ"
                 disabled={brewdayResults}
-              ><span>Brew&nbsp;EQ</span></button>}
+              ><span>Brew&nbsp;EQ</span></button>} */}
               <button
                 className={`button button--icon-large button--light-brown button--no-shadow clone`}
                 onClick={clone()}
