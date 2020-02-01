@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ReactGA from 'react-ga';
 
 import styles from './Home.module.scss';
 import calcStyles from '../Calculators/Calculators.module.scss';
@@ -123,7 +124,16 @@ const Home = () => {
       <header className={styles.header}>
         <div>
           <img src={logoImage} alt="BeerForge - Modern homebrewing" />
-          <Link to="/login" className={styles.link}>
+          <Link
+            to="/login"
+            className={styles.link}
+            onClick={() => {
+              ReactGA.event({
+                category: "Signup",
+                action: "User pressed the Signup button on the home page",
+              });
+            }}
+            >
             Log In
           </Link>
         </div>

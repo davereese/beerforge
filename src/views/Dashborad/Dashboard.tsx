@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import ReactGA from 'react-ga';
 
 import styles from './Dashboard.module.scss';
 import calcImage from '../../resources/images/calculators.svg';
@@ -124,6 +125,10 @@ const Dashboard = (props: any) => {
 
   const handleDonateClick = (event: any) => {
     event.stopPropagation();
+    ReactGA.event({
+      category: "Donate",
+      action: "User pressed the donate button",
+    });
     modalDispatch({
       type: 'show',
       payload: {
@@ -167,6 +172,12 @@ const Dashboard = (props: any) => {
         {currentUser && <Link
           to="brew"
           className="button button--large button--yellow"
+          onClick={() => {
+            ReactGA.event({
+              category: "New Brew",
+              action: "User pressed the New Brew button on the dashboard",
+            });
+          }}
         >New Brew</Link>}
       </div>
       <div className={styles.leftColumn}>

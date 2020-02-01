@@ -1,5 +1,6 @@
 import React from 'react';
 import { Switch, Route, withRouter, RouteComponentProps } from 'react-router-dom';
+import ReactGA from 'react-ga';
 
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -21,6 +22,14 @@ interface Props extends RouteComponentProps {
 }
 
 const App = (props: Props) => {
+  const trackingId = "UA-88010262-3";
+  ReactGA.initialize(trackingId);
+
+  props.history.listen((location: any) => {
+    ReactGA.set({ page: location.pathname }); // Update the user's current page
+    ReactGA.pageview(location.pathname); // Record a pageview for the given page
+  });
+
   return (
     <Fade>
       {window.location.pathname !== '/' ? <Header {...props} /> : null}
