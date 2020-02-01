@@ -20,6 +20,10 @@
     font-weight: $weight-medium;
     list-style-type: none;
 
+    @include for-tablet-landscape-up {
+      width: 70%;
+    }
+
     li {
       position: relative;
       margin-bottom: 3px;
@@ -374,10 +378,16 @@
     }
 
     .cardOverride {
-      width: calc(100% - 30px);
+      width: 100%;
+      margin: 0;
       box-sizing: border-box;
       background-image: linear-gradient(125.4deg, rgba($default-bg-1, 0.7) 0%, rgba($default-bg-2, 0.7) 118.45%);
       transition: opacity 0.3s;
+
+      @include for-tablet-landscape-up {
+        width: calc(100% - 30px);
+        margin: 15px 15px;
+      }
     }
 
     .out {

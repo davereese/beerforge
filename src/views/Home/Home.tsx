@@ -153,8 +153,10 @@ const Home = () => {
           <p><strong>BeerForge</strong> was built out of the desire to have a clean, simple, and easy to scan natural language interface for recipe formulation, brew day calculations and to keep track of past beer glory in the form of a robust brew log. Our feature set includes:</p>
           <ul>
             <li>Recipe and brew day formulation</li>
-            <li>Extract, partial mash, BIAB and all grain support</li>
             <li>Automatic calculations for brew day</li>
+            <li>Re-brew batches and keep track of changes with brew version control</li>
+            <li>Brewday results mode to track what was planned vs. what actually happened</li>
+            <li>Extract, partial mash, BIAB and all grain support</li>
             <li>Multiple mash step support</li>
             <li>Standalone calculators</li>
             <li>Searchable brew logs</li>
@@ -162,7 +164,7 @@ const Home = () => {
             <li>Custom ingredient inputs</li>
             <li>Import/Export brews via beerXML</li>
             <li>Customizable equipment variables</li>
-            <li>Fully mobile-responsive</li>
+            <li>Mobile optimized</li>
           </ul>
           <div className={styles.cta}>
             <p><Link to="/login" className="button button--large button--yellow">Sign Up</Link></p>
