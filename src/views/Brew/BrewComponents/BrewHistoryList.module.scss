@@ -1,0 +1,27 @@
+@import '../../../styles/variables';
+@import '../../../styles/utilities';
+
+.evenMargin {
+  @include for-tablet-landscape-up () {
+    margin: 28px 0;
+  }
+}
+
+.current,
+.notCurrent {
+  transition: box-shadow 0.5s, border 0.3s;
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba($tar, 0.5), 0px 10px 30px rgba($caramel, 0.5);
+    border-top: 5px solid $brew-card-bg-view;
+  }
+}
+
+.current {
+  border-top: 5px solid $brew-card-bg-view;
+}
+
+.notCurrent {
+  border-top: 5px solid $not-current-brew;
+}

@@ -24,6 +24,7 @@ interface Props {
   deleteBrew: Function;
   updateBrew: Function;
   open: boolean;
+  brewdayResults: boolean;
 }
 
 function FormHandler({
@@ -34,6 +35,7 @@ function FormHandler({
   updateBrew,
   deleteBrew,
   open,
+  brewdayResults
 }: Props) {
 
   let title: string,
@@ -251,7 +253,7 @@ function FormHandler({
           className="button button--brown button--no-shadow"
           onClick={closeSidebar}
         >Cancel</button>
-        {form !== 'tags' && editingData === null
+        {form !== 'tags' && editingData === null && !brewdayResults
           ? <button
               className="button button--no-shadow"
               onClick={handleNext}

@@ -1,0 +1,87 @@
+@import '../../../styles/variables';
+@import '../../../styles/utilities';
+
+.editResultsMenu {
+  margin-top: 8px;
+  padding-top: 9px;
+  text-align: left;
+  line-height: 0;
+}
+
+.moreButton {
+  padding: 0;
+  margin: 0;
+  height: auto;
+}
+
+.divider {
+  margin: 8px 0;
+  border: none;
+  border-bottom: 1px solid $tooltip-border;
+}
+
+strong {
+  position: relative;
+}
+
+input.editInput {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  min-width: 0;
+  width: 35px;
+  height: auto;
+  font-size: px-to-rem(12px);
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &Center {
+    text-align: center;
+  }
+
+  &Medium {
+    height: 20px;
+    width: 100%;
+    font-size: px-to-rem(13px);
+    font-weight: $weight-light;
+
+    @include for-tablet-portrait-up () {
+      font-size: px-to-rem(17px);
+      font-weight: $weight-regular;
+    }
+  }
+
+  &Large {
+    width: 100%;
+    font-size: px-to-rem(14px);
+    font-weight: $weight-light;
+
+    @include for-tablet-portrait-up () {
+      font-size: px-to-rem(15px);
+    }
+
+    @include for-tablet-landscape-up () {
+      font-size: px-to-rem(17px);
+    }
+
+    @media (min-width: 1075px) {
+      font-size: px-to-rem(24px);
+    }
+  }
+}
+
+.originalValue {
+  display: block;
+  font-size: px-to-rem(10px);
+  color: $placeholder-dark;
+  line-height: 1;
+}
+
+.bottomSpacing {
+  margin-bottom: 4px;
+}

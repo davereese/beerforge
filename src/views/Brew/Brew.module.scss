@@ -11,7 +11,7 @@
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
-  transition: transform 0.5s, grid-template-columns 0.5s,;
+  transition: transform 0.5s, grid-template-columns 0.5s, opacity 0.3s;
   perspective: 1000px;
  
   // Safari has a problem with perspective
@@ -64,6 +64,12 @@
       transform: translateX(0);
     }
 
+    h1 {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .sideBar {
       pointer-events: none;
       opacity: 0;
@@ -90,6 +96,10 @@
     border-top: 5px solid $brew-card-bg-view;
   }
 
+  .res {
+    border-top: 5px solid $text-dark;
+  }
+
   .settings {
     color: $text-dark;
     font-weight: $weight-medium;
@@ -99,10 +109,6 @@
     &:hover {
       color: $link-hover;
     }
-  }
-
-  .dateBrewed {
-    margin-left: px-to-rem(20px);
   }
 
   &__pageHeading {
@@ -117,6 +123,8 @@
     }
 
     h1 {
+      margin-left: -2px;
+
       @include for-tablet-landscape-up () {
         padding-bottom: 0;
       }
@@ -135,17 +143,54 @@
 
       .userLink {
         display: block;
+        margin: 4px 10px 2px 0;
         font-size: px-to-rem(12px);
         font-weight: $weight-semibold;
         color: darken($link, 14%);
         text-decoration: none;
         transition: color 0.3s;
-
+      }
+      a.userLink {
         &:hover,
         &:focus {
           color: $button-shadow;
         }
       }
+    }
+  }
+
+  &__pageSubHeading {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 7px;
+  }
+
+  .brewdayResultsLabel {
+    display: inline-block;
+    padding: 4px 5px 3px;
+    background-color: $text-dark;
+    border-radius: 4px;
+    font-size: px-to-rem(10px);
+    text-transform: uppercase;
+    color: $label-color;
+    font-weight: $weight-medium;
+  }
+
+  .subHeading {
+    @extend h2;
+    margin: 4px 20px 2px 2px;
+    font-size: px-to-rem(12px);
+  }
+
+  .pageHeading__items {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    @include for-tablet-landscape-up () {
+      justify-content: flex-end;
+      margin-left: 20px;
     }
   }
 
@@ -159,45 +204,6 @@
 
     @include for-tablet-landscape-up () {
       padding-bottom: 10px;
-    }
-  }
-
-  &__numbers {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 0 15px;
-
-    @media (min-width: 725px) {
-      flex-direction: row;
-      align-items: center;
-    }
-  }
-
-  &__numbersList {
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-
-    @include for-tablet-landscape-up () {
-      display: block;
-      padding: 0;
-    }
-
-    li {
-      margin: 12px 0;
-      font-weight: $weight-semibold;
-
-      button.edit {
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-
-      &:hover {
-        button.edit {
-          opacity: 1;
-        }
-      }
     }
   }
 
@@ -216,24 +222,95 @@
     }
   }
 
+  &__numbers {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 15px;
+
+    @media (min-width: 725px) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__numbersList {
+    padding: 0;
+    margin: 0 0 10px;
+    list-style-type: none;
+
+    @include for-tablet-landscape-up () {
+      display: block;
+      padding: 0;
+    }
+
+    li {
+      margin: 3px 0;
+
+      button.edit {
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      &:hover {
+        button.edit {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  &__numbersMenu {
+    margin: 15px 0 15px;
+    min-width: 168px;
+
+    @include for-tablet-portrait-up () {
+      min-width: 200px;
+    }
+
+    @include for-tablet-landscape-up () {
+      margin: 15px 0 25px;
+      min-width: 168px;
+    }
+
+    @media (min-width: 950px) {
+      min-width: 200px;
+    }
+
+    @include for-desktop-up () {
+      min-width: 250px;
+    }
+  }
+
+  &__menu {
+    button {
+      margin-right: 5px;
+
+      @media (min-width: 950px) {
+        margin-right: 10px;
+      }
+    }
+  }
+
   &__stats {
     display: flex;
     margin: 0 0 20px;
+    flex-grow: 1;
+    justify-content: space-evenly;
 
     @include for-tablet-portrait-up () {
-      justify-content: center;
       margin: 10px 0 20px;
     }
 
     @include for-tablet-landscape-up () {
-      justify-content: flex-end;
+      flex-grow: 1;
       margin: 20px 0;
     }
   }
 
   &__stat {
     position: relative;
-    margin: 0 6px;
+    margin: 0;
     width: calc(25% - 12px);
     height: auto;
     padding-bottom: 21%;
@@ -242,19 +319,18 @@
     background-color: rgba($stat-background, 0.4);
     text-align: center;
 
-    @media (min-width: 725px) {
-      margin: 0 6px;
-      width: 75px;
-      height: 75px;
+    @include for-tablet-portrait-up () {
+      width: 100px;
+      height: 100px;
       padding-bottom: 0;
     }
 
-    @media (min-width: 1000px) {
-      margin: 0 12px;
+    @include for-tablet-landscape-up () {
+      width: 75px;
+      height: 75px;
     }
 
-    @media (min-width: 1050px) {
-      margin: 0 10px;
+    @media (min-width: 1075px) {
       width: 100px;
       height: 100px;
     }
@@ -270,6 +346,7 @@
     }
 
     .value {
+      position: relative;
       font-size: px-to-rem(14px);
       font-weight: $weight-light;
 
@@ -281,7 +358,7 @@
         font-size: px-to-rem(17px);
       }
 
-      @media (min-width: 1050px) {
+      @media (min-width: 1075px) {
         font-size: px-to-rem(24px);
       }
     }
@@ -704,7 +781,7 @@
     width: 280px;
     left: 50%;
     margin-left: -140px;
-    transition: padding 0.4s;
+    transition: background-color 0.5s, padding 0.4s;
 
     &.saving {
       padding-right: 50px;
@@ -716,10 +793,26 @@
   position: relative;
   left: 50%;
   margin-left: -23px;
+  margin-bottom: 100%;
   transform: translateY(33vh);
 }
 
 .savingLoader {
   position: absolute;
   top: 4px;
+}
+
+.fadeOut {
+  opacity: 0;
+}
+
+.modalImage,
+.modalImageSmaller {
+  float: right;
+  width: 150px;
+  margin: 10px 0 20px 30px;
+}
+
+.modalImageSmaller {
+  width: 100px;
 }

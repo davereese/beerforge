@@ -17,6 +17,7 @@ import { useUser } from '../../Store/UserContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
 import { useModal } from '../../Store/ModalContext';
 import * as brewService from '../../Store/BrewService';
+import SortMenu from './SortMenu';
 
 const Brews = (props: any) => {
   // CONTEXT
@@ -31,20 +32,20 @@ const Brews = (props: any) => {
   const [brews, setBrews] = useState([]);
   const [brewsCount, setBrewsCount] = useState(0);
   const [page, setPage] = useState(1);
-  // eslint-disable-next-line
   const [numToShow, setNumToShow] = useState(20);
   const [loading, setLoading] = useState(false);
   const [showTooltip, setShowTooltip] = useState<null | number>(null);
-  // const [headerClass, setHeaderClass] = useState<null | string>(null);
+  const [showSort, setShowSort] = useState(false);
   const [placeholderClass, setPlaceholderClass] = useState<undefined | CSSProperties>(undefined);
   const [currentUser, setCurrentUser] = useState(false);
   const [userViewing, setUserViewing] = useState<any>({});
+  const [dateSort, setDateSort] = useState('desc');
+  const [displaySort, setDisplaySort] = useState('individual');
 
   // REFS
   // const logHeader = React.createRef<HTMLDivElement>();
   const logHeader = useRef<HTMLDivElement>(null);
   const headerClass = useRef('');
-
   const isMounted: any = useRef();
 
   // mount
@@ -86,6 +87,12 @@ const Brews = (props: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
+  useEffect(() => {
+    const id = currentUser ? user.id : userViewing.id;
+    listUserBrews(1, id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numToShow, dateSort, displaySort]);
+
   const getUserAndBrews = async (userId: number) => {
     setLoading(true);
     await axios.get(`${process.env.REACT_APP_API_ENDPOINT}/users/${userId}`, {
@@ -114,8 +121,15 @@ const Brews = (props: any) => {
       setLoading(true);
       const authHeaders = {'authorization': user ? user.token : null};
       await axios
-        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/${id}?num=${numToShow}&page=${page}&search=${search}`, {
+        .get(`${process.env.REACT_APP_API_ENDPOINT}/brews/${id}`, {
           headers: authHeaders,
+          params: {
+            num: numToShow > 0 ? numToShow : 20,
+            page: page,
+            search: search,
+            dateSort: dateSort,
+            displaySort: displaySort
+          },
         }).then(result => {
           setBrews(result.data.brews);
           setBrewsCount(result.data.count);
@@ -172,7 +186,7 @@ const Brews = (props: any) => {
               className="button"
               onClick={async () => {
                 // @ts-ignore-line
-                await brewService.deleteBrew(brew.id, user)
+                await brewService.deleteBrew(brew.id, user, brew.parent === null ? true : false)
                 .then((res: any) => {
                   snackbarDispatch({type: 'show', payload: {
                     status: 'success',
@@ -237,11 +251,15 @@ const Brews = (props: any) => {
     }
   }
 
+  const handleSortToggle = () => {
+    setShowSort(!showSort);
+  }
+
   const onChange = debounce((value: string) => {
     setSearch(value);
   }, 300);
 
-  const pagination = Array.from(Array(Math.ceil(brewsCount/numToShow)), (e, i) => {
+  const pagination = Array.from(Array(Math.ceil(brewsCount/(numToShow > 0 ? numToShow : 20))), (e, i) => {
     const currentPage = i+1;
     return !currentUser
       ? <button
@@ -260,17 +278,35 @@ const Brews = (props: any) => {
     <section className={styles.allBrews}>
       <div className={styles.topRow}>
         <h1 className={styles.allBrews__header}>{currentUser ? 'All Brews' : `All ${userViewing.username}'s Brews`}</h1>
-        <input
-          type="text"
-          name="search"
-          className={styles.search}
-          placeholder="Search names and tags"
-          onChange={({ target: { value } }) => onChange(value)}
-        />
+        <div className={styles.topRow__container}>
+          <input
+            type="text"
+            name="search"
+            className={styles.search}
+            placeholder="Search names and tags"
+            autoComplete="off"
+            onChange={({ target: { value } }) => onChange(value)}
+          />
+          <button
+            type="button"
+            className={`button button--no-button ${styles.sortButton}`}
+            onClick={handleSortToggle}
+          >Sort</button>
+        </div>
         {currentUser && <Link
           to="brew"
           className="button button--large button--yellow"
         >New Brew</Link>}
+      </div>
+      <div className={`${styles.sortMenuContainer} ${showSort ? styles.open : ''}`}>
+        <SortMenu
+          dateSort={dateSort}
+          setDateSort={setDateSort}
+          displaySort={displaySort}
+          setDisplaySort={setDisplaySort}
+          numToShow={numToShow}
+          setNumToShow={setNumToShow}
+        />
       </div>
       <div className={`${styles.brewLogHeader} ${headerClass.current}`}>
         <label className={styles.nameCol}>Name</label>
@@ -287,7 +323,7 @@ const Brews = (props: any) => {
               ? brews.map((brew: any, index: number) => {
                 return <ListItem
                   key={brew.id}
-                  customClass={styles.brewLog__item}
+                  customClass={`${styles.brewLog__item} ${displaySort === 'series' && brew.parent !== null ? styles.child : ''}`}
                   clicked={handleBrewClick(brew.id)}
                   label="Click to see brew details"
                 >

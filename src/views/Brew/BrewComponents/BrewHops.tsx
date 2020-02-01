@@ -12,22 +12,23 @@ interface Props {
   newBrew: boolean;
   brew: BrewInterface;
   unitLabels: any;
-  openSideBar: any;
+  openSideBar: Function;
   user: any;
+  brewdayResults: boolean;
 }
 
 const BrewHops = (props: Props) => {
-  const {brew, newBrew, readOnly, unitLabels, openSideBar, user} = props;
+  const {brew, newBrew, readOnly, unitLabels, openSideBar, user, brewdayResults} = props;
   return (
-    <Card color="brew" customClass={`${newBrew? styles.newBrew: styles.view} ${styles.brew__editingSection}`}>
+    <Card color="brew" customClass={`${newBrew ? styles.new : brewdayResults ? styles.res : styles.view} ${styles.brew__editingSection}`}>
       <div className={styles.brew__header}>
         <h2>Hops</h2>
-        {brew && brew.hops.length > 0
+        {brew && brew.hops.length > 0 && !brewdayResults
           ? <span>
               Total: {user.units === 'metric' ? parseFloat(oz2g(brew.totalHops).toFixed(2)) : brew.totalHops} {unitLabels.smallWeight}
             </span>
           : null}
-        {!readOnly
+        {!readOnly && !brewdayResults
           ? <button
               className={`button button--icon plus ${styles.editButton}`}
               onClick={openSideBar('hops')}
@@ -38,7 +39,7 @@ const BrewHops = (props: Props) => {
         {brew && brew.hops.map((hop: HopInterface, index: number) => (
           <ListItem
             color="brew"
-            clicked={!readOnly ? openSideBar('hops', {...hop, index: index + 1}) : null}
+            clicked={!readOnly && !brewdayResults ? openSideBar('hops', {...hop, index: index + 1}) : null}
             key={`${hop.id}${index}`}
           >
             <span className={styles.firstCol}>

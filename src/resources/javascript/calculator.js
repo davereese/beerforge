@@ -188,16 +188,16 @@ export function totalMashVolume(totalWaterVol, grainWeight) {
 export function mashEfficiency(malts, volume, gravity) {
   let extraction = 0;
   malts.forEach(malt => {
-    extraction += malt.potential * malt.grainVol;
+    extraction += malt.potential * malt.weight;
   });
   return (((volume * (gravity * 1000 - 1000)) / extraction) * 100).toFixed(0);
 };
 
 // * Pre-Boil Gravity
-export function preBoilG(OG, grainVol, totalWaterVol, vol, equipmentLoss, absorptionRate, batchType = 'allGrain') {
+export function preBoilG(OG, grainVol, totalWaterVol, batchSize, equipmentLoss, absorptionRate, batchType = 'allGrain') {
   const PBVol = preBoilVol(totalWaterVol, grainVol, equipmentLoss, absorptionRate, batchType);
   // Pre-boil specific gravity points = (Post-boil volume * Post-boil gravity points) / Pre-boil volume
-  const PreBoilG = (vol * convertToGravityPoints(OG)) / PBVol;
+  const PreBoilG = (batchSize * convertToGravityPoints(OG)) / PBVol;
 
   // convert back to gravity units and return
   return convertToGravityUnits(PreBoilG);
@@ -218,9 +218,9 @@ export function partialMashTopOff(preBoilVolume, strikeVolume, grainVol, absorpt
 };
 
 // * Original Gravity
-export function OG(malts, mashEfficiency, volume) {
+export function OG(malts, mashEfficiency, batchSize) {
   mashEfficiency = parseFloat(mashEfficiency);
-  volume = parseFloat(volume);
+  batchSize = parseFloat(batchSize);
 
   let totalPoints = 0,
       OG = null;
@@ -230,7 +230,7 @@ export function OG(malts, mashEfficiency, volume) {
   }
 
   // multiply by mash efficiency
-  OG = totalPoints * (mashEfficiency/100) / volume;
+  OG = totalPoints * (mashEfficiency/100) / batchSize;
 
   // convert back to gravity units and return
   return convertToGravityUnits(OG);
@@ -336,7 +336,7 @@ export function SRM(malts, vol, units = 'weight') {
 
   SRM = (1.4922 * Math.pow(MCU, 0.6859)).toFixed(2);
 
-  return parseFloat(SRM);
+  return SRM > 0 ? parseFloat(SRM) : undefined;
 };
 
 // * CO2

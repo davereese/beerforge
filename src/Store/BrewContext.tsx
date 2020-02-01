@@ -108,9 +108,24 @@ export interface processOptionsInterface {
   hopAbsorptionRate?: number;
 };
 
+export interface brewHistory {
+  id: number;
+  name: string;
+  dateBrewed: Date;
+  batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
+  batchSize?: number;
+  mashEfficiency?: number;
+  alcoholContent?: number;
+  srm?: number;
+  ibu?: number;
+  og?: number;
+};
+
 export interface BrewInterface {
   id?: number;
   userId?: number;
+  parent?: number;
+  recipe?: number;
   name?: string;
   dateBrewed?: Date;
   batchType?: 'allGrain' | 'BIAB' | 'partialMash' | 'extract';
@@ -152,6 +167,8 @@ export interface BrewInterface {
   fermentableUnits?: 'weight' | 'percent';
   totalFermentablesPercent?: number;
   targetOG?: number;
+  history?: brewHistory[];
+  [key: string]: any;
 };
 
 const initialState: any = {
@@ -166,11 +183,7 @@ const initialState: any = {
 
 export const BrewContext = React.createContext(initialState);
 
-export const processBrew = (
-  brew: BrewInterface,
-  options: processOptionsInterface
-): BrewInterface => {
-
+export const sortBrew = (brew: BrewInterface): BrewInterface => {
   // Sort ingredients
   if (brew.fermentables) {
     brew.fermentables.sort(compareWeight);
@@ -191,8 +204,19 @@ export const processBrew = (
     brew.mash.sort(compareStep);
   }
 
+  return brew;
+}
+
+export const processBrew = (
+  brew: BrewInterface,
+  options: processOptionsInterface
+): BrewInterface => {
+
+  brew = sortBrew(brew);
+
   // Run Calculations
   if (brew.fermentables.length > 0) {
+    brew.targetOG = brew.fermentableUnits === 'percent' ? brew.targetOG : undefined;
     if (brew.fermentableUnits === 'percent' && brew.targetOG && brew.batchSize && brew.mashEfficiency) {
       // Calculate the actual weights
       const pointsNeeded = parseFloat((((Number(brew.targetOG) - 1) * 1000) * brew.batchSize).toPrecision(3));
@@ -242,15 +266,13 @@ export const processBrew = (
     });
     if (strike && index !== undefined) {
       if (brew.batchType === 'partialMash' && brew.totalGrainFermentables) {
-        // convert BACK to kg so these numbers are accurate!!
         brew.mash[index].strikeVolume = Calculator.strikeVolume(
-          options.units === 'metric' ? Calculator.lb2kg(brew.totalGrainFermentables) : brew.totalGrainFermentables,
+          brew.totalGrainFermentables,
           strike.waterToGrain
         );
       } else {
-        // convert BACK to kg so these numbers are accurate!!
         brew.mash[index].strikeVolume = Calculator.strikeVolume(
-          options.units === 'metric' ? Calculator.lb2kg(brew.totalFermentables) : brew.totalFermentables,
+          brew.totalFermentables,
           strike.waterToGrain,
         );
       }
@@ -491,11 +513,10 @@ export const processBrew = (
   ) {
     const step = brew.mash.find(item => item.strikeVolume);
     if (step) {
-      // convert BACK to kg so these numbers are accurate!!
       brew.topOff = Calculator.partialMashTopOff(
         brew.preBoilVolume,
         step.strikeVolume,
-        options.units === 'metric' ? Calculator.lb2kg(brew.totalGrainFermentables) : brew.totalGrainFermentables,
+        brew.totalGrainFermentables,
         options.absorptionRate
       );
     }
@@ -543,6 +564,26 @@ const reducer = (state: any, action: any) => {
       return processBrew(state, action.options);
     case 'clear':
       return initialState;
+    case 'clone':
+      const clonedState = {...state};
+      delete clonedState.id;
+      delete clonedState.userId;
+      delete clonedState.dateBrewed;
+      delete clonedState.parent;
+      delete clonedState.history;
+      clonedState.name = '';
+      return clonedState;
+    case 'rebrew':
+      const rebrewState = {...state};
+      rebrewState.parent = rebrewState.parent ? rebrewState.parent : rebrewState.id;
+      delete rebrewState.id;
+      delete rebrewState.dateBrewed;
+      return rebrewState;
+    case 'replace':
+      state = {
+        ...action.payload
+      };
+      return sortBrew(state);
     default:
       throw new Error('Unexpected action');
   }

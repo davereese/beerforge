@@ -34,10 +34,11 @@
     }
 
     h1 {
-      margin: 0 0 5px 0;
+      margin: 0 0 15px 0;
       order: 1;
 
       @include for-tablet-portrait-up () {
+        margin: 0 0 5px 0;
         width: 100%;
         text-align: center;
       }
@@ -48,22 +49,59 @@
       }
     }
 
-    input.search {
+    &__container {
       order: 2;
-      width: 30%;
-      padding: 0 50px 0 15px;
-      margin: 0;
-      background-color: rgba($default-card-bg, 0.15);
-      color: $search-text;
-      background-image: url('../../resources/images/search.svg');
-      background-repeat: no-repeat;
-      background-position: calc(100% - 15px) 12px;
+      width: 100%;
+      display: flex;
 
-      &::placeholder {
-        color: rgba($error-color, 0.5);
+      @include for-tablet-portrait-up () {
+        width: 55%;
+      }
+
+      @include for-tablet-landscape-up () {
+        width: 35%;
+      }
+
+      input.search {
+        padding: 0 50px 0 15px;
+        margin: 0;
+        background-color: rgba($default-card-bg, 0.15);
+        color: $search-text;
+        background-image: url('../../resources/images/search.svg');
+        background-repeat: no-repeat;
+        background-position: calc(100% - 15px) 12px;
+  
+        &::placeholder {
+          color: rgba($error-color, 0.5);
+        }
+      }
+
+      .sortButton {
+        position: relative;
+
+        &::before,
+        &::after {
+          content: '';
+          display: block;
+          position: absolute;
+          right: 0;
+          width: 10px;
+          height: 10px;
+        }
+
+        &::before {
+          background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' class='svg-triangle' width='10' height='10' viewBox='0 0 13 13'><path d='M 5,6 10,0 0,0 z' fill='rgb(233, 102, 44)' /></svg>");
+          transform: rotate(180deg);
+          top: 9px;
+        }
+
+        &::after {
+          background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' class='svg-triangle' width='10' height='10' viewBox='-3 0 13 13'><path d='M 5,6 10,0 0,0 z' fill='rgb(233, 102, 44)' /></svg>");
+          top: 22px;
+        }
       }
     }
-    
+
     a {
       order: 3;
       margin-left: 20px;
@@ -81,6 +119,77 @@
         box-shadow: 0 5px 15px 2px darken($text-dark, 3%);
         font-weight: $weight-regular;
       }
+    }
+  }
+
+  .sortMenuContainer {
+    display: flex;
+    overflow: hidden;
+    max-height: 0px;
+    transition: max-height 0.3s cubic-bezier(.19,.19,.04,.99);
+
+    &.open {
+      max-height: 150px;
+    }
+  }
+
+  .sortMenu {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 30px auto 0;
+    width: 100%;
+    padding: 20px 0 0;
+    border-top: 1px solid darken($dashboard-border, 5%);
+
+    @include for-tablet-portrait-up () {
+      padding: 20px 20px 10px;
+      flex-direction: row;
+      width: auto;
+    }
+
+    div {
+      @include for-phone-only () {
+        width: 50%;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+      }
+
+      @include for-tablet-portrait-up () {
+        &:not(:last-child) {
+          margin-right: 5vw;
+        }
+      }
+    }
+
+    label {
+      font-weight: $weight-medium;
+      color: $error-color;
+    }
+
+    &__column {
+      ul {
+        list-style-type: none;
+        margin: 5px 0 0;
+        padding: 0;
+
+        li {
+          &:hover {
+            cursor: pointer;
+          }
+
+          label {
+            color: $label-color;
+            font-weight: $weight-regular;
+          }
+        }
+      }
+    }
+
+    .countInput {
+      width: 100px;
+      min-width: 100px;
     }
   }
 
@@ -166,6 +275,31 @@
 
       @include for-tablet-landscape-up () {
         grid-template-columns: 57% 10% 10% 10% 11% auto;
+      }
+
+      &.child {
+        background-color: rgba(darken(desaturate($default-card-bg, 60%), 45%), 0.2);
+
+        &:hover,
+        &:focus {
+          background-color: rgba($default-card-bg, 0.15);
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          left: 18px;
+          display: block;
+          left: 16px;
+          width: 6px;
+          height: 6px;
+          background-color: $honey;
+          border-radius: 50%;
+        }
+
+        .nameCol {
+          text-indent: 15px;
+        }
       }
 
       .nameCol {
