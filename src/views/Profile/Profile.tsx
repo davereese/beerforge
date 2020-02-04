@@ -229,6 +229,7 @@ const Profile = () => {
               className="dark"
               value={firstName ? firstName : ''}
               onChange={ (e) => setFirstName(e.target.value) }
+              disabled={user.googleLogin}
             />
           </label>
           <label>Last Name<br />
@@ -239,6 +240,7 @@ const Profile = () => {
               className="dark"
               value={lastName ? lastName : ''}
               onChange={ (e) => setLastName(e.target.value) }
+              disabled={user.googleLogin}
             />
           </label>
         </div>
@@ -250,9 +252,10 @@ const Profile = () => {
             className="dark"
             value={email ? email : ''}
             onChange={ (e) => setEmail(e.target.value) }
+            disabled={user.googleLogin}
           />
         </label>
-        <div className={formStyles.row}>
+        {!user.googleLogin && <div className={formStyles.row}>
           <label className={styles.loginSignup__label}>
             Reset Password<br />
             <input
@@ -275,7 +278,7 @@ const Profile = () => {
               // className={`dark ${error === 'noMatch' ? 'error' : ''}`}
             />
           </label>
-        </div>
+        </div>}
         <div className={styles.buttons}>
           <button
             className={`button button--green ${styles.updateButton} ${saving ? styles.saving : null}`}
