@@ -66,6 +66,10 @@ const LoginSignup = (props: any) => {
   const handleSignUp = (e: any) => {
     e.preventDefault();
     if (error !== 'noMatch') {
+      ReactGA.event({
+        category: "New Signup",
+        action: `There was a new user signup: ${newUsername}`,
+      });
       logInOrSignUpUser(`${process.env.REACT_APP_API_ENDPOINT}/users`, {
         username: newUsername,
         password1: password1,
