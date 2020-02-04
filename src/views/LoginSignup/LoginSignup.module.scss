@@ -151,6 +151,19 @@
   }
 }
 
+.googleButton {
+  button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: none;
+
+    svg {
+      margin-right: 5px;
+    }
+  }
+}
+
 @keyframes flipFront {
   0% {
     transform: rotateY(180deg);

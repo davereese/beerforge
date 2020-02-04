@@ -6,6 +6,7 @@ import styles from './LoginSignup.module.scss';
 import Loader from '../../components/Loader/Loader';
 import { useUser } from '../../Store/UserContext';
 import { useSnackbar } from '../../Store/SnackbarContext';
+import { google } from '../../resources/javascript/googleSvg';
 
 const LoginSignup = (props: any) => {
   // CONTEXT
@@ -30,6 +31,13 @@ const LoginSignup = (props: any) => {
   // mount
   useEffect(() => {
     document.title = "BeerForge | Log In or Sign Up";
+
+    const params = new URLSearchParams(props.location.search);
+    const code = params.get("code");
+    if (code) {
+      googleLogin(code);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -41,6 +49,15 @@ const LoginSignup = (props: any) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [password1, password2]);
+
+  const authenticationUrl = () => {
+    const scope: string = "profile https://www.googleapis.com/auth/user.emails.read";
+    const clientID: string = `${process.env.REACT_APP_GOOGLE_CLIENT_ID}`;
+    const redirectURL: string = `${process.env.REACT_APP_GOOGLE_REDIRECT_URL}`;
+    const allowedDomain = "gmail.com";
+    const url = `https://accounts.google.com/o/oauth2/auth?scope=${scope}&client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURL)}&response_type=code&hd=${allowedDomain}`;
+    return url;
+  };
 
   const logInOrSignUpUser = async (url: string, body: Object) => {
     try {
@@ -76,6 +93,20 @@ const LoginSignup = (props: any) => {
         password2: password2,
         email: email,
       });
+    }
+  }
+
+  const googleLogin = async (code: string) => {
+    try {
+      setSaving(true);
+      const response = await axios.post(`${process.env.REACT_APP_API_ENDPOINT}/login`, {code: code});
+      const payload = response.data;
+      userDispatch({type: 'save', payload: {...payload, googleLogin: true}});
+      setSaving(false);
+      props.history.push('/dashboard');
+    } catch (error) {
+      setError(100);
+      setSaving(false);
     }
   }
 
@@ -134,6 +165,13 @@ const LoginSignup = (props: any) => {
               </p>
               : null
           }
+          {
+            error === 100 ?
+              <p className={`error center-text`}>
+                Failed to validate user.
+              </p>
+              : null
+          }
           <form onSubmit={handleLogIn}>
             <label className={styles.loginSignup__label}>
               Username<br />
@@ -168,11 +206,29 @@ const LoginSignup = (props: any) => {
               </button>
               <button
                 type="button"
-                className="button button--no-button"
+                className="button button--no-button button--brown"
                 onClick={() => flipStyles('back')}
               >Sign Up</button>
             </div>
           </form>
+          <div className={styles.loginSignup__buttons}>
+            <div className={styles.googleButton}>
+              <button
+              className='button button--small'
+                onClick={() => {
+                  ReactGA.event({
+                    category: "Google Sign in",
+                    action: "User pressed the Sign in with Google button",
+                  });
+                  // @ts-ignore-line
+                  window.location = authenticationUrl();
+                }}
+              >
+                {google}
+                Sign in with Google
+              </button>
+            </div>
+          </div>
           <button
             onClick={() => {
               flipStyles('forgotBack');

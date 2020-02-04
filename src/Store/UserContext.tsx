@@ -8,6 +8,7 @@ export interface UserInterface {
   email: string;
   token: string;
   date_joined: string;
+  googleLogin?: boolean;
 };
 
 // check local storage for user
