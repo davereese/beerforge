@@ -126,7 +126,6 @@ const Brew = (props: Props) => {
     } else {
       const brewId = Number(window.location.pathname.split('/')[2]);
       if (!isNaN(brewId)) {
-        console.log('get brew');
         getBrew(brewId);
         setOriginalBrew(null);
       } else if (!cloning) {
