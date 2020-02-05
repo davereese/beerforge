@@ -96,7 +96,7 @@ const BrewEditableField = (props: Props) => {
                 if (e.key === 'Enter') {
                   setShowInput(false);
                   setEditing(false);
-                  editValue([{value: e.currentTarget.value, choice: fieldName}]);
+                  editValue(e.currentTarget.value, fieldName);
                 }
               }}
             />{!noInputLabel && label ? label : ''}
