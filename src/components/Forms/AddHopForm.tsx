@@ -74,7 +74,8 @@ function AddHopForm(props: Props) {
           weight: formData.weight ? formData.weight : 0,
         }]
       : hopsToCalculate;
-    const ibus = IBU(brewsHops, props.brew.og, props.brew.batchSize, user.ibu_formula);
+    const ibus = IBU(brewsHops, props.brew.og, props.brew.batchSize, user.ibu_formula ? user.ibu_formula : 'rager');
+    console.log(props.brew.boilLength, formData.use);
     setProjectedTotalIBU(ibus ? ibus : 0);
 
     // this lastIndex stuff is a chack to make sure we don't submit an empty selection
@@ -273,7 +274,11 @@ function AddHopForm(props: Props) {
           && props.brew.og
         )
         ? <>Projected IBU: <strong>
-            {props.brew.boilLength === null && formData.use === 'first wort' ? 'set boil lengh to calculate' : projectedTotalIBU}
+            {!props.brew.boilLength && formData.use === 'first wort'
+              ? 'set boil lengh to calculate'
+              : props.brew.mash.length === 0 && formData.use === 'mash'
+                ? 'add mash steps to calculate'
+                : projectedTotalIBU}
           </strong><br /></>
           : null}
       </p>
