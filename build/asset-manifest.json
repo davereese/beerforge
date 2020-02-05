@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.2665ebd3.chunk.css",
+    "main.css": "/static/css/main.377ef821.chunk.css",
     "main.js": "/static/js/main.07f15434.chunk.js",
     "main.js.map": "/static/js/main.07f15434.chunk.js.map",
     "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
@@ -8,9 +8,9 @@
     "static/js/2.eea7c6c2.chunk.js": "/static/js/2.eea7c6c2.chunk.js",
     "static/js/2.eea7c6c2.chunk.js.map": "/static/js/2.eea7c6c2.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.9d573246ef909e04d0cfe4ea3276d151.js": "/precache-manifest.9d573246ef909e04d0cfe4ea3276d151.js",
+    "precache-manifest.2546d2dd8da7901c8812e6525288d8a5.js": "/precache-manifest.2546d2dd8da7901c8812e6525288d8a5.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/main.2665ebd3.chunk.css.map": "/static/css/main.2665ebd3.chunk.css.map",
+    "static/css/main.377ef821.chunk.css.map": "/static/css/main.377ef821.chunk.css.map",
     "static/media/Brew.module.scss": "/static/media/tag.f4f98ff1.svg",
     "static/media/beerforge_logo.svg": "/static/media/beerforge_logo.a43d5519.svg",
     "static/media/beerforge_logo_white.svg": "/static/media/beerforge_logo_white.ae0b60b4.svg",
