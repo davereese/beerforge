@@ -250,6 +250,13 @@ const LoginSignup = (props: any) => {
               </p>
               : null
           }
+          {
+            error === 100 ?
+              <p className={`error center-text`}>
+                Failed to validate user.
+              </p>
+              : null
+          }
           <form onSubmit={handleSignUp}>
             <label className={styles.loginSignup__label}>
               Email<br />
@@ -317,6 +324,24 @@ const LoginSignup = (props: any) => {
               >Log In</button>
             </div>
           </form>
+          <div className={styles.loginSignup__buttons}>
+            <div className={styles.googleButton}>
+              <button
+              className='button button--small'
+                onClick={() => {
+                  ReactGA.event({
+                    category: "Google Sign in",
+                    action: "User pressed the Sign in with Google button",
+                  });
+                  // @ts-ignore-line
+                  window.location = authenticationUrl();
+                }}
+              >
+                {google}
+                Sign up with Google
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className={styles.forgotPanel}>
