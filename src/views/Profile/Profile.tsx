@@ -87,7 +87,8 @@ const Profile = () => {
       const res = await axios.put(`${process.env.REACT_APP_API_ENDPOINT}/users/${user.id}`, body, {
         headers: authHeaders,
       });
-      userDispatch({type: 'update', payload: res.data[0]});
+      const data = res.data[0];
+      userDispatch({type: 'update', payload: {...data, googleLogin: user.googleLogin}});
       setSaving(false);
       setPassword1('');
       setPassword2('');
