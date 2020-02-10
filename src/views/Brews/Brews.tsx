@@ -79,7 +79,7 @@ const Brews = (props: any) => {
   }, [props.history.location.pathname]);
 
   useEffect(() => {
-    if (isMounted && brews.length > 0) {
+    if (isMounted) {
       const id = currentUser ? user.id : userViewing.id;
       listUserBrews(1, id);
       scrollToTop(300);
