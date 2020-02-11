@@ -193,7 +193,7 @@ function AddHopForm(props: Props) {
         <label>Form<br />
           <select
             onChange={dataChanged('form')}
-            value={formData.form ? formData.form.toString() : ''}
+            value={formData.form ? formData.form : ''}
           >
             <option value="pellet">Pellet</option>
             <option value="leaf">Whole Leaf</option>
@@ -212,7 +212,7 @@ function AddHopForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.alphaAcid ? formData.alphaAcid.toString() : ''}
+            value={formData.alphaAcid ? formData.alphaAcid : ''}
             onChange={dataChanged('alphaAcid')}
           />
         </label>
@@ -221,7 +221,9 @@ function AddHopForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.weight ? user.units === 'metric' ? parseFloat(oz2g(formData.weight).toFixed(5)) : formData.weight.toString() : ''}
+            value={formData.weight
+              ? user.units === 'metric' ? parseFloat(oz2g(formData.weight).toFixed(5)) : formData.weight
+              : ''}
             onChange={dataChanged('weight')}
           />
         </label>
@@ -231,7 +233,9 @@ function AddHopForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="0"
-                value={formData.lengthInBoil !== undefined && formData.lengthInBoil !== null ? formData.lengthInBoil.toString() : ''}
+                value={formData.lengthInBoil !== undefined && formData.lengthInBoil !== null
+                  ? formData.lengthInBoil
+                  : ''}
                 onChange={dataChanged('lengthInBoil')}
               />
             </label>
@@ -246,7 +250,9 @@ function AddHopForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="10"
-                value={formData.multiplier !== undefined && formData.multiplier !== null ? formData.multiplier.toString() : ''}
+                value={formData.multiplier !== undefined && formData.multiplier !== null
+                  ? formData.multiplier
+                  : ''}
                 onChange={dataChanged('multiplier')}
               />
             </label>
@@ -257,7 +263,7 @@ function AddHopForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="0"
-                value={formData.days !== undefined ? formData.days.toString() : ''}
+                value={formData.days !== undefined ? formData.days : ''}
                 onChange={dataChanged('days')}
               />
             </label>

@@ -227,7 +227,7 @@ function AddFermentableForm(props: Props) {
                 type="number"
                 step="0.1"
                 placeholder="1"
-                value={formData.lovibond ? formData.lovibond.toString() : ''}
+                value={formData.lovibond ? formData.lovibond : ''}
                 onChange={dataChanged('lovibond')}
               />
             </label>
@@ -236,7 +236,7 @@ function AddFermentableForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="34"
-                value={formData.potential ? formData.potential.toString() : ''}
+                value={formData.potential ? formData.potential : ''}
                 onChange={dataChanged('potential')}
               />
             </label>
@@ -253,7 +253,7 @@ function AddFermentableForm(props: Props) {
             value={formData.weight
               ? user.units === 'metric'
                 ? parseFloat(lb2kg(formData.weight).toFixed(5))
-                : formData.weight.toString() 
+                : formData.weight
               : ''}
             onChange={dataChanged('weight')}
           />

@@ -174,7 +174,7 @@ function AddYeastForm(props: Props) {
                   type="number"
                   step="10" 
                   placeholder="100"
-                  value={formData.cellCount ? formData.cellCount.toString() : ''}
+                  value={formData.cellCount ? formData.cellCount : ''}
                   onChange={dataChanged('cellCount')}
                 />
               </label>
@@ -183,7 +183,7 @@ function AddYeastForm(props: Props) {
                   type="number"
                   step="1" 
                   placeholder="75"
-                  value={formData.averageAttenuation ? formData.averageAttenuation.toString() : ''}
+                  value={formData.averageAttenuation ? formData.averageAttenuation: ''}
                   onChange={dataChanged('averageAttenuation')}
                 />
               </label>
@@ -196,7 +196,7 @@ function AddYeastForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.amount ? formData.amount.toString() : ''}
+            value={formData.amount ? formData.amount : ''}
             onChange={dataChanged('amount')}
           />
         </label>
