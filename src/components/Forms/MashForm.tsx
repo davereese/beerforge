@@ -125,7 +125,7 @@ function MashForm(props: Props) {
         <br />
         <select
           onChange={dataChanged("type")}
-          value={formData.type ? formData.type.toString() : ""}
+          value={formData.type ? formData.type : ""}
         >
           {props.brew.mash.length > 0 
             ? (
@@ -150,7 +150,7 @@ function MashForm(props: Props) {
               value={formData.targetStepTemp
                 ? user.units === "metric"
                   ? parseFloat(f2c(formData.targetStepTemp).toFixed(2))
-                  : formData.targetStepTemp.toString()
+                  : formData.targetStepTemp
                 : ''}
               onChange={dataChanged("targetStepTemp")}
             />
@@ -167,7 +167,7 @@ function MashForm(props: Props) {
                   value={formData.currentMashTemp
                     ? user.units === "metric"
                       ? parseFloat(f2c(formData.currentMashTemp).toFixed(2))
-                      : formData.currentMashTemp.toString()
+                      : formData.currentMashTemp
                     : ''}
                   onChange={dataChanged("currentMashTemp")}
                 />
@@ -182,7 +182,7 @@ function MashForm(props: Props) {
                   value={formData.infusionWaterTemp
                     ? user.units === "metric"
                       ? parseFloat(f2c(formData.infusionWaterTemp).toFixed(2))
-                      : formData.infusionWaterTemp.toString()
+                      : formData.infusionWaterTemp
                     : ''}
                   onChange={dataChanged("infusionWaterTemp")}
                 ></input>
@@ -204,7 +204,7 @@ function MashForm(props: Props) {
                 value={formData.waterToGrain
                   ? user.units === "metric"
                     ? parseFloat(qt2l(formData.waterToGrain).toFixed(5))
-                    : formData.waterToGrain.toString()
+                    : formData.waterToGrain
                   : ''}
                 onChange={dataChanged("waterToGrain")}
               />
@@ -220,7 +220,7 @@ function MashForm(props: Props) {
                 value={formData.grainTemp
                   ? user.units === "metric"
                     ? parseFloat(f2c(formData.grainTemp).toFixed(2))
-                    : formData.grainTemp.toString() 
+                    : formData.grainTemp
                   : ''}
                 onChange={dataChanged("grainTemp")}
               />
@@ -235,7 +235,7 @@ function MashForm(props: Props) {
                 value={formData.kettleSize
                   ? user.units === "metric"
                     ? parseFloat(gal2l(formData.kettleSize).toFixed(5))
-                    : formData.kettleSize.toString()
+                    : formData.kettleSize
                   : ''}
                 onChange={dataChanged("kettleSize")}
               />
@@ -247,7 +247,7 @@ function MashForm(props: Props) {
             <input
               type="number"
               placeholder="60"
-              value={formData.stepLength ? formData.stepLength.toString() : ''}
+              value={formData.stepLength ? formData.stepLength : ''}
               onChange={dataChanged("stepLength")}
             />
           </label>
@@ -262,7 +262,7 @@ function MashForm(props: Props) {
             value={formData.spargeTemp
               ? user.units === "metric"
                 ? parseFloat(f2c(formData.spargeTemp).toFixed(2))
-                : formData.spargeTemp.toString()
+                : formData.spargeTemp
               : ''}
             onChange={dataChanged("spargeTemp")}
           />

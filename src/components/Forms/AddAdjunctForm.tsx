@@ -147,7 +147,7 @@ function AddAdjunctsForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.amount ? formData.amount.toString() : ''}
+            value={formData.amount ? formData.amount : ''}
             onChange={dataChanged('amount')}
           />
         </label>

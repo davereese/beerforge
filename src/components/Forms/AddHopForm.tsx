@@ -37,6 +37,13 @@ function AddHopForm(props: Props) {
   const [projectedTotalIBU, setProjectedTotalIBU] = useState<number>(props.brew.ibu ? props.brew.ibu : 0);
 
   useEffect(() => {
+    // load hops when component renders
+    listAllHops().then(result => {
+      setHops(result);
+    });
+  }, []);
+
+  useEffect(() => {
     // when formData changes, update the data in formHandler component
     let dataToSet: HopInterface[] = [];
     const hopsArray = props.brew.hops ? [...props.brew.hops] : [];
@@ -87,15 +94,8 @@ function AddHopForm(props: Props) {
   }, [formData]);
 
   useEffect(() => {
-    // load hops when component renders
-    listAllHops().then(result => {
-      setHops(result);
-    });
-  }, []);
-
-  useEffect(() => {
     // reset form when submitted
-    setFormData({id: 0});
+    setFormData({id: 0, use: 'boil', form: 'pellet'});
   }, [props.brew]);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ function AddHopForm(props: Props) {
     if (props.editingData !== null) {
       setFormData(props.editingData);
     } else {
-      setFormData({id: 0});
+      setFormData({id: 0, use: 'boil', form: 'pellet'});
     }
   }, [props.editingData]);
 
@@ -117,8 +117,6 @@ function AddHopForm(props: Props) {
             id: choice.id,
             name: choice.name,
             alphaAcid: Number(choice.average_alpha),
-            form: 'pellet',
-            use: 'boil'
           }
         : {};
     } else if (type === 'form' || type === 'custom') {
@@ -193,7 +191,7 @@ function AddHopForm(props: Props) {
         <label>Form<br />
           <select
             onChange={dataChanged('form')}
-            value={formData.form ? formData.form.toString() : ''}
+            value={formData.form ? formData.form : ''}
           >
             <option value="pellet">Pellet</option>
             <option value="leaf">Whole Leaf</option>
@@ -212,7 +210,7 @@ function AddHopForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.alphaAcid ? formData.alphaAcid.toString() : ''}
+            value={formData.alphaAcid ? formData.alphaAcid : ''}
             onChange={dataChanged('alphaAcid')}
           />
         </label>
@@ -221,7 +219,9 @@ function AddHopForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.weight ? user.units === 'metric' ? parseFloat(oz2g(formData.weight).toFixed(5)) : formData.weight.toString() : ''}
+            value={formData.weight
+              ? user.units === 'metric' ? parseFloat(oz2g(formData.weight).toFixed(5)) : formData.weight
+              : ''}
             onChange={dataChanged('weight')}
           />
         </label>
@@ -231,7 +231,9 @@ function AddHopForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="0"
-                value={formData.lengthInBoil !== undefined && formData.lengthInBoil !== null ? formData.lengthInBoil.toString() : ''}
+                value={formData.lengthInBoil !== undefined && formData.lengthInBoil !== null
+                  ? formData.lengthInBoil
+                  : ''}
                 onChange={dataChanged('lengthInBoil')}
               />
             </label>
@@ -246,7 +248,9 @@ function AddHopForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="10"
-                value={formData.multiplier !== undefined && formData.multiplier !== null ? formData.multiplier.toString() : ''}
+                value={formData.multiplier !== undefined && formData.multiplier !== null
+                  ? formData.multiplier
+                  : ''}
                 onChange={dataChanged('multiplier')}
               />
             </label>
@@ -257,7 +261,7 @@ function AddHopForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="0"
-                value={formData.days !== undefined ? formData.days.toString() : ''}
+                value={formData.days !== undefined ? formData.days : ''}
                 onChange={dataChanged('days')}
               />
             </label>
