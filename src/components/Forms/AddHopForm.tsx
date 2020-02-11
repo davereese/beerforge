@@ -37,6 +37,13 @@ function AddHopForm(props: Props) {
   const [projectedTotalIBU, setProjectedTotalIBU] = useState<number>(props.brew.ibu ? props.brew.ibu : 0);
 
   useEffect(() => {
+    // load hops when component renders
+    listAllHops().then(result => {
+      setHops(result);
+    });
+  }, []);
+
+  useEffect(() => {
     // when formData changes, update the data in formHandler component
     let dataToSet: HopInterface[] = [];
     const hopsArray = props.brew.hops ? [...props.brew.hops] : [];
@@ -87,15 +94,8 @@ function AddHopForm(props: Props) {
   }, [formData]);
 
   useEffect(() => {
-    // load hops when component renders
-    listAllHops().then(result => {
-      setHops(result);
-    });
-  }, []);
-
-  useEffect(() => {
     // reset form when submitted
-    setFormData({id: 0});
+    setFormData({id: 0, use: 'boil', form: 'pellet'});
   }, [props.brew]);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ function AddHopForm(props: Props) {
     if (props.editingData !== null) {
       setFormData(props.editingData);
     } else {
-      setFormData({id: 0});
+      setFormData({id: 0, use: 'boil', form: 'pellet'});
     }
   }, [props.editingData]);
 
@@ -117,8 +117,6 @@ function AddHopForm(props: Props) {
             id: choice.id,
             name: choice.name,
             alphaAcid: Number(choice.average_alpha),
-            form: 'pellet',
-            use: 'boil'
           }
         : {};
     } else if (type === 'form' || type === 'custom') {
