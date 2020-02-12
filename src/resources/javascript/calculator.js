@@ -351,13 +351,13 @@ export function CO2(temp, vol, type, beerVol) {
       X = (-16.6999 - (0.0101059 * temp) + (0.00116512 * Math.pow(temp, 2)) + (0.173354 * temp * vol) + (4.24267 * vol) - (0.0684226 * Math.pow(vol, 2))).toFixed(2);
       break;
     case 'cornSugar':
-      X = ((((vol - dissolvedCO2) * 4 * (beerVol * 3.8)) / 28.34952) * 1).toFixed(2);
+      X = ((((Number(vol) - dissolvedCO2) * 4 * (beerVol * 3.8)) / 28.34952) * 1).toFixed(2);
       break;
     case 'caneSugar':
-      X = ((((vol - dissolvedCO2) * 4 * (beerVol * 3.8)) / 28.34952) * 0.91).toFixed(2);
+      X = ((((Number(vol) - dissolvedCO2) * 4 * (beerVol * 3.8)) / 28.34952) * 0.91).toFixed(2);
       break;
     case 'dme':
-      X = ((((vol - dissolvedCO2) * 5.33 * (beerVol * 3.8) ) / 28.34952) * 0.91).toFixed(2);
+      X = ((((Number(vol) - dissolvedCO2) * 5.33 * (beerVol * 3.8) ) / 28.34952) * 0.91).toFixed(2);
       break;
     default:
       break;

@@ -22,48 +22,6 @@ function MashForm(props: Props) {
   const [user, userDispatch] = useUser();
   const [formData, setFormData] = useState<MashInterface>({ type: "temperature" });
 
-  const dataChanged = (type: string) => (event: any) => {
-    let data: MashInterface = {};
-    if (
-      type === "targetStepTemp" ||
-      type === "grainTemp" ||
-      type === "spargeTemp"
-    ) {
-      data[type] =
-        user.units === "metric"
-          ? c2f(event.currentTarget.value)
-          : event.currentTarget.value;
-    } else if (type === "waterToGrain") {
-      data.waterToGrain =
-        user.units === "metric"
-          ? l2qt(event.currentTarget.value)
-          : event.currentTarget.value;
-    } else if (type === "kettleSize") {
-      data.kettleSize =
-        user.units === "metric"
-          ? l2gal(props.brew.kettleSize)
-          : event.currentTarget.value;
-    } else if (type === "type" && event.currentTarget.value === "infusion") {
-      data[type] = event.currentTarget.value;
-      data.infusionWaterTemp = user.boil_temp;
-    } else {
-      data[type] = event.currentTarget.value;
-    }
-    setFormData({ ...formData, ...data });
-  };
-
-  const setFormDataSwitch = () => {
-    if (props.brew.mash.length > 0) {
-      setFormData({ type: "temperature" });
-    } else {
-      if (props.brew.batchType === "BIAB") {
-        setFormData({ type: "strike", kettleSize: user.kettle_size ? user.kettle_size : "" });
-      } else {
-        setFormData({ type: "strike" });
-      }
-    }
-  }
-
   useEffect(() => {
     // when formData changes, update the data in formHandler component
     let dataToSet: MashInterface[] = [];
@@ -111,12 +69,60 @@ function MashForm(props: Props) {
     // if the form's editingData changes, we've selected something to edit.
     // set the form default valies to be the data we're editing.
     if (props.editingData !== null) {
-      setFormData(props.editingData);
+      console.log(props.editingData);
+      setFormData({
+        ...props.editingData,
+        kettleSize: props.brew.kettleSize
+          ? props.brew.kettleSize
+          : user.kettle_size ? user.kettle_size : ''
+      });
     } else {
       setFormDataSwitch();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.editingData]);
+
+  const dataChanged = (type: string) => (event: any) => {
+    let data: MashInterface = {};
+    if (
+      type === "targetStepTemp" ||
+      type === "grainTemp" ||
+      type === "spargeTemp"
+    ) {
+      data[type] =
+        user.units === "metric"
+          ? c2f(event.currentTarget.value)
+          : event.currentTarget.value;
+    } else if (type === "waterToGrain") {
+      data.waterToGrain =
+        user.units === "metric"
+          ? l2qt(event.currentTarget.value)
+          : event.currentTarget.value;
+    } else if (type === "kettleSize") {
+      data.kettleSize =
+        user.units === "metric"
+          ? l2gal(event.currentTarget.value)
+          : event.currentTarget.value;
+    } else if (type === "type" && event.currentTarget.value === "infusion") {
+      data[type] = event.currentTarget.value;
+      data.infusionWaterTemp = user.boil_temp;
+    } else {
+      data[type] = event.currentTarget.value;
+    }
+    setFormData({ ...formData, ...data });
+  };
+
+  const setFormDataSwitch = () => {
+    if (props.brew.mash.length > 0) {
+      setFormData({ type: "temperature" });
+    } else {
+      if (props.brew.batchType === "BIAB") {
+        setFormData({ type: "strike", kettleSize: user.kettle_size ? user.kettle_size : "" });
+      } else {
+        setFormData({ type: "strike" });
+      }
+    }
+  }
 
   return (
     <>
