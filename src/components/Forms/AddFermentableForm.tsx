@@ -150,7 +150,7 @@ function AddFermentableForm(props: Props) {
     } else if (type === 'custom') {
       data.custom = event.currentTarget.value;
     } else if (type === 'weight') {
-      data.weight = user.units === 'metric'
+      data.weight = formData.units !== 'percent' && user.units === 'metric'
         ? kg2lb(Number(event.currentTarget.value) + 0)
         : Number(event.currentTarget.value) + 0;
     } else if (type === 'units') {
@@ -251,7 +251,7 @@ function AddFermentableForm(props: Props) {
             step="0.01"
             placeholder="0"
             value={formData.weight
-              ? user.units === 'metric'
+              ? formData.units !== 'percent' && user.units === 'metric'
                 ? parseFloat(lb2kg(formData.weight).toFixed(5))
                 : formData.weight
               : ''}

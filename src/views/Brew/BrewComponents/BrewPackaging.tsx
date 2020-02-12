@@ -3,7 +3,7 @@ import React from 'react';
 import styles from '../Brew.module.scss';
 import { parseStringValues } from '../BrewUtils';
 import { BrewInterface } from '../../../Store/BrewContext';
-import { f2c } from '../../../resources/javascript/calculator';
+import { f2c, oz2g } from '../../../resources/javascript/calculator';
 
 interface Props {
   readOnly: boolean;
@@ -40,7 +40,11 @@ const BrewPackaging = (props: Props) => {
           : null}</span>
         <span>{brew.amountForCO2
           ? <>{brew.carbonationMethod === 'forced' ? 'Pressure: ' : 'Amount: '}
-          <strong>{brew.amountForCO2} {brew.carbonationMethod === 'forced' ? 'psi' : unitLabels.smallWeight}</strong></>
+          <strong>
+            {brew.carbonationMethod === 'forced'
+              ? `${brew.amountForCO2} psi`
+              : user.units === 'metric' ? parseFloat(oz2g(brew.amountForCO2).toFixed(2)) + unitLabels.smallWeight : `${brew.amountForCO2} ${unitLabels.smallWeight}`}
+          </strong></>
           : null}
         </span>
       </div>
