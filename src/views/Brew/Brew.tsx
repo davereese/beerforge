@@ -265,23 +265,22 @@ const Brew = (props: Props) => {
   const getBrewdayResults = async () =>{
     brewService.getBrewResults(brew.id, user)
     .then((res: any) => {
+      if (!res.data.error) {
       // add total water to brewday results brew
-      const brewdayBrew = res.data.brew;
-      brewdayBrew.totalWater = totalWater(
-        brewdayBrew.batchSize,
-        brewdayBrew.boilLength,
-        brewdayBrew.evaporationRate,
-        brew.totalFermentables,
-        userSettings);
-      brewDispatch({type: 'replace', payload: brewdayBrew, options: userSettings});
-      scrollToTop(300);
+        const brewdayBrew = res.data.brew;
+        brewdayBrew.totalWater = totalWater(
+          brewdayBrew.batchSize,
+          brewdayBrew.boilLength,
+          brewdayBrew.evaporationRate,
+          brew.totalFermentables,
+          userSettings);
+        brewDispatch({type: 'replace', payload: brewdayBrew, options: userSettings});
+        scrollToTop(300);
+      }
     })
     .catch((error) => {
-      // 404 if a brew hasn't had any results saved yet
-      if (error.response.status !== 404) {
-        showBasicError(error);
-        setBrewdayResults(false);
-      }
+      setBrewdayResults(false);
+      showBasicError(error);
     });
   };
 
