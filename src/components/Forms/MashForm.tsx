@@ -69,7 +69,6 @@ function MashForm(props: Props) {
     // if the form's editingData changes, we've selected something to edit.
     // set the form default valies to be the data we're editing.
     if (props.editingData !== null) {
-      console.log(props.editingData);
       setFormData({
         ...props.editingData,
         kettleSize: props.brew.kettleSize

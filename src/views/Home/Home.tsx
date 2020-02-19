@@ -17,6 +17,7 @@ import SRM from '../Calculators/Calculators/srm';
 import CO2 from '../Calculators/Calculators/co2';
 import sketch from '../../resources/javascript/bubbles';
 import * as Calculator from '../../resources/javascript/calculator';
+import { useUser } from '../../Store/UserContext';
 
 const Home = () => {
   // STATE
@@ -24,6 +25,8 @@ const Home = () => {
   const [transition, setTransition] = useState('');
   // eslint-disable-next-line
   const [units, setUnits] = useState('us');
+  // eslint-disable-next-line
+  const [user, userDispatch] = useUser();
 
   // REFS
   const featuresRef = useRef<HTMLDivElement>(null);
@@ -124,18 +127,22 @@ const Home = () => {
       <header className={styles.header}>
         <div>
           <img src={logoImage} alt="BeerForge - Modern homebrewing" />
-          <Link
-            to="/login"
-            className={styles.link}
-            onClick={() => {
-              ReactGA.event({
-                category: "Signup",
-                action: "User pressed the Signup button on the home page",
-              });
-            }}
-            >
-            Log In
-          </Link>
+          {!user
+            ? <Link
+                to="/login"
+                className={styles.link}
+                onClick={() => {
+                  ReactGA.event({
+                    category: "Signup",
+                    action: "User pressed the Signup button on the home page",
+                  });
+                }}
+                >
+                Log In
+              </Link>
+            : <Link to="/dashboard" className={styles.link}>
+                Dashboard
+              </Link>}
         </div>
         <div className={styles.introText}>
           <div>
