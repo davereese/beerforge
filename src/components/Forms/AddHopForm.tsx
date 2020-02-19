@@ -84,7 +84,7 @@ function AddHopForm(props: Props) {
     const ibus = IBU(brewsHops, props.brew.og, props.brew.batchSize, user.ibu_formula ? user.ibu_formula : 'rager');
     setProjectedTotalIBU(ibus ? ibus : 0);
 
-    // this lastIndex stuff is a chack to make sure we don't submit an empty selection
+    // this lastIndex stuff is a check to make sure we don't submit an empty selection
     const lastIndex = dataToSet.length - 1;
     const name = dataToSet[lastIndex].name ? dataToSet[lastIndex].name : dataToSet[lastIndex].custom;
     if (name && name.length > 0) {

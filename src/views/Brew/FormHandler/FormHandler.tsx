@@ -86,17 +86,67 @@ function FormHandler({
   };
 
   const saveData = () => {
-    // display message that we made a global change
-    if (optionData && optionData.units === 'percent' && brew.fermentableUnits !== 'percent') {
-      openModal('You have changed this brew\'s grain bill to percentages. This is a global change and will affect all fermentables. You won\'t need to set this again.');
-    } else if (optionData && optionData.units !== 'percent' && brew.fermentableUnits === 'percent') {
-      openModal('You have changed this brew\'s grain bill to weights. This is a global change and will affect all fermentables. You won\'t need to set this again.');
+    // look for duplicate hops and present offer to edit all
+    const editingIndex = editingData.index - 1;
+    // dupeHops will never contain the just edited data
+    const dupeHops = formData && editingData && formData.hops.filter((hop, index) =>
+      hop.name === editingData.name &&
+      hop.alphaAcid === editingData.alphaAcid &&
+      index !== editingIndex
+    );
+
+    if (
+      dupeHops.length &&
+      formData &&
+      editingData.alphaAcid !== formData.hops[editingIndex].alphaAcid
+    ) {
+      openModal(`Edit the alpha acid on all similar ${dupeHops[0].name} additions?`, 'Yes', 'No', () => {
+        const editSimilarHops = formData.hops.map(hop => {
+          if (hop.alphaAcid === editingData.alphaAcid) {
+            hop.alphaAcid = formData.hops[editingIndex].alphaAcid;
+          }
+          return hop;
+        })
+        updateBrew({...formData, hops: editSimilarHops});
+        modalDispatch({type: 'hide'});
+      }, () => {
+        updateBrew({...formData});
+        modalDispatch({type: 'hide'});
+      });
+    } else if (
+      optionData && optionData.units === 'percent' &&
+      brew.fermentableUnits !== 'percent'
+    ) {
+      // display message that we made a global change
+      openModal('You have changed this brew\'s grain bill to percentages. This is a global change and will affect all fermentables. You won\'t need to set this again.', 'Got It', 'Go Back', () => {
+        updateBrew({...formData});
+        modalDispatch({type: 'hide'});
+      }, () => {
+        modalDispatch({type: 'hide'});
+      });
+    } else if (
+      optionData && optionData.units !== 'percent' &&
+      brew.fermentableUnits === 'percent'
+    ) {
+      // display message that we made a global change
+      openModal('You have changed this brew\'s grain bill to weights. This is a global change and will affect all fermentables. You won\'t need to set this again.', 'Got It', 'Go Back', () => {
+        updateBrew({...formData});
+        modalDispatch({type: 'hide'});
+      }, () => {
+        modalDispatch({type: 'hide'});
+      });
     } else {
       updateBrew({...formData});
     }
   };
 
-  const openModal = (message: string) => {
+  const openModal = (
+    message: string,
+    yesText: string,
+    noText: string,
+    yesCallback: Function,
+    noCallback: Function
+  ) => {
     modalDispatch({
       type: 'show',
       payload: {
@@ -104,17 +154,12 @@ function FormHandler({
         buttons: <>
           <button
             className="button button--brown"
-            onClick={() => {
-              modalDispatch({type: 'hide'});
-            }}
-          >Go Back</button>
+            onClick={() => noCallback()}
+          >{noText}</button>
           <button
             className="button"
-            onClick={() => {
-              updateBrew({...formData});
-              modalDispatch({type: 'hide'});
-            }}
-          >Got It</button>
+            onClick={() => yesCallback()}
+          >{yesText}</button>
         </>
       }
     });
@@ -122,7 +167,7 @@ function FormHandler({
 
   const handleNext = () => {
     if (formData !== null) {
-      updateBrew({...formData});
+      saveData();
     }
     nextForm();
   };
