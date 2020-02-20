@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.32383252.chunk.css",
-    "main.js": "/static/js/main.29c930a6.chunk.js",
-    "main.js.map": "/static/js/main.29c930a6.chunk.js.map",
+    "main.js": "/static/js/main.261343e2.chunk.js",
+    "main.js.map": "/static/js/main.261343e2.chunk.js.map",
     "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
     "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
     "static/js/2.eea7c6c2.chunk.js": "/static/js/2.eea7c6c2.chunk.js",
     "static/js/2.eea7c6c2.chunk.js.map": "/static/js/2.eea7c6c2.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.41320756d167ed360b80dc7d50c9b4ad.js": "/precache-manifest.41320756d167ed360b80dc7d50c9b4ad.js",
+    "precache-manifest.47f8aee6eed7109323752e75bd53ad3d.js": "/precache-manifest.47f8aee6eed7109323752e75bd53ad3d.js",
     "service-worker.js": "/service-worker.js",
     "static/css/main.32383252.chunk.css.map": "/static/css/main.32383252.chunk.css.map",
     "static/media/Brew.module.scss": "/static/media/tag.f4f98ff1.svg",
