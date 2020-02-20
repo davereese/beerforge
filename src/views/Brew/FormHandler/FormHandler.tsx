@@ -87,13 +87,17 @@ function FormHandler({
 
   const saveData = () => {
     // look for duplicate hops and present offer to edit all
-    const editingIndex = editingData.index - 1;
-    // dupeHops will never contain the just edited data
-    const dupeHops = formData && editingData && formData.hops.filter((hop, index) =>
-      hop.name === editingData.name &&
-      hop.alphaAcid === editingData.alphaAcid &&
-      index !== editingIndex
-    );
+    let dupeHops: any[] = [];
+    let editingIndex: number = 0;
+    if (editingData) {
+      editingIndex = editingData.index - 1;
+      // dupeHops will never contain the just edited data
+      dupeHops = formData && editingData && formData.hops.filter((hop, index) =>
+        hop.name === editingData.name &&
+        hop.alphaAcid === editingData.alphaAcid &&
+        index !== editingIndex
+      );
+    }
 
     if (
       dupeHops.length &&
@@ -150,7 +154,7 @@ function FormHandler({
     modalDispatch({
       type: 'show',
       payload: {
-        body: <p>{message}</p>,
+        body: <p>{message}<br /><br /></p>,
         buttons: <>
           <button
             className="button button--brown"
