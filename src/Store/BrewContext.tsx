@@ -36,7 +36,7 @@ export interface HopInterface {
   ibu?: number;
   unit?: 'g' | 'oz';
   form?: 'pellet' | 'leaf';
-  use?: 'boil' | 'dry hop' | 'mash' | 'first wort' | 'aroma';
+  use?: "boil" | "dry hop" | "mash" | "first wort" | "aroma" | "whirlpool";
   days?: number;
   multiplier?: number;
   index?: number;

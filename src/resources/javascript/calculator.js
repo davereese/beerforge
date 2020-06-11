@@ -72,6 +72,22 @@ export function c2f(number) {
   return (number * 9/5) + 32;
 };
 
+export function f2kelvin(number) {
+  return (number - 32) * 5/9 + 273.15;
+};
+
+export function kelvin2f(number) {
+  return (number - 273.15) * 9/5 + 32
+};
+
+export function c2kelvin(number) {
+  return number + 273.15;
+};
+
+export function kelvin2c(number) {
+  return number - 273.15;
+};
+
 function tanh(number) {
   return (Math.exp(number) - Math.exp(-number)) / (Math.exp(number) + Math.exp(-number));
 };
@@ -289,12 +305,22 @@ export function attenuation(OG, FG) {
   return A;
 };
 
+// Utilization calculator for hte IBU Calculator
+function getWhirlpoolUtilization(hop) {
+  if (hop.use === 'whirlpool') {
+    const T = f2kelvin(hop.whirlpoolTemp);
+    const whirlpoolUtilization = 2.39 * Math.pow(10, 11) * Math.pow(2.71828, (-9773/T));
+    return parseFloat(whirlpoolUtilization.toFixed(2) > 1 ? 1 : whirlpoolUtilization.toFixed(2));
+  } else {
+    return 1; // 100%
+  }
+};
+
 // * IBU
 export function IBU(hops, OG, vol, type = 'rager') {
   // TODO: sepatate the unit conversions out of this function
 
-  let utilization,
-      IBU = 0,
+  let IBU = 0,
       multiplier = 1;
 
   for ( let i = 0; i < hops.length; i++ ) {
@@ -304,13 +330,15 @@ export function IBU(hops, OG, vol, type = 'rager') {
       const utilizationFactor = hops[i].form === 'pellet' ? 1.15 : 1.0;
 
       if (type === 'tinseth') {
-        utilization = (1.65 * Math.pow(0.000125, OG - 1.0) * ((1 - Math.pow(Math.E, -0.04 * hops[i].lengthInBoil)) / 4.15));
-        IBU += utilization * ((hops[i].alphaAcid / 100.0 * oz2kg(hops[i].weight) * 1000000) / gal2l(vol) * utilizationFactor);
+        const utilization = (1.65 * Math.pow(0.000125, OG - 1.0) * ((1 - Math.pow(Math.E, -0.04 * hops[i].lengthInBoil)) / 4.15));
+        const whirlpoolUtilization = getWhirlpoolUtilization(hops[i]);
+        IBU += (utilization * whirlpoolUtilization) * ((hops[i].alphaAcid / 100.0 * oz2kg(hops[i].weight) * 1000000) / gal2l(vol) * utilizationFactor);
       } else if (type === 'rager') {
-        utilization = 18.11 + 13.86 * tanh((hops[i].lengthInBoil - 31.32) / 18.27);
+        const utilization = 18.11 + 13.86 * tanh((hops[i].lengthInBoil - 31.32) / 18.27);
+        const whirlpoolUtilization = getWhirlpoolUtilization(hops[i]);
         const adjustment = Math.max(0, (OG - 1.050) / 0.2);
         // multiply by the multiplyer for first wort calculations
-        IBU += (oz2kg(hops[i].weight) * 100 * utilization * utilizationFactor * hops[i].alphaAcid / (gal2l(vol) * (1 + adjustment))) * multiplier;
+        IBU += (oz2kg(hops[i].weight) * 100 * (utilization * whirlpoolUtilization) * utilizationFactor * hops[i].alphaAcid / (gal2l(vol) * (1 + adjustment))) * multiplier;
       }
     }
   }
