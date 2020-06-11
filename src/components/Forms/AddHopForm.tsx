@@ -5,7 +5,7 @@ import styles from './Forms.module.scss';
 import Info from "../Info/Info";
 import { BrewInterface, HopInterface } from '../../Store/BrewContext';
 import { useUser } from '../../Store/UserContext';
-import { oz2g, g2oz, IBU } from '../../resources/javascript/calculator';
+import { oz2g, g2oz, IBU, f2c, c2f } from '../../resources/javascript/calculator';
 import { HOP_USE } from '../../resources/javascript/constants';
 
 interface Props {
@@ -116,19 +116,36 @@ function AddHopForm(props: Props) {
         ? {
             id: choice.id,
             name: choice.name,
-            alphaAcid: Number(choice.average_alpha),
+            alphaAcid: Number(choice.average_alpha)
           }
         : {};
     } else if (type === 'form' || type === 'custom') {
       data[type] = event.currentTarget.value;
     } else if (type === 'use' || type === 'custom') {
       data[type] = event.currentTarget.value;
-      if (data[type] !== 'dry hop') { data['days'] = undefined; }
-      if (data[type] !== 'boil') { data['lengthInBoil'] = undefined; }
-      if (data[type] !== 'first wort') { data['multiplier'] = undefined; }
-      if (data[type] === 'first wort') { data['multiplier'] = 10; }
+      if (data[type] !== 'dry hop') {
+        data['days'] = undefined;
+      }
+      if (data[type] !== 'boil') {
+        data['lengthInBoil'] = undefined;
+      }
+      if (data[type] !== 'first wort') {
+        data['multiplier'] = undefined;
+      } else {
+        data['multiplier'] = 10;
+      }
+      if (data[type] !== 'whirlpool') {
+        data['whirlpoolTemp'] = undefined;
+      }
     } else if (type === 'weight') {
-      data.weight = user.units === 'metric' ? g2oz(Number(event.currentTarget.value) + 0) : Number(event.currentTarget.value) + 0;
+      data.weight = user.units === 'metric'
+        ? g2oz(Number(event.currentTarget.value) + 0)
+        : Number(event.currentTarget.value) + 0;
+    } else if (type === 'whirlpoolTemp') {
+      data[type] =
+        user.units === "metric"
+          ? c2f(event.currentTarget.value)
+          : event.currentTarget.value;
     } else {
       data[type] = Number(event.currentTarget.value) + 0;
     }
@@ -140,7 +157,7 @@ function AddHopForm(props: Props) {
         props.brew.batchSize,
         'rager'
       );
-      
+
       if (type === 'custom' && !formData['custom']) {
         data['id'] = undefined;
         data['name'] = '';
@@ -202,6 +219,7 @@ function AddHopForm(props: Props) {
         formData.use === 'boil'
         || formData.use === 'dry hop'
         || formData.use === 'first wort'
+        || formData.use === "whirlpool"
           ? styles.rowThirds
           : styles.row
       }>
@@ -225,47 +243,67 @@ function AddHopForm(props: Props) {
             onChange={dataChanged('weight')}
           />
         </label>
-        {formData.use === 'boil'
-          ? <label>Time (min)<br />
-              <input
-                type="number"
-                step="1"
-                placeholder="0"
-                value={formData.lengthInBoil !== undefined && formData.lengthInBoil !== null
-                  ? formData.lengthInBoil
-                  : ''}
-                onChange={dataChanged('lengthInBoil')}
-              />
-            </label>
-          : null}
-        {formData.use === 'first wort'
-          ? <label>Multiplier %&nbsp;
+        {(formData.use === 'boil' || formData.use === 'whirlpool') &&
+          <label>Time (min)<br />
+            <input
+              type="number"
+              step="1"
+              placeholder="0"
+              value={formData.lengthInBoil !== undefined && formData.lengthInBoil !== null
+                ? formData.lengthInBoil
+                : ''}
+              onChange={dataChanged('lengthInBoil')}
+            />
+          </label>
+        }
+        {formData.use === 'first wort' &&
+          <label>Multiplier %&nbsp;
             <Info
               alignment="top-right"
               info="First&nbsp;wort&nbsp;hopping&nbsp;generally adds about 10% to your ibu calculation using the total boil time. Setting the multiplier to 0 would be the same calculation as a hop addition for the full boil."
             /><br />
-              <input
-                type="number"
-                step="1"
-                placeholder="10"
-                value={formData.multiplier !== undefined && formData.multiplier !== null
-                  ? formData.multiplier
-                  : ''}
-                onChange={dataChanged('multiplier')}
-              />
-            </label>
-          : null}
-        {formData.use === 'dry hop'
-          ? <label>Days<br />
-              <input
-                type="number"
-                step="1"
-                placeholder="0"
-                value={formData.days !== undefined ? formData.days : ''}
-                onChange={dataChanged('days')}
-              />
-            </label>
-          : null}
+            <input
+              type="number"
+              step="1"
+              placeholder="10"
+              value={formData.multiplier !== undefined && formData.multiplier !== null
+                ? formData.multiplier
+                : ''}
+              onChange={dataChanged('multiplier')}
+            />
+          </label>
+        }
+        {formData.use === 'dry hop' &&
+          <label>Days<br />
+            <input
+              type="number"
+              step="1"
+              placeholder="0"
+              value={formData.days !== undefined ? formData.days : ''}
+              onChange={dataChanged('days')}
+            />
+          </label>
+        }
+        {formData.use === 'whirlpool' &&
+          <label>Temp (°{user.units === "metric" ? "C" : "F"})&nbsp;
+          <Info
+            alignment="top-right"
+            info="Temperature&nbsp;of&nbsp;the whirlpool when adding&nbsp;hop&nbsp;addition."
+          />
+          <br />
+            <input
+              type="number"
+              step="1"
+              placeholder="0"
+              value={formData.whirlpoolTemp
+                ? user.units === "metric"
+                  ? parseFloat(f2c(formData.whirlpoolTemp).toFixed(2))
+                  : formData.whirlpoolTemp
+                : ''}
+              onChange={dataChanged('whirlpoolTemp')}
+            />
+          </label>
+        }
       </div>
       <p className={styles.extra}>
         {props.brew.ibu || (

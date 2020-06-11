@@ -64,7 +64,7 @@ export const compareTime = (a: HopInterface, b: HopInterface) => {
 }
 
 export const byUse = (a: HopInterface, b: HopInterface) => {
-  const usesOrderArray = ['mash', 'first wort', 'boil', 'aroma', 'dry hop'];
+  const usesOrderArray = ['mash', 'first wort', 'boil', 'aroma', 'whirlpool', 'dry hop'];
   const lengthA = usesOrderArray.indexOf(a.use ? a.use : '');
   const lengthB = usesOrderArray.indexOf(b.use ? b.use : '');
 

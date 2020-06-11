@@ -36,9 +36,10 @@ export const ADJUNCT_USE = [
 
 
 export const HOP_USE = [
-  'boil',
-  'dry hop',
   'mash',
   'first wort',
-  'aroma'
+  'boil',
+  'aroma',
+  'whirlpool',
+  'dry hop',
 ];
