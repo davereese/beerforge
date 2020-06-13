@@ -16,6 +16,7 @@ import NoMatch from './views/404/NoMatch';
 import PrivateRoute from './views/PrivateRoute';
 import Home from './views/Home/Home';
 import Snackbar from './components/Snackbar/Snackbar';
+import Feedback from './components/Feedback/Feedback';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -32,7 +33,8 @@ const App = (props: Props) => {
 
   return (
     <Fade>
-      {window.location.pathname !== '/' ? <Header {...props} /> : null}
+      {window.location.pathname !== '/' && <Header {...props} />}
+      {window.location.pathname !== '/' && <Feedback />}
       <main>
         <Switch>
           <Route path="/" exact component={Home} />

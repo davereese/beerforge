@@ -129,6 +129,10 @@
         padding-bottom: 0;
       }
 
+      .titleToggle:hover {
+        cursor: pointer;
+      }
+
       button {
         opacity: 0;
         transition: opacity 0.3s;
