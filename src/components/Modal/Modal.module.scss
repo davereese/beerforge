@@ -48,14 +48,14 @@
     font-weight: $weight-light;
     font-size: px-to-rem(18px);
   }
+}
 
-  .modalButtons {
-    display: flex;
-    justify-content: center;
+.modalButtons {
+  display: flex;
+  justify-content: center;
 
-    button:not(:last-child) {
-      margin-right: 10px;
-    }
+  button:not(:last-child) {
+    margin-right: 10px;
   }
 }
 

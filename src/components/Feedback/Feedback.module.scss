@@ -1,0 +1,67 @@
+@import '../../styles/variables/';
+@import '../../styles/utilities/';
+@import '../Modal/Modal.module.scss';
+
+.feedback {
+  position: fixed;
+  width: 100px;
+  height: 18px;
+  right: -42px;
+  top: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotate(-90deg);
+  background-color: darken($button-default-bg, 2%);
+  color: $link;
+  z-index: 10;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+
+  @include for-tablet-landscape-up {
+    height: 30px;
+    right: -35px;
+  }
+
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+  }
+}
+
+.modalClass {
+  > div {
+
+    input,
+    textarea {
+      background-color: $feedback-modal-input-bg;
+    }
+
+    > div {
+      margin-top: 20px;
+      justify-content: flex-end !important;
+    }
+  }
+}
+
+.buttonContainer {
+  @extend .modalButtons;
+  flex-direction: row-reverse;
+
+  button:not(:last-child) {
+    margin-right: 0;
+  }
+
+  button:last-child {
+    margin-right: 10px;
+  }
+}
+
+.error {
+  color: $error-color;
+  font-weight: $weight-medium;
+  
+  textarea {
+    border: 1px solid $error-color;
+  }
+}
