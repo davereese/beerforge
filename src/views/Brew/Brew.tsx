@@ -652,7 +652,11 @@ const Brew = (props: Props) => {
             title={brew.name === '' ? 'New Brew' : brew.name}
             className={showBrewHistory ? styles.showBrewHistory : ''}
           >
-            {brew.name === '' ? 'New Brew' : brew.name}
+            {currentUser ? 
+              <span className={styles.titleToggle} onClick={openSideBar("settings")}>
+                {brew.name === '' ? 'New Brew' : brew.name}
+              </span>
+            : brew.name === '' ? 'New Brew' : brew.name}
             <div className={styles.brew__pageSubHeading}>
               {!currentUser // not current user's brew (viewing someone else's)
                 && <Link
