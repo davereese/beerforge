@@ -68,13 +68,14 @@ function FeedbackModal() {
       </label>
       <div className={styles.buttonContainer}>
         <button
-          type="submit"
-          className="button"
-        >Submit</button>
-        <button
+          type="button"
           className="button button--brown"
           onClick={() => modalDispatch({type: 'hide'})}
         >Cancel</button>
+        <button
+          type="submit"
+          className="button"
+        >Submit</button>
       </div>
     </form>
   );
