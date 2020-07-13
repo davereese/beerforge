@@ -1,6 +1,7 @@
 import React from 'react';
 
 import styles from '../Brew.module.scss';
+import componentStyles from './BrewComponents.module.scss';
 import Card from '../../../components/Card/Card';
 import List from '../../../components/List/List';
 import ListItem from '../../../components/ListItem/ListItem';
@@ -41,6 +42,7 @@ const BrewYeast = (props: Props) => {
             color="brew"
             clicked={!readOnly && !brewdayResults ? openSideBar('yeast', {...item, index: index + 1}) : null}
             key={`${item.id}${index}`}
+            customClass={componentStyles.ingredientListItem}
           >
             <span className={styles.firstCol}>
               {item.amount} {item.units === 'cells' ? 'bn cells' : item.units}

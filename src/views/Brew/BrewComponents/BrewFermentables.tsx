@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styles from '../Brew.module.scss';
+import componentStyles from './BrewComponents.module.scss';
 import Card from '../../../components/Card/Card';
 import List from '../../../components/List/List';
 import ListItem from '../../../components/ListItem/ListItem';
@@ -16,10 +17,40 @@ interface Props {
   user: any;
   brewdayResults: boolean;
   originalBrew: BrewInterface | null;
+  updateBrew: Function;
 }
 
 const BrewFermentables = (props: Props) => {
-  const {brew, newBrew, readOnly, unitLabels, openSideBar, user, brewdayResults, originalBrew} = props;
+  const containerRef: any = React.useRef();
+  const {brew, newBrew, readOnly, unitLabels, openSideBar, user, brewdayResults, originalBrew, updateBrew} = props;
+  const [editing, setEditing] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRef]);
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (containerRef.current && !containerRef.current.contains(e.target)) {
+      setEditing(undefined);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode === 13) {
+      setEditing(undefined);
+    }
+  };
+
+  const getFermentableWeight = (weight: number = 0): number => {
+    return user.units === 'metric' ? parseFloat(lb2kg(weight).toFixed(2)) : weight
+  }
 
   const calculatedWeight = (index: number) => {
     if (brewdayResults && originalBrew) {
@@ -29,12 +60,24 @@ const BrewFermentables = (props: Props) => {
     }
   };
 
+  const weightUpdated = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    brew.fermentables[index].weight = +event.currentTarget.value;
+    updateBrew(brew);
+  }
+
+  const handleEditToggle = (index: number) => (e: any) => {
+    e.stopPropagation();
+    if (!readOnly) {
+      setEditing(index);
+    }
+  }
+
   return (
     <Card color="brew" customClass={`${newBrew ? styles.new : brewdayResults ? styles.res : styles.view} ${styles.brew__editingSection}`}>
       <div className={styles.brew__header}>
         <h2>Fermentables</h2>
         {brew && brew.fermentables.length > 0 && !brewdayResults
-          ? <span>Total: {user.units === 'metric' ? parseFloat(lb2kg(brew.totalFermentables).toFixed(2)) : brew.totalFermentables} {unitLabels.largeWeight}{brew.totalFermentablesPercent ? ` (${brew.totalFermentablesPercent}%)` : null}</span>
+          ? <span>Total: {getFermentableWeight(brew.totalFermentables)} {unitLabels.largeWeight}{brew.totalFermentablesPercent && ` (${brew.totalFermentablesPercent}%)`}</span>
           : null}
         {!readOnly && !brewdayResults
           ? <button
@@ -49,15 +92,39 @@ const BrewFermentables = (props: Props) => {
             color="brew"
             clicked={!readOnly && !brewdayResults ? openSideBar('fermentables', {...fermentable, index: index + 1}) : null}
             key={`${fermentable.id}${index}`}
+            customClass={componentStyles.ingredientListItem}
           >
-            <span className={styles.firstCol}>
+            <span
+              className={`${styles.firstCol} ${!readOnly && componentStyles.editable} ${editing === index && componentStyles.editing}`}
+              onClick={handleEditToggle(index)}
+            >
             {brew.fermentableUnits === 'percent'
-              ? <>{user.units === 'metric'
-                  ? parseFloat(lb2kg(calculatedWeight(index)).toFixed(2))
-                  : calculatedWeight(index)} {unitLabels.largeWeight} ({fermentable.weight}%)</>
-              : <>{user.units === 'metric'
-                  ? parseFloat(lb2kg(fermentable.weight).toFixed(2))
-                  : fermentable.weight} {unitLabels.largeWeight}</>
+              ? <>{editing === index
+                  ? <><input
+                      type="number"
+                      step="0.1"
+                      defaultValue={getFermentableWeight(fermentable.weight)}
+                      onChange={weightUpdated(index)}
+                      className={componentStyles.amountEditor}
+                      ref={containerRef}
+                      autoFocus
+                    />%</>
+                  : `${getFermentableWeight(calculatedWeight(index))} ${unitLabels.largeWeight} (${fermentable.weight}%)`}
+                  
+                </>
+              : <>{editing === index
+                  ? <input
+                      type="number"
+                      step="0.1"
+                      defaultValue={getFermentableWeight(fermentable.weight)}
+                      onChange={weightUpdated(index)}
+                      className={componentStyles.amountEditor}
+                      ref={containerRef}
+                      autoFocus
+                    />
+                  : getFermentableWeight(fermentable.weight) + ' '}
+                  {unitLabels.largeWeight}
+                </>
             }
             </span>
             <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>

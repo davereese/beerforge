@@ -58,7 +58,6 @@ function FormHandler({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 
   useEffect(() => {

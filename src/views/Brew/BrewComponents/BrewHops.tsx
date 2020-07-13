@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import styles from '../Brew.module.scss';
+import componentStyles from './BrewComponents.module.scss';
 import Card from '../../../components/Card/Card';
 import List from '../../../components/List/List';
 import ListItem from '../../../components/ListItem/ListItem';
@@ -15,17 +16,60 @@ interface Props {
   openSideBar: Function;
   user: any;
   brewdayResults: boolean;
+  updateBrew: Function;
 }
 
 const BrewHops = (props: Props) => {
-  const {brew, newBrew, readOnly, unitLabels, openSideBar, user, brewdayResults} = props;
+  const containerRef: any = React.useRef();
+  const {brew, newBrew, readOnly, unitLabels, openSideBar, user, brewdayResults, updateBrew} = props;
+  const [editing, setEditing] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRef]);
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (containerRef.current && !containerRef.current.contains(e.target)) {
+      setEditing(undefined);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode === 13) {
+      setEditing(undefined);
+    }
+  };
+
+  const handleEditToggle = (index: number) => (e: any) => {
+    e.stopPropagation();
+    if (!readOnly) {
+      setEditing(index);
+    }
+  }
+
+  const weightUpdated = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    brew.hops[index].weight = +event.currentTarget.value;
+    updateBrew(brew);
+  }
+
+  const getHopWeight = (weight: number = 0): number => {
+    return user.units === 'metric' ? parseFloat(oz2g(weight).toFixed(2)) : weight
+  }
+
   return (
     <Card color="brew" customClass={`${newBrew ? styles.new : brewdayResults ? styles.res : styles.view} ${styles.brew__editingSection}`}>
       <div className={styles.brew__header}>
         <h2>Hops</h2>
         {brew && brew.hops.length > 0 && !brewdayResults
           ? <span>
-              Total: {user.units === 'metric' ? parseFloat(oz2g(brew.totalHops).toFixed(2)) : brew.totalHops} {unitLabels.smallWeight}
+              Total: {getHopWeight(brew.totalHops)} {unitLabels.smallWeight}
             </span>
           : null}
         {!readOnly && !brewdayResults
@@ -41,9 +85,25 @@ const BrewHops = (props: Props) => {
             color="brew"
             clicked={!readOnly && !brewdayResults ? openSideBar('hops', {...hop, index: index + 1}) : null}
             key={`${hop.id}${index}`}
+            customClass={componentStyles.ingredientListItem}
           >
-            <span className={styles.firstCol}>
-              {user.units === 'metric' ? parseFloat(oz2g(hop.weight).toFixed(2)) : hop.weight} {unitLabels.smallWeight}
+            <span
+              className={`${styles.firstCol} ${!readOnly && componentStyles.editable} ${editing === index && componentStyles.editing}`}
+              onClick={handleEditToggle(index)}
+            >
+              {editing === index
+                ? <input
+                    type="number"
+                    step="0.1"
+                    defaultValue={getHopWeight(hop.weight)}
+                    onChange={weightUpdated(index)}
+                    className={componentStyles.amountEditor}
+                    ref={containerRef}
+                    autoFocus
+                  />
+                : getHopWeight(hop.weight) + ' '
+              }
+              {unitLabels.smallWeight}
             </span>
             <span className={styles.secondCol}>{hop.name ? hop.name : hop.custom}</span>
             <span className={styles.thirdCol}>{hop.alphaAcid ? `${hop.alphaAcid}% AA` : null}</span>

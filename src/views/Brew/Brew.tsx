@@ -709,12 +709,15 @@ const Brew = (props: Props) => {
           />
           <BrewFermentables
             {...commonProps}
+            updateBrew={handleUpdateBrew}
           />
           <BrewHops
             {...commonProps}
+            updateBrew={handleUpdateBrew}
           />
           <BrewAdjuncts
             {...commonProps}
+            updateBrew={handleUpdateBrew}
           />
           <BrewYeast
             {...commonProps}
