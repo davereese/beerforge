@@ -63,7 +63,7 @@ const Brew = (props: Props) => {
   const [currentUser, setCurrentUser] = useState(true);
   const [userViewing, setUserViewing] = useState<any>({});
   const [cloning, setCloning] = useState(false);
-  const [currentPageIndex, setCurrentPageIndex] = useState();
+  const [currentPageIndex, setCurrentPageIndex] = useState<number>();
   const [changeBrew, setChangeBrew] = useState(false);
   const [showBrewHistory, setShowBrewHistory] = useState(false);
   const [originalBrew, setOriginalBrew] = useState<BrewInterface | null>(null);
