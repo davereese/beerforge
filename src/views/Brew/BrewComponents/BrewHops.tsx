@@ -47,9 +47,9 @@ const BrewHops = (props: Props) => {
     }
   };
 
-  const handleEditToggle = (index: number) => (e: any) => {
+  const handleEditToggle = (index: number) => (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!readOnly) {
+    if (!readOnly && !brewdayResults) {
       setEditing(index);
     }
   }
@@ -88,7 +88,11 @@ const BrewHops = (props: Props) => {
             customClass={componentStyles.ingredientListItem}
           >
             <span
-              className={`${styles.firstCol} ${!readOnly && componentStyles.editable} ${editing === index && componentStyles.editing}`}
+              className={`
+                ${styles.firstCol}
+                ${!readOnly && !brewdayResults && componentStyles.editable}
+                ${editing === index && componentStyles.editing}
+              `}
               onClick={handleEditToggle(index)}
             >
               {editing === index
