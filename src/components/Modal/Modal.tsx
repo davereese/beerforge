@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import styles from './Modal.module.scss';
-import { useModal } from '../../Store/ModalContext';
+import { useModal } from '../../store/ModalContext';
 
 const Modal = () => {
   const modalRef = React.createRef<HTMLDivElement>();

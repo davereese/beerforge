@@ -85,3 +85,38 @@ input.editInput {
 .bottomSpacing {
   margin-bottom: 4px;
 }
+
+.ingredientListItem {
+  padding: 0 15px;
+  min-height: 42px;
+  align-items: center;
+}
+
+.editable:not(.editing) {
+  &::before {
+    content: '';
+    position: absolute;
+    display: block;
+    left: -5px;
+    width: 90%;
+    height: 100%;
+    background: rgba($button-brown-bg, 0);
+    border-radius: 4px;
+    transition: background 0.3s;
+  }
+
+  &:hover::before {
+    background: rgba($button-brown-bg, 0.25);
+  }
+}
+
+input.amountEditor {
+  width: calc(100% - 35px);
+  min-width: calc(100% - 35px);
+  padding: 5px 7px;
+  margin: 0;
+  height: auto;
+  background-color: $feedback-modal-input-bg;
+  font-size: 14px;
+  transform: translateX(-7px);
+}

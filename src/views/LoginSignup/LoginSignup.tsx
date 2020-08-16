@@ -4,8 +4,8 @@ import ReactGA from 'react-ga';
 
 import styles from './LoginSignup.module.scss';
 import Loader from '../../components/Loader/Loader';
-import { useUser } from '../../Store/UserContext';
-import { useSnackbar } from '../../Store/SnackbarContext';
+import { useUser } from '../../store/UserContext';
+import { useSnackbar } from '../../store/SnackbarContext';
 import { google } from '../../resources/javascript/googleSvg';
 
 const LoginSignup = (props: any) => {

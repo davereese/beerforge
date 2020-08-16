@@ -7,9 +7,9 @@ import formStyles from '../../components/Forms/Forms.module.scss';
 import Avatar from '../../components/Avatar/Avatar';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
-import { useUser } from '../../Store/UserContext';
-import { useModal } from '../../Store/ModalContext';
-import { useSnackbar } from '../../Store/SnackbarContext';
+import { useUser } from '../../store/UserContext';
+import { useModal } from '../../store/ModalContext';
+import { useSnackbar } from '../../store/SnackbarContext';
 import Info from '../../components/Info/Info';
 import { gal2l, l2gal } from '../../resources/javascript/calculator';
 

@@ -14,9 +14,9 @@ import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import ActivityPanel from '../../components/ActivityPanel/ActivityPanel';
 import Loader from '../../components/Loader/Loader';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
-import { useUser } from '../../Store/UserContext';
-import { useSnackbar } from '../../Store/SnackbarContext';
-import { useModal } from '../../Store/ModalContext';
+import { useUser } from '../../store/UserContext';
+import { useSnackbar } from '../../store/SnackbarContext';
+import { useModal } from '../../store/ModalContext';
 
 // @ts-ignore
 const form = <div className={styles.formWrapper}><script src="https://donorbox.org/widget.js" paypalexpress="false"></script><p>Help me keep the servers running, or just buy me a beer!</p><iframe title="donate" allowpaymentrequest="" frameBorder="0" height="750px" name="donorbox" scrolling="no" seamless="seamless" src="https://donorbox.org/embed/keep-the-servers-on-or-buy-me-a-beer-1" style={{"maxWidth": "500px", "minWidth": "310px", "maxHeight": "none !important"}} width="100%"></iframe></div>;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
-import { BrewInterface, FermentationInterface } from '../../../Store/BrewContext';
+import { BrewInterface, FermentationInterface } from '../../../store/BrewContext';
 import { f2c, c2f, OG, FG } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 

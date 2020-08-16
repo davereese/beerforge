@@ -1,7 +1,7 @@
 import React from 'react';
 
 import styles from './Footer.module.scss';
-import { useModal } from '../../Store/ModalContext';
+import { useModal } from '../../store/ModalContext';
 
 const year = new Date().getFullYear();
 

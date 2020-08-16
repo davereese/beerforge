@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '../../../Store/UserContext';
+import { useUser } from '../../../store/UserContext';
 import { l2gal, kg2lb } from '../../../resources/javascript/calculator';
 
 const PreBoilGravity = (props: any) => {

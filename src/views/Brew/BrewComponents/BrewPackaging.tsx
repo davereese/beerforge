@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from '../Brew.module.scss';
 import { parseStringValues } from '../BrewUtils';
-import { BrewInterface } from '../../../Store/BrewContext';
+import { BrewInterface } from '../../../store/BrewContext';
 import { f2c, oz2g } from '../../../resources/javascript/calculator';
 
 interface Props {

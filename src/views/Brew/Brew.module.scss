@@ -436,6 +436,7 @@
 
       span {
         &.firstCol {
+          position: relative;
           order: 2;
           width: 20%;
         }
@@ -444,6 +445,7 @@
           order: 1;
           width: 100%;
           font-weight: $weight-semibold;
+          padding: 11px 0;
         }
 
         &.thirdCol {
@@ -516,7 +518,7 @@
 
           @include for-tablet-landscape-up () {
             &.firstCol {
-              width: 14%;
+              width: 13%;
             }
           }
         }

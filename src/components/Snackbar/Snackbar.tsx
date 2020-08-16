@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 import styles from './Snackbar.module.scss';
-import { useSnackbar } from '../../Store/SnackbarContext';
+import { useSnackbar } from '../../store/SnackbarContext';
 
 
 function Snackbar() {

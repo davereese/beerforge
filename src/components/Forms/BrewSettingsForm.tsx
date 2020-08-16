@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 
 import styles from "./Forms.module.scss";
 import Info from "../Info/Info";
-import { useUser } from "../../Store/UserContext";
-import { BrewInterface } from "../../Store/BrewContext";
+import { useUser } from "../../store/UserContext";
+import { BrewInterface } from "../../store/BrewContext";
 import { l2gal, gal2l } from "../../resources/javascript/calculator";
 
 interface Props {

@@ -8,15 +8,15 @@ import Card from '../../components/Card/Card';
 import FormHandler from './FormHandler/FormHandler';
 import FormattedDate from '../../components/FormattedDate/FormattedDate';
 import Loader from '../../components/Loader/Loader';
-import { BrewInterface, brewHistory } from '../../Store/BrewContext';
+import { BrewInterface, brewHistory } from '../../store/BrewContext';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { isEmpty } from '../../resources/javascript/isEmpty';
 import { usePrevious } from '../../resources/javascript/usePreviousHook';
-import { useUser } from '../../Store/UserContext';
-import { useBrew, processOptionsInterface } from '../../Store/BrewContext';
-import { useModal } from '../../Store/ModalContext';
-import { useSnackbar } from '../../Store/SnackbarContext';
-import * as brewService from '../../Store/BrewService';
+import { useUser } from '../../store/UserContext';
+import { useBrew, processOptionsInterface } from '../../store/BrewContext';
+import { useModal } from '../../store/ModalContext';
+import { useSnackbar } from '../../store/SnackbarContext';
+import * as brewService from '../../store/BrewService';
 import BrewSettingsAndStats from './BrewComponents/BrewSettingsAndStats';
 import BrewFermentables from './BrewComponents/BrewFermentables';
 import BrewHops from './BrewComponents/BrewHops';
@@ -63,7 +63,7 @@ const Brew = (props: Props) => {
   const [currentUser, setCurrentUser] = useState(true);
   const [userViewing, setUserViewing] = useState<any>({});
   const [cloning, setCloning] = useState(false);
-  const [currentPageIndex, setCurrentPageIndex] = useState();
+  const [currentPageIndex, setCurrentPageIndex] = useState<number>();
   const [changeBrew, setChangeBrew] = useState(false);
   const [showBrewHistory, setShowBrewHistory] = useState(false);
   const [originalBrew, setOriginalBrew] = useState<BrewInterface | null>(null);
@@ -709,12 +709,15 @@ const Brew = (props: Props) => {
           />
           <BrewFermentables
             {...commonProps}
+            updateBrew={handleUpdateBrew}
           />
           <BrewHops
             {...commonProps}
+            updateBrew={handleUpdateBrew}
           />
           <BrewAdjuncts
             {...commonProps}
+            updateBrew={handleUpdateBrew}
           />
           <BrewYeast
             {...commonProps}

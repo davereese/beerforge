@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import styles from './Forms.module.scss';
-import { BrewInterface, FermentableInterface } from '../../Store/BrewContext';
-import { useUser } from '../../Store/UserContext';
+import { BrewInterface, FermentableInterface } from '../../store/BrewContext';
+import { useUser } from '../../store/UserContext';
 import { lb2kg, kg2lb, SRM, OG } from '../../resources/javascript/calculator';
 import { pen } from '../../resources/javascript/penSvg.js';
 

@@ -12,11 +12,11 @@ import Loader from '../../components/Loader/Loader';
 import Tooltip from "../../components/Tooltip/Tooltip";
 import { getSrmToRgb } from '../../resources/javascript/srmToRgb';
 import { scrollToTop } from '../../resources/javascript/scrollToTop';
-import { BrewInterface } from '../../Store/BrewContext';
-import { useUser } from '../../Store/UserContext';
-import { useSnackbar } from '../../Store/SnackbarContext';
-import { useModal } from '../../Store/ModalContext';
-import * as brewService from '../../Store/BrewService';
+import { BrewInterface } from '../../store/BrewContext';
+import { useUser } from '../../store/UserContext';
+import { useSnackbar } from '../../store/SnackbarContext';
+import { useModal } from '../../store/ModalContext';
+import * as brewService from '../../store/BrewService';
 import SortMenu from './SortMenu';
 
 const Brews = (props: any) => {

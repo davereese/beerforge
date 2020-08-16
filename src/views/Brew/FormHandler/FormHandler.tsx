@@ -12,9 +12,9 @@ import FermentationForm from '../../../components/Forms/FermentationForm';
 import PackagingForm from '../../../components/Forms/PackagingForm';
 import NotesForm from '../../../components/Forms/NotesForm';
 import TagsForm from '../../../components/Forms/TagsForm';
-import { BrewInterface } from '../../../Store/BrewContext';
-import { useBrew } from '../../../Store/BrewContext';
-import { useModal } from '../../../Store/ModalContext';
+import { BrewInterface } from '../../../store/BrewContext';
+import { useBrew } from '../../../store/BrewContext';
+import { useModal } from '../../../store/ModalContext';
 
 interface Props {
   form: string;
@@ -58,7 +58,6 @@ function FormHandler({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 
   useEffect(() => {
