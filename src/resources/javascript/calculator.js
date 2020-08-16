@@ -234,7 +234,7 @@ export function partialMashTopOff(preBoilVolume, strikeVolume, grainVol, absorpt
 };
 
 // * Original Gravity
-export function OG(malts, mashEfficiency, batchSize) {
+export function OG(malts, mashEfficiency, batchSize, fermentableUnits) {
   mashEfficiency = parseFloat(mashEfficiency);
   batchSize = parseFloat(batchSize);
 
@@ -242,7 +242,8 @@ export function OG(malts, mashEfficiency, batchSize) {
       OG = null;
 
   for ( let i = 0; i < malts.length; i++ ) {
-    totalPoints += malts[i].potential * malts[i].weight;
+    const weight = fermentableUnits === 'percent' ? malts[i].calculatedWeight : malts[i].weight;
+    totalPoints += malts[i].potential * weight;
   }
 
   // multiply by mash efficiency

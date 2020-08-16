@@ -448,10 +448,11 @@ export const processBrew = (
     }
   }
   if (brew.fermentables.length > 0 && brew.mashEfficiency && brew.batchSize) {
-    brew.og = brew.targetOG ? brew.targetOG : Calculator.OG(
+    brew.og = Calculator.OG(
       brew.fermentables,
       brew.mashEfficiency,
-      brew.batchSize
+      brew.batchSize,
+      brew.fermentableUnits
     );
   }
   if (brew.og && brew.totalFermentables && brew.totalWater && brew.batchSize) {
