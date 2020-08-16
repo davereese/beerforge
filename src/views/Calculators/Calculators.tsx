@@ -21,7 +21,7 @@ import IBU from './Calculators/ibu';
 import SRM from './Calculators/srm';
 import CO2 from './Calculators/co2';
 import MashInfusion from './Calculators/mash-infusion';
-import { useUser } from '../../Store/UserContext';
+import { useUser } from '../../store/UserContext';
 import MashEfficiency from './Calculators/mash-efficiency';
 
 const Calculators = (props: any) => {

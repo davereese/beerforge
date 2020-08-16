@@ -3,8 +3,8 @@ import axios from 'axios';
 
 import styles from './Forms.module.scss';
 import Info from "../Info/Info";
-import { BrewInterface, HopInterface } from '../../Store/BrewContext';
-import { useUser } from '../../Store/UserContext';
+import { BrewInterface, HopInterface } from '../../store/BrewContext';
+import { useUser } from '../../store/UserContext';
 import { oz2g, g2oz, IBU, f2c, c2f } from '../../resources/javascript/calculator';
 import { HOP_USE } from '../../resources/javascript/constants';
 

@@ -5,7 +5,7 @@ import componentStyles from './BrewComponents.module.scss';
 import Card from '../../../components/Card/Card';
 import List from '../../../components/List/List';
 import ListItem from '../../../components/ListItem/ListItem';
-import { BrewInterface, YeastInterface } from '../../../Store/BrewContext';
+import { BrewInterface, YeastInterface } from '../../../store/BrewContext';
 
 interface Props {
   readOnly: boolean;

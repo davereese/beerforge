@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 
-import { useUser } from '../Store/UserContext';
+import { useUser } from '../store/UserContext';
 
 interface Props {
   component: Function,

@@ -17,7 +17,7 @@ import SRM from '../Calculators/Calculators/srm';
 import CO2 from '../Calculators/Calculators/co2';
 import sketch from '../../resources/javascript/bubbles';
 import * as Calculator from '../../resources/javascript/calculator';
-import { useUser } from '../../Store/UserContext';
+import { useUser } from '../../store/UserContext';
 
 const Home = () => {
   // STATE

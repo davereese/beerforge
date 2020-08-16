@@ -6,7 +6,7 @@ import Card from "../../../components/Card/Card";
 import {
   BrewInterface,
   processOptionsInterface
-} from "../../../Store/BrewContext";
+} from "../../../store/BrewContext";
 import { parseStringValues } from "../BrewUtils";
 import { getSrmToRgb } from "../../../resources/javascript/srmToRgb";
 import {

@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from '../Brew.module.scss';
 import { transformNotes } from '../BrewUtils';
-import { BrewInterface } from '../../../Store/BrewContext';
+import { BrewInterface } from '../../../store/BrewContext';
 
 interface Props {
   readOnly: boolean;

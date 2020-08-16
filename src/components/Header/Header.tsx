@@ -5,7 +5,7 @@ import styles from "./Header.module.scss";
 import logoImage from "../../resources/images/beerforge_logo.svg";
 import Avatar from "../Avatar/Avatar";
 import Tooltip from "../Tooltip/Tooltip";
-import { useUser } from '../../Store/UserContext';
+import { useUser } from '../../store/UserContext';
 
 const Header = ({ history }: any) => {
   const [user, userDispatch] = useUser();

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import styles from '../Brew.module.scss';
 import componentStyles from './BrewComponents.module.scss';
-import { BrewInterface, MashInterface, processOptionsInterface } from '../../../Store/BrewContext';
+import { BrewInterface, MashInterface, processOptionsInterface } from '../../../store/BrewContext';
 import { gal2l, l2gal, preBoilVol, OG, preBoilG, partialMashTopOff, totalBIABWater, totalWater } from '../../../resources/javascript/calculator';
 import BrewEditableField from './BrewEditableField';
 

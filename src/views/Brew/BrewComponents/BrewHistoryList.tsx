@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from '../Brew.module.scss';
 import listStyles from './BrewHistoryList.module.scss';
-import { BrewInterface } from '../../../Store/BrewContext';
+import { BrewInterface } from '../../../store/BrewContext';
 import Card from '../../../components/Card/Card';
 import { parseStringValues } from '../BrewUtils';
 import { getSrmToRgb } from '../../../resources/javascript/srmToRgb';

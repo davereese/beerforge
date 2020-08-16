@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { BrewInterface } from '../../Store/BrewContext';
-import { useUser } from '../../Store/UserContext';
+import { BrewInterface } from '../../store/BrewContext';
+import { useUser } from '../../store/UserContext';
 import { gal2l, l2gal } from '../../resources/javascript/calculator';
 
 interface Props {

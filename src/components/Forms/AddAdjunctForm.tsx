@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import styles from './Forms.module.scss';
-import { BrewInterface, AdjunctInterface } from '../../Store/BrewContext';
+import { BrewInterface, AdjunctInterface } from '../../store/BrewContext';
 import { ADJUNCT_TYPES, UNITS, ADJUNCT_USE } from '../../resources/javascript/constants';
 
 interface Props {

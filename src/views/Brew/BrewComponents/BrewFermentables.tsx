@@ -5,7 +5,7 @@ import componentStyles from './BrewComponents.module.scss';
 import Card from '../../../components/Card/Card';
 import List from '../../../components/List/List';
 import ListItem from '../../../components/ListItem/ListItem';
-import { BrewInterface, FermentableInterface } from '../../../Store/BrewContext';
+import { BrewInterface, FermentableInterface } from '../../../store/BrewContext';
 import { lb2kg } from '../../../resources/javascript/calculator';
 
 interface Props {

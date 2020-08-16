@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 import styles from './Feedback.module.scss';
-import { useModal } from '../../Store/ModalContext';
-import { useUser } from '../../Store/UserContext';
-import { useSnackbar } from '../../Store/SnackbarContext';
+import { useModal } from '../../store/ModalContext';
+import { useUser } from '../../store/UserContext';
+import { useSnackbar } from '../../store/SnackbarContext';
 
 function FeedbackModal() {
   // eslint-disable-next-line
