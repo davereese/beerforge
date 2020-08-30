@@ -179,6 +179,7 @@ const Home = () => {
             <li>Searchable brew logs</li>
             <li>Huge ingredient library</li>
             <li>Custom ingredient inputs</li>
+            <li>Draft brew entries</li>
             <li>Import/Export brews via beerXML</li>
             <li>Customizable equipment variables</li>
             <li>Mobile optimized</li>
