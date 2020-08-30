@@ -100,6 +100,10 @@
     border-top: 5px solid $text-dark;
   }
 
+  .draft {
+    border-top: 5px solid $draft-brew-border;
+  }
+
   .settings {
     color: $text-dark;
     font-weight: $weight-medium;
@@ -781,13 +785,15 @@
     box-shadow: 0 2px 10px rgba($button-shadow, 0.3);
   }
 
+  .buttonContainer {
+    display: flex;
+    justify-content: center;
+  }
+
   .saveButton {
     position: relative;
+    margin: 0 10px;
     padding: 0 20px;
-    width: 280px;
-    left: 50%;
-    margin-left: -140px;
-    transition: background-color 0.5s, padding 0.4s;
 
     &.saving {
       padding-right: 50px;

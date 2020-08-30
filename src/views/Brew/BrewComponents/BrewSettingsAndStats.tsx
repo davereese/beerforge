@@ -76,13 +76,17 @@ const BrewSettingsAndStats = (props: Props) => {
     setEditing,
     brewdayResults
   };
+  const { isDraft } = brew;
 
   return (
     <Card
       color="brew"
-      customClass={
-        newBrew ? styles.new : brewdayResults ? styles.res : styles.view
-      }
+      customClass={`
+        ${newBrew && styles.new}
+        ${brewdayResults && styles.res}
+        ${isDraft && styles.draft}
+        ${!newBrew && !brewdayResults && !isDraft && styles.view}
+      `}
     >
       <div className={styles.brew__numbers}>
         <div className={styles.brew__numbersMenu}>
@@ -203,7 +207,7 @@ const BrewSettingsAndStats = (props: Props) => {
               className={`button button--icon-large button--light-brown button--no-shadow clone`}
               onClick={clone()}
               title="Clone"
-              disabled={newBrew || brewdayResults}
+              disabled={newBrew || brewdayResults || isDraft}
             >
               <span>Clone</span>
             </button>
@@ -211,7 +215,7 @@ const BrewSettingsAndStats = (props: Props) => {
               <button
                 className={`button button--icon-large button--light-brown button--no-shadow results`}
                 onClick={brewdayResultsToggle()}
-                disabled={newBrew}
+                disabled={newBrew || isDraft}
                 title="Brewday Results"
               >
                 <span>Brewday&nbsp;Results</span>

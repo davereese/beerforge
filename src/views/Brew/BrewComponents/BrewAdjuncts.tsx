@@ -21,6 +21,7 @@ interface Props {
 const BrewAdjuncts = (props: Props) => {
   const containerRef: any = React.useRef();
   const {brew, newBrew, readOnly, openSideBar, brewdayResults, updateBrew} = props;
+  const { isDraft } = brew;
   const [editing, setEditing] = useState<number | undefined>(undefined);
 
   useEffect(() => {
@@ -59,7 +60,12 @@ const BrewAdjuncts = (props: Props) => {
   }
 
   return (
-    <Card color="brew" customClass={`${newBrew ? styles.new : brewdayResults ? styles.res : styles.view} ${styles.brew__editingSection}`}>
+    <Card color="brew" customClass={`
+    ${newBrew && styles.new}
+    ${brewdayResults && styles.res}
+    ${isDraft && styles.draft}
+    ${!newBrew && !brewdayResults && !isDraft && styles.view}
+  `}>
       <div className={styles.brew__header}>
         <h2>Adjuncts</h2>
         {!readOnly && !brewdayResults

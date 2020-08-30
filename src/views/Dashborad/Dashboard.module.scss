@@ -151,6 +151,24 @@
         font-size: px-to-rem(10px);
         line-height: 0;
         letter-spacing: 0.03em;
+
+        &.pill {
+          display: inline-flex;
+          height: 15px;
+          align-content: center;
+          padding: 0 2px;
+          margin-left: 8px;
+          transform: translateY(-1px);
+          border-radius: 3px;
+          background-color: $stat-background;
+          line-height: 1.3;
+          color: $text-dark;
+        }
+      }
+
+      p {
+        padding: 0;
+        margin: 0;
       }
     }
 

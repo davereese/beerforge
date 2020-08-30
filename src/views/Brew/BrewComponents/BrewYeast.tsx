@@ -19,8 +19,14 @@ interface Props {
 
 const BrewYeast = (props: Props) => {
   const {brew, newBrew, readOnly, openSideBar, brewdayResults} = props;
+  const { isDraft } = brew;
   return (
-    <Card color="brew" customClass={`${newBrew ? styles.new : brewdayResults ? styles.res : styles.view} ${styles.brew__editingSection}`}>
+    <Card color="brew" customClass={`
+    ${newBrew && styles.new}
+    ${brewdayResults && styles.res}
+    ${isDraft && styles.draft}
+    ${!newBrew && !brewdayResults && !isDraft && styles.view}
+  `}>
       <div className={styles.brew__header}>
         <h2>Yeast</h2>
         {brew && brew.yeast.length > 0 && !brewdayResults
