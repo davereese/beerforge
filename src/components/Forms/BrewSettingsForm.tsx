@@ -72,21 +72,19 @@ function BrewSettingsForm(props: Props) {
           onChange={dataChanged("name")}
         />
       </label>
-      {props.brew.id ? (
-        <label>
-          Date Brewed
-          <br />
-          <input
-            type="date"
-            defaultValue={
-              props.brew.dateBrewed
-                ? getFormattedDate(props.brew.dateBrewed).toString()
-                : ""
-            }
-            onChange={dataChanged("dateBrewed")}
-          />
-        </label>
-      ) : null}
+      <label>
+        Brew Date
+        <br />
+        <input
+          type="date"
+          defaultValue={
+            props.brew.dateBrewed
+              ? getFormattedDate(props.brew.dateBrewed).toString()
+              : ""
+          }
+          onChange={dataChanged("dateBrewed")}
+        />
+      </label>
       <div className={styles.row}>
         <label>
           Batch Type
@@ -117,7 +115,7 @@ function BrewSettingsForm(props: Props) {
           Batch Size ({user.units === "metric" ? "L" : "gal"})&nbsp;
           <Info
             alignment="top-right"
-            info="Volume of wort you expect to transfer to the&nbsp;fermentor."
+            info="Volume&nbsp;of&nbsp;wort you expect to transfer to the fermentor."
           />
           <br />
           <input
@@ -177,7 +175,7 @@ function BrewSettingsForm(props: Props) {
           className={`button button--error button--no-shadow ${styles.fullButton}`}
           onClick={() => props.delete()}
         >
-          Remove Brew
+          {props.brew.isDraft ? `Remove Draft` : `Remove Brew`}
         </button>
       ) : null}
     </>

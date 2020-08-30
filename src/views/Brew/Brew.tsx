@@ -59,6 +59,7 @@ const Brew = (props: Props) => {
   const [editingData, setEditingData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
   const [shouldBlock, setShouldBlock] = useState(false);
   const [currentUser, setCurrentUser] = useState(true);
   const [userViewing, setUserViewing] = useState<any>({});
@@ -380,12 +381,12 @@ const Brew = (props: Props) => {
     }
   }
 
-  const handleSaveBrew = async (e: any) => {
+  const handleSaveBrew = (isDraft: boolean) => async (e: React.MouseEvent) => {
     // double check current user hasn't expired
     userDispatch({type: 'load'});
-    setSaving(true);
+    isDraft ? setSavingDraft(true) : setSaving(true);
     if (newBrew) {
-      await brewService.saveBrew(brew, user)
+      await brewService.saveBrew({...brew, isDraft: isDraft}, user)
         .then((res: any) => {
           setShouldBlock(false);
           setNewBrew(false);
@@ -397,7 +398,7 @@ const Brew = (props: Props) => {
             message: `Successfully saved: ${brew.name}!`
           }});
           scrollToTop(300);
-          setSaving(false);
+          isDraft ? setSavingDraft(false) : setSaving(false);
           brewDispatch({
             type: 'process',
             payload: res.data.brew,
@@ -411,17 +412,17 @@ const Brew = (props: Props) => {
               ? error.response.statusText
               : error.response.data
           }});
-          setSaving(false);
+          isDraft ? setSavingDraft(false) : setSaving(false);
         });
     } else {
       !brewdayResults
-        ? await brewService.updateBrew(brew, user)
+        ? await brewService.updateBrew({...brew, isDraft: isDraft}, user)
           .then((res: any) => {
             updateSuccess()
           })
           .catch((error) => {
             showBasicError(error);
-            setSaving(false);
+            isDraft ? setSavingDraft(false) : setSaving(false);
           })
         : await brewService.updateBrewResults(brew, user)
           .then((res: any) => {
@@ -431,7 +432,7 @@ const Brew = (props: Props) => {
           .catch((error) => {
             console.log(error);
             showBasicError(error);
-            setSaving(false);
+            isDraft ? setSavingDraft(false) : setSaving(false);
           })
         ;
     }
@@ -608,6 +609,7 @@ const Brew = (props: Props) => {
     }});
     scrollToTop(300);
     setSaving(false);
+    setSavingDraft(false);
     setShouldBlock(false);
   }
 
@@ -630,6 +632,7 @@ const Brew = (props: Props) => {
     user,
     originalBrew
   }
+  const { isDraft } = brew;
 
   return loading ? <Loader className={styles.loader} color="#000" /> : (
     <section
@@ -674,6 +677,9 @@ const Brew = (props: Props) => {
               }
               {showBrewHistory &&
                 <span className={styles.subHeading}>Brew History</span>
+              }
+              {isDraft &&
+                <span className={styles.subHeading}>Draft</span>
               }
             </div>
           </h1>
@@ -722,7 +728,14 @@ const Brew = (props: Props) => {
           <BrewYeast
             {...commonProps}
           />
-          <Card color="brew" customClass={newBrew ? styles.new : brewdayResults ? styles.res : styles.view}>
+          <Card color="brew"
+            customClass={`
+              ${newBrew && styles.new}
+              ${brewdayResults && styles.res}
+              ${isDraft && styles.draft}
+              ${!newBrew && !brewdayResults && !isDraft && styles.view}
+            `}
+          >
             {brew.batchType && brew.batchType !== 'extract'
               ? <BrewMash
                   applyEdit={handleUpdateBrew}
@@ -747,16 +760,26 @@ const Brew = (props: Props) => {
               />}
           </Card>
           {!readOnly
-            ? <button
+            && <div className={styles.buttonContainer}>
+              {(isDraft || newBrew) && <button
                 type="submit"
-                className={`button button--large ${styles.saveButton} ${saving ? styles.saving : null}`}
-                onClick={handleSaveBrew}
+                className={`button button--yellow button--large ${styles.saveButton} ${savingDraft && styles.saving}`}
+                onClick={handleSaveBrew(true)}
               >
-                {newBrew? <>Save &amp; Get Brewing!</> : <>Update {brewdayResults ? 'Results' : 'Brew'}</>}
-                {saving ? <Loader className={styles.savingLoader} /> : null}
-              </button>
-            : null}
-        </> /* !showBrewHistory */}
+                {newBrew ? `Save Draft` : `Update Draft`}
+                {savingDraft && <Loader className={styles.savingLoader} />}
+              </button> }
+              <button
+                  type="submit"
+                  className={`button button--large ${styles.saveButton} ${saving && styles.saving}`}
+                  onClick={handleSaveBrew(false)}
+                >
+                  {newBrew || isDraft ? `Save & Get Brewing!` : `Update ${brewdayResults ? 'Results' : 'Brew'}`}
+                  {saving && <Loader className={styles.savingLoader} />}
+                </button>
+              </div>
+            }
+        </>}
       </div>
       <div className={styles.sideBar} role="complementary" ref={formContainer}>
         <Card color="brew" customStyle={top} customClass={`${styles.formsContainer}`}>

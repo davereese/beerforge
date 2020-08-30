@@ -167,6 +167,7 @@ export interface BrewInterface {
   fermentableUnits?: 'weight' | 'percent';
   totalFermentablesPercent?: number;
   targetOG?: number;
+  isDraft: boolean;
   history?: brewHistory[];
   [key: string]: any;
 };
@@ -549,6 +550,7 @@ export const processBrew = (
       brew.batchSize
     );
   }
+  brew.isDraft = !!brew.isDraft ? brew.isDraft : false;
 
   return brew;
 };

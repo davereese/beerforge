@@ -17,6 +17,7 @@ import { scrollToTop } from '../../resources/javascript/scrollToTop';
 import { useUser } from '../../store/UserContext';
 import { useSnackbar } from '../../store/SnackbarContext';
 import { useModal } from '../../store/ModalContext';
+import { BrewInterface } from '../../store/BrewContext';
 
 // @ts-ignore
 const form = <div className={styles.formWrapper}><script src="https://donorbox.org/widget.js" paypalexpress="false"></script><p>Help me keep the servers running, or just buy me a beer!</p><iframe title="donate" allowpaymentrequest="" frameBorder="0" height="750px" name="donorbox" scrolling="no" seamless="seamless" src="https://donorbox.org/embed/keep-the-servers-on-or-buy-me-a-beer-1" style={{"maxWidth": "500px", "minWidth": "310px", "maxHeight": "none !important"}} width="100%"></iframe></div>;
@@ -81,7 +82,7 @@ const Dashboard = (props: any) => {
         if (isMounted) {
           setBrewLog(result.data.allBrews);
           setBrewActivity(result.data.brews);
-          setBrewsNum(result.data.allBrews.length)
+          setBrewsNum(result.data.allBrews.filter((brew: BrewInterface) => brew.is_draft === false).length)
           setLoading(false);
         }
       });
@@ -150,7 +151,7 @@ const Dashboard = (props: any) => {
               clicked={handleBrewClick(brew.id)}
               label="Click to see brew details"
             >
-              {brew.name} <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
+              <p>{brew.name}{brew.is_draft && <span className={styles.pill}>Draft</span>}</p> <span><FormattedDate>{brew.date_brewed}</FormattedDate></span>
             </ListItem>
           );
         } else {
