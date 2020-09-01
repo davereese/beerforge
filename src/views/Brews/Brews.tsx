@@ -327,7 +327,7 @@ const Brews = (props: any) => {
                   clicked={handleBrewClick(brew.id)}
                   label="Click to see brew details"
                 >
-                  <div className={styles.nameCol}>{brew.name}</div>
+                  <div className={styles.nameCol}>{brew.name} {brew.is_draft && <span className={styles.pill}>Draft</span>}</div>
                   <span className={styles.abvCol}>{brew.abv ? brew.abv : '--'}</span>
                   <span className={styles.ibuCol}>{brew.ibu ? brew.ibu : '--'}</span>
                   <span className={styles.srmCol}>
