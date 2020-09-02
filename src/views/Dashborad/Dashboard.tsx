@@ -211,14 +211,13 @@ const Dashboard = (props: any) => {
           <h2 className={styles.dashboard__label}>Weekly Activity</h2>
           {loading ? <Loader className={styles.activityLoader} /> : <ActivityPanel brews={brewActivity} />}
         </Card>
-        {currentUser && <Card customClass={styles.flex}>
+        <Card customClass={styles.flex}>
             <Link to="/calculators" className={styles.cardLink}>
               <h2 className={styles.dashboard__header}>Calculators</h2>
               <img src={calcImage} alt="calculators" />
             </Link>
           </Card>
-        }
-        {currentUser && <Card customClass={styles.flex}>
+        <Card customClass={styles.flex}>
             <button
               className={styles.cardLink}
               onClick={handleDonateClick}
@@ -227,7 +226,7 @@ const Dashboard = (props: any) => {
               <img src={coinsImage} alt="calculators" />
             </button>
           </Card>
-        }
+        
       </div>
     </section>
   );

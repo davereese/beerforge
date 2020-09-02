@@ -187,6 +187,10 @@
       }
     }
 
+    .filterInput {
+      width: 180px;
+    }
+
     .countInput {
       width: 100px;
       min-width: 100px;
@@ -320,7 +324,7 @@
             margin-left: 8px;
             transform: translateY(-1px);
             border-radius: 3px;
-            background-color: $stat-background;
+            background-color: $label-color;
             line-height: 1.3;
             color: $text-dark;
           }

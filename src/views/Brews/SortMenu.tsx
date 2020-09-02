@@ -24,7 +24,7 @@ const SortMenu = (props: any) => {
               id="desc"
               name="date"
               checked={dateSort === "desc"}
-              onChange={(e: any) => setDateSort(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDateSort(e.target.value)}
             />
             <label htmlFor="desc">Date descending</label>
           </li>
@@ -35,17 +35,27 @@ const SortMenu = (props: any) => {
               id="asc"
               name="date"
               checked={dateSort === "asc"}
-              onChange={(e: any) => setDateSort(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDateSort(e.target.value)}
             />
             <label htmlFor="asc">Date ascending</label>
           </li>
         </ul>
       </div>
       <div className={styles.sortMenu__column}>
-        <label>DISPLAY</label>
+        <label>FILTER &amp; SORT</label>
           <ul>
             <li>
-              <input
+              <select
+                className={`dark ${styles.filterInput}`}
+                value={displaySort}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDisplaySort(e.target.value)}
+              >
+                <option value="individual">All</option>
+                <option value="series">Re-brew Series</option>
+                <option value="noDrafts">Exclude Drafts</option>
+                <option value="onlyDrafts">Only Drafts</option>
+              </select>
+              {/* <input
                 type="radio"
                 value="individual"
                 id="individual"
@@ -64,7 +74,7 @@ const SortMenu = (props: any) => {
                 checked={displaySort === "series"}
                 onChange={(e: any) => setDisplaySort(e.target.value)}
               />
-              <label htmlFor="series">Re-brew Series</label>
+              <label htmlFor="series">Re-brew Series</label> */}
             </li>
           </ul>
         </div>
@@ -75,7 +85,7 @@ const SortMenu = (props: any) => {
               step="10"
               className={`dark ${styles.countInput}`}
               value={numToShow.toString()}
-              onChange={(e: any) => setNumToShow(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumToShow(e.target.value)}
             />
           </label>
         </div>
