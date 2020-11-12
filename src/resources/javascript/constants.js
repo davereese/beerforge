@@ -43,3 +43,14 @@ export const HOP_USE = [
   'whirlpool',
   'dry hop',
 ];
+
+export const FERMENTABLE_CATEGORIES = [
+  'All',
+  'Extract',
+  'Base Malts',
+  'Caramel & Crystal Malts',
+  'Adjunct Grains',
+  'Kilned & Toasted Malts',
+  'Roasted Malts',
+  'Sugars'
+]

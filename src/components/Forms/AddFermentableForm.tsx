@@ -6,6 +6,9 @@ import { BrewInterface, FermentableInterface } from '../../store/BrewContext';
 import { useUser } from '../../store/UserContext';
 import { lb2kg, kg2lb, SRM, OG } from '../../resources/javascript/calculator';
 import { pen } from '../../resources/javascript/penSvg.js';
+import Select from '../Select/Select';
+import { FERMENTABLE_CATEGORIES } from '../../resources/javascript/constants';
+import { getCategoryColor } from '../../resources/javascript/functions';
 
 interface Props {
   brew: BrewInterface;
@@ -145,7 +148,7 @@ function AddFermentableForm(props: Props) {
   const dataChanged = (type: string) => (event: any) => {
     let data: FermentableInterface = {};
     if (type === 'fermentable') {
-      const choice = fermentables.find(fermentable => fermentable.id === parseInt(event.currentTarget.value));
+      const choice = fermentables.find(fermentable => fermentable.id === parseInt(event.value));
       data = choice ? choice : {};
     } else if (type === 'custom') {
       data.custom = event.currentTarget.value;
@@ -195,7 +198,7 @@ function AddFermentableForm(props: Props) {
   return(
     <>
       <label>Select Fermentable<br />
-        <select
+        {/* <select
           onChange={dataChanged('fermentable')}
           value={formData.id ? formData.id : 0}
           className={formData.custom ? styles.unused : ''}
@@ -209,7 +212,25 @@ function AddFermentableForm(props: Props) {
               {fermentable.name} - {fermentable.origin} - {fermentable.lovibond}°L
             </option>
           ))}
-        </select>
+        </select> */}
+        <Select
+          options={
+            fermentables.map(fermentable => (
+              {
+                value: +fermentable.id!,
+                label: fermentable.name!,
+                secondaryLabels: [fermentable.origin, `${fermentable.lovibond}°L`],
+                color: getCategoryColor(fermentable.category!)
+              }
+            ))
+          }
+          defaultLabel="Choose One"
+          value={formData.id ? formData.id : 0}
+          includeSearch
+          filters={FERMENTABLE_CATEGORIES}
+          onChange={dataChanged('fermentable')}
+          className={formData.custom ? styles.unused : ''}
+        />
       </label>
       <label><strong>Or</strong> add your own<br />
         <input

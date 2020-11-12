@@ -25,14 +25,7 @@ label {
   font-weight: 500;
 }
 
-
-input[type="text"],
-input[type="number"],
-input[type="password"],
-input[type="email"],
-input[type="date"],
-select,
-textarea {
+%inputStyle {
   display: inline-block;
   box-sizing: border-box;
   margin: 5px 0 10px;
@@ -62,14 +55,29 @@ textarea {
 
   &:disabled {
     opacity: 0.5;
+    cursor: not-allowed;
   }
+}
+
+%selectStyle {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' class='svg-triangle' width='10' height='10'><path d='M 5,6 10,0 0,0 z' fill='rgb(46, 25, 34)' /></svg>");
+  background-position: calc(100% - 15px) 19px;
+  background-repeat: no-repeat;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+  @extend %inputStyle;
 }
 
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' class='svg-triangle' width='10' height='10'><path d='M 5,6 10,0 0,0 z' fill='rgb(46, 25, 34)' /></svg>");
-  background-position: calc(100% - 15px) 19px;
-  background-repeat: no-repeat;
+  @extend %selectStyle;
 }
 
 select::-ms-expand {

@@ -1,0 +1,156 @@
+@import '../../styles/variables';
+@import '../../styles/utilities';
+@import "../../styles/type";
+@import "../../styles/forms";
+
+.selectContainer {
+  position: relative;
+  z-index: 5;
+
+  &.show {
+    opacity: 1;
+  }
+}
+
+.selection {
+  @extend %inputStyle;
+  @extend %selectStyle;
+  display: flex;
+  font-size: px-to-rem(13px);
+  align-items: center;
+  z-index: 1;
+  transition: opacity 0.3s;
+
+  &.light {
+    background-color: $brew-card-bg;
+    color: $text-dark;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.selectDropdown {
+  position: absolute;
+  top: 0;
+  padding: 0;
+  width: 100%;
+  background-color: $select-background;
+  z-index: 10;
+
+  input[type="text"].search {
+    margin: 0;
+    padding: 0 10px;
+    height: 42px;
+    border-bottom: 1px solid $select-element-border;
+    border-radius: 0;
+    background-color: transparent;
+    color: $text-light;
+  
+    &::placeholder {
+      color: $label-color;
+      font-weight: normal;
+    }
+  }
+  
+  .filter {
+    position: relative;
+    padding-left: 100px;
+    height: 42px;
+    border-bottom: 1px solid $select-element-border;
+  
+    &::before {
+      content: 'Filter';
+      position: absolute;
+      left: 10px;
+      top: 12px;
+      font-family: $montserrat;
+      font-size: px-to-rem(13px);
+      color: $label-color;
+    }
+  
+    select {
+      $color: rgba($label-color, 0.99);
+
+      margin: 0;
+      background-color: transparent;
+      color: $text-light;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' class='svg-triangle' width='10' height='10'><path d='M 5,6 10,0 0,0 z' fill='#{$color}' /></svg>");
+    }
+  }
+
+  ul {
+    height: 307px;
+    overflow-y: scroll;
+    padding: 5px 0 10px;
+    margin: 0;
+    list-style-type: none;
+
+    li {
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: $select-option-hover;
+      }
+    }
+  }
+
+  .option {
+    display: grid;
+    grid-template-columns: 68% 30%;
+    column-gap: 2%;
+    padding: 4px 10px;
+    width: 100%;
+    background-color: transparent;
+    cursor: pointer;
+    border: 0;
+    text-align: left;
+    color: $text-light;
+    font-size: px-to-rem(13px);
+    font-family: $montserrat;
+
+    &:focus {
+      border: 0;
+      outline: none;
+    }
+
+    > span {
+      position: relative;
+      display: flex;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      width: 100%;
+
+      &.color {
+        padding-left: 17px;
+
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 0;
+          width: 10px;
+          height: 10px;
+          background-color: var(--color);
+          border-radius: 50%;
+        }
+      }
+
+      &.alignRight {
+        justify-content: flex-end;
+      }
+
+      span {
+        color: $label-color;
+      }
+
+      span:last-of-type {
+        justify-content: flex-end;
+      }
+    }
+  }
+}

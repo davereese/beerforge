@@ -23,6 +23,7 @@ export interface FermentableInterface {
   origin?: string;
   index?: number;
   units?: 'lb' | 'kg' | 'percent';
+  category?: number;
   [key: string]: string | number | boolean | undefined;
 };
 

@@ -5,7 +5,8 @@ $dark-gray: #2b2b2b;
 $white: #ffffff;
 
 // color
-$tar: #2e2318;
+$tar: #251f1d;
+$mud: #2e2318;
 $brown: #58382a;
 $caramel: #ab5c00;
 $coral: #e9662c;
@@ -29,7 +30,7 @@ $brew-bg-1: $canary;
 $brew-bg-2: $embers;
 
 $text-light: $white;
-$text-dark: $tar;
+$text-dark: $mud;
 $label-color: $gold;
 $error-color: $coral;
 $success-color: $seafoam;
@@ -39,14 +40,14 @@ $placeholder-light: $coral;
 $search-text: $forsythia;
 
 $dashboard-header: $canary;
-$dashboard-border: rgba($tar, 0.5);
+$dashboard-border: rgba($mud, 0.5);
 
 $link: $coral;
 $link-hover: $canary;
 $dashboard-link: $canary;
 $dashboard-link-hover: $gold;
 
-$button-default-bg: $tar;
+$button-default-bg: $mud;
 $button-default-text: $canary;
 $button-yellow: $canary;
 $button-light-brown: $toast;
@@ -57,6 +58,10 @@ $button-green-bg: $seafoam;
 $button-red-bg: $coral;
 $button-error-bg: darken($coral, 20%);
 $input-bg-dark: $coral;
+
+$select-background: $tar;
+$select-option-hover: rgba($coral, 0.25);
+$select-element-border: rgba($coral, 0.25);
 
 $default-card-bg: $coral;
 $brew-card-bg: $forsythia;

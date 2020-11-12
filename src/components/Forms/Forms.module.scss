@@ -8,7 +8,12 @@
   grid-column-gap: 10px;
   padding-top: 3px;
 
-  input,
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  input[type="email"],
+  input[type="date"],
+  select,
   select {
     min-width: 50px;
   }
@@ -36,8 +41,6 @@
 
 input.inline {
   display: inline;
-  width: 59px;
-  height: inherit;
   min-width: inherit;
   padding: 0 3px;
   margin: 0;
