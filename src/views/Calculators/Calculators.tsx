@@ -151,7 +151,7 @@ const Calculators = (props: any) => {
           name="search"
           className={styles.search}
           placeholder="Search"
-          onChange={(e: any) => {setSearch(e.target.value)}}
+          onChange={(e: any) => {setSearch(e.target.value.toLowerCase())}}
         />
         </div>
       </div>
