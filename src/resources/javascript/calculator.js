@@ -5,7 +5,7 @@ const thermodynamicConstant = 0.2;
 // PRIVATE FUNCTIONS
 
 function convertToGravityUnits(value) {
-  return parseFloat(((value / 1000) + 1)).toFixed(3);
+  return parseFloat(((value / 1000) + 1).toFixed(3));
 };
 
 function convertToGravityPoints(gravity) {
@@ -145,7 +145,7 @@ export function totalBIABWater(batchSize, boilTime, boilOff, grainWeight, hopWei
 // * Strike Water Volume
 export function strikeVolume(grainWeight, ratio = 1.5) {
   const sVol = (ratio * grainWeight) / 4;
-  return parseFloat(sVol).toFixed(2);
+  return parseFloat(sVol.toFixed(2));
 };
 
 // * Strike Water Temperature
@@ -174,12 +174,12 @@ export function infusionWaterVol(targetTemp, initailTemp, grainVol, totalMashVol
   const two = (0.2 * grainVol) + Number(totalMashVol);
   const three = infusionWaterTemp - targetTemp;
   const result = one * two / three;
-  return parseFloat(result).toFixed(2);
+  return parseFloat(result.toFixed(2));
 };
 
 // * Sparge Water Volume
 export function spargeVolume(totalWater, mashVolume) {
-  return parseFloat((totalWater - mashVolume)).toFixed(2);
+  return parseFloat((totalWater - mashVolume).toFixed(2));
 }
 
 // Boil-Off Evaporation Percentage
@@ -224,13 +224,13 @@ export function preBoilVol(totalWaterVol, grainVol, equipmentLoss, absorptionRat
   // totalWaterVol - (grainVol * absorptionRate) - equipmentLoss
   const loss = batchType === 'BIAB' ? 0 : equipmentLoss;
   const result = totalWaterVol - (grainVol * absorptionRate) - loss;
-  return parseFloat(result).toFixed(2);
+  return parseFloat(result.toFixed(2));
 };
 
 // Partial Mash Top-off
 export function partialMashTopOff(preBoilVolume, strikeVolume, grainVol, absorptionRate) {
   const result = preBoilVolume - (strikeVolume - (grainVol * absorptionRate));
-  return parseFloat(result).toFixed(2);
+  return parseFloat(result.toFixed(2));
 };
 
 // * Original Gravity
@@ -281,7 +281,7 @@ export function FG(OG, attenuation) {
   const gravity = convertToGravityPoints(OG);
   const aPercentage = attenuation/100;
 
-  return parseFloat(((gravity - (gravity * aPercentage) + 1000) / 1000)).toFixed(3);
+  return parseFloat(((gravity - (gravity * aPercentage) + 1000) / 1000).toFixed(3));
 };
 
 // * Alcohol Content
