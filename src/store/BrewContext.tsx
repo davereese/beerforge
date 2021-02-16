@@ -65,7 +65,7 @@ export interface AdjunctInterface {
   custom?: string;
   amount?: number;
   units?: string;
-  type?: string;
+  category?: number;
   use?: string;
   time?: number;
   index?: number;
