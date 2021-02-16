@@ -4,6 +4,7 @@ import axios from 'axios';
 import styles from './Forms.module.scss';
 import { BrewInterface, AdjunctInterface } from '../../store/BrewContext';
 import { ADJUNCT_TYPES, UNITS, ADJUNCT_USE } from '../../resources/javascript/constants';
+import { getAdjunctById } from '../../resources/javascript/functions';
 
 interface Props {
   brew: BrewInterface;
@@ -34,12 +35,12 @@ function AddAdjunctsForm(props: Props) {
         ? {
           id: choice.id,
           name: choice.name,
-          type: choice.type,
+          category: choice.category,
           use: choice.use,
           units: 'g'
         }
         : {};
-    } else if (type === 'time' || type === 'amount') {
+    } else if (type === 'time' || type === 'amount' || type === "category") {
       data[type] = Number(event.currentTarget.value) + 0;
     } else {
       data[type] = event.currentTarget.value;
@@ -48,7 +49,7 @@ function AddAdjunctsForm(props: Props) {
     if (data !== undefined) {
       if (type === 'custom' && !formData['custom']) {
         data['id'] = undefined;
-        data['type'] = 'fining';
+        data['category'] = 1;
         data['use'] = 'mash';
         data['name'] = '';
         data['units'] = '';
@@ -115,7 +116,7 @@ function AddAdjunctsForm(props: Props) {
         >
           <option value="0">Choose One</option>
           {adjuncts.map(adjunct => (
-            <option value={adjunct.id} key={adjunct.id}>{adjunct.name} - {adjunct.type}</option>
+            <option value={adjunct.id} key={adjunct.id}>{adjunct.name} - {getAdjunctById(adjunct.category)}</option>
           ))}
         </select>
       </label>
@@ -131,12 +132,12 @@ function AddAdjunctsForm(props: Props) {
       {formData.custom
         ? <label>Type<br />
             <select
-              onChange={dataChanged('type')}
-              value={formData.type ? formData.type : 0}
+              onChange={dataChanged('category')}
+              value={formData.category ? formData.category : 0}
               className="capitalize"
             >
               {ADJUNCT_TYPES.map(type => {
-                return <option value={type} key={type}>{type}</option>;
+                return <option value={type.value} key={type.value}>{type.label}</option>;
               })}
             </select>
           </label>

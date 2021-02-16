@@ -18,12 +18,12 @@ export const UNITS = [
 ];
 
 export const ADJUNCT_TYPES = [
-  'fining',
-  'flavor',
-  'herb',
-  'spice',
-  'water agent',
-  'other'
+  {label: 'flavor', value: 1},
+  {label: 'spice', value: 2},
+  {label: 'herb', value: 3},
+  {label: 'fining', value: 4},
+  {label: 'water agent', value: 5},
+  {label: 'other', value: 6}
 ];
 
 export const ADJUNCT_USE = [

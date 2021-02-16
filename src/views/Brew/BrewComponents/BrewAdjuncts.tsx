@@ -6,6 +6,7 @@ import Card from '../../../components/Card/Card';
 import List from '../../../components/List/List';
 import ListItem from '../../../components/ListItem/ListItem';
 import { BrewInterface, AdjunctInterface } from '../../../store/BrewContext';
+import { getAdjunctById } from '../../../resources/javascript/functions';
 
 interface Props {
   readOnly: boolean;
@@ -113,7 +114,7 @@ const BrewAdjuncts = (props: Props) => {
                 : null}
             </span>
             <span className={styles.fourthCol}>{adjunct.use}</span>
-            <span className={styles.sixthCol}>{adjunct.type}</span>
+            <span className={styles.sixthCol}>{getAdjunctById(adjunct.category)}</span>
           </ListItem>
         ))}
       </List>
