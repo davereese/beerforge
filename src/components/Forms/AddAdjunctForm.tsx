@@ -41,7 +41,7 @@ function AddAdjunctsForm(props: Props) {
         }
         : {};
     } else if (type === 'time' || type === 'amount' || type === "category") {
-      data[type] = Number(event.currentTarget.value) + 0;
+      data[type] = !!event.currentTarget.value ? +event.currentTarget.value : undefined;
     } else {
       data[type] = event.currentTarget.value;
     }
@@ -148,7 +148,8 @@ function AddAdjunctsForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.amount ? formData.amount : ''}
+            min="0"
+            value={formData.amount !== undefined && formData.amount !== null ? formData.amount : ''}
             onChange={dataChanged('amount')}
           />
         </label>
@@ -180,7 +181,8 @@ function AddAdjunctsForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.time ? formData.time : ''}
+            min="0"
+            value={formData.time !== undefined && formData.time !== null ? formData.time : ''}
             onChange={dataChanged('time')}
           />
         </label>

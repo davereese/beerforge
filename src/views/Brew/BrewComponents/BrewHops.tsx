@@ -101,7 +101,8 @@ const BrewHops = (props: Props) => {
               `}
               onClick={handleEditToggle(index)}
             >
-              {editing === index
+              {!!hop.weight && (
+                editing === index
                 ? <input
                     type="number"
                     step="0.1"
@@ -112,13 +113,13 @@ const BrewHops = (props: Props) => {
                     autoFocus
                   />
                 : getHopWeight(hop.weight) + ' '
-              }
-              {unitLabels.smallWeight}
+              )}
+              {!!hop.weight && unitLabels.smallWeight}
             </span>
             <span className={styles.secondCol}>{hop.name ? hop.name : hop.custom}</span>
             <span className={styles.thirdCol}>{hop.alphaAcid ? `${hop.alphaAcid}% AA` : null}</span>
             <span className={styles.fourthCol}>
-              {hop.lengthInBoil
+              {(!!hop.lengthInBoil || hop.lengthInBoil === 0)
               && hop.use === 'boil' ? `${hop.lengthInBoil} min` : null}
               {hop.days ? `${hop.days} days` : null}
             </span>

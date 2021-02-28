@@ -182,6 +182,7 @@ function AddFermentableForm(props: Props) {
       type="number"
       step="0.001"
       placeholder="1.000"
+      min="0"
       value={targetOG}
       onChange={(event) => setTargetOG(Number(event.currentTarget.value))}
       onBlur={() => setEditOG(false)}
@@ -227,6 +228,7 @@ function AddFermentableForm(props: Props) {
                 type="number"
                 step="0.1"
                 placeholder="1"
+                min="0"
                 value={formData.lovibond ? formData.lovibond : ''}
                 onChange={dataChanged('lovibond')}
               />
@@ -236,6 +238,7 @@ function AddFermentableForm(props: Props) {
                 type="number"
                 step="1"
                 placeholder="34"
+                min="0"
                 value={formData.potential ? formData.potential : ''}
                 onChange={dataChanged('potential')}
               />
@@ -250,6 +253,7 @@ function AddFermentableForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
+            min="0"
             value={formData.weight
               ? formData.units !== 'percent' && user.units === 'metric'
                 ? parseFloat(lb2kg(formData.weight).toFixed(5))

@@ -92,22 +92,24 @@ const BrewAdjuncts = (props: Props) => {
               `}
               onClick={handleEditToggle(index)}
             >
-              {editing === index
-                ? <input
-                    type="number"
-                    step="0.1"
-                    defaultValue={adjunct.amount}
-                    onChange={weightUpdated(index)}
-                    className={componentStyles.amountEditor}
-                    ref={containerRef}
-                    autoFocus
-                  />
-                : adjunct.amount + ' '}
-              {adjunct.units}
+              {(!!adjunct.amount || adjunct.amount === 0) && (
+                editing === index
+                  ? <input
+                      type="number"
+                      step="0.1"
+                      defaultValue={adjunct.amount}
+                      onChange={weightUpdated(index)}
+                      className={componentStyles.amountEditor}
+                      ref={containerRef}
+                      autoFocus
+                    />
+                  : adjunct.amount + ' '
+              )}
+              {(!!adjunct.amount || adjunct.amount === 0) && adjunct.units}
             </span>
             <span className={styles.secondCol}>{adjunct.name ? adjunct.name : adjunct.custom}</span>
             <span className={styles.thirdCol}>
-              {adjunct.time
+              {!!adjunct.time || adjunct.time === 0
                 ? `${adjunct.time} ${adjunct.use === 'mash' || adjunct.use === 'boil'
                   ? 'min'
                   : 'days'}`

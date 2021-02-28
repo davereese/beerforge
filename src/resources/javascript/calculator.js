@@ -97,13 +97,9 @@ function tanh(number) {
 
 // * Total fermentable weight
 export function totalFermentableWeight(malts) {
-  let totalFermentableWeight = 0;
-  malts.forEach(fermentable => {
-    totalFermentableWeight = fermentable.weight
-      ? Number(totalFermentableWeight) + Number(fermentable.weight)
-      : 0;
-  });
-  return totalFermentableWeight;
+  return parseFloat(malts.reduce((accumulator, currentValue) => (
+    accumulator + +currentValue.weight
+  ), 0).toFixed(2));
 };
 
 // * Total hop weight
