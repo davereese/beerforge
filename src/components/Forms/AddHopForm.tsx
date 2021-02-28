@@ -228,6 +228,7 @@ function AddHopForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
+            min="0"
             value={formData.alphaAcid ? formData.alphaAcid : ''}
             onChange={dataChanged('alphaAcid')}
           />
@@ -237,6 +238,7 @@ function AddHopForm(props: Props) {
             type="number"
             step="0.01"
             placeholder="0"
+            min="0"
             value={formData.weight
               ? user.units === 'metric' ? parseFloat(oz2g(formData.weight).toFixed(5)) : formData.weight
               : ''}
@@ -249,6 +251,7 @@ function AddHopForm(props: Props) {
               type="number"
               step="1"
               placeholder="0"
+              min="0"
               value={formData.lengthInBoil !== undefined && formData.lengthInBoil !== null
                 ? formData.lengthInBoil
                 : ''}

@@ -108,33 +108,35 @@ const BrewFermentables = (props: Props) => {
               `}
               onClick={handleEditToggle(index)}
             >
-            {brew.fermentableUnits === 'percent'
-              ? <>{editing === index
-                  ? <><input
-                      type="number"
-                      step="0.1"
-                      defaultValue={getFermentableWeight(fermentable.weight)}
-                      onChange={weightUpdated(index)}
-                      className={componentStyles.amountEditor}
-                      ref={containerRef}
-                      autoFocus
-                    />%</>
-                  : `${getFermentableWeight(calculatedWeight(index))} ${unitLabels.largeWeight} (${fermentable.weight}%)`}
-                  
-                </>
-              : <>{editing === index
-                  ? <input
-                      type="number"
-                      step="0.1"
-                      defaultValue={getFermentableWeight(fermentable.weight)}
-                      onChange={weightUpdated(index)}
-                      className={componentStyles.amountEditor}
-                      ref={containerRef}
-                      autoFocus
-                    />
-                  : getFermentableWeight(fermentable.weight) + ' '}
-                  {unitLabels.largeWeight}
-                </>
+            {!!fermentable.weight && (
+              brew.fermentableUnits === 'percent'
+                ? <>{editing === index
+                    ? <><input
+                        type="number"
+                        step="0.1"
+                        defaultValue={getFermentableWeight(fermentable.weight)}
+                        onChange={weightUpdated(index)}
+                        className={componentStyles.amountEditor}
+                        ref={containerRef}
+                        autoFocus
+                      />%</>
+                    : `${getFermentableWeight(calculatedWeight(index))} ${unitLabels.largeWeight} (${fermentable.weight}%)`}
+                    
+                  </>
+                : <>{editing === index
+                    ? <input
+                        type="number"
+                        step="0.1"
+                        defaultValue={getFermentableWeight(fermentable.weight)}
+                        onChange={weightUpdated(index)}
+                        className={componentStyles.amountEditor}
+                        ref={containerRef}
+                        autoFocus
+                      />
+                    : getFermentableWeight(fermentable.weight) + ' '}
+                    {unitLabels.largeWeight}
+                  </>
+              )
             }
             </span>
             <span className={styles.secondCol}>{fermentable.name ? fermentable.name : fermentable.custom}</span>

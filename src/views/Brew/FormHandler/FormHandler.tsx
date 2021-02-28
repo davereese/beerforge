@@ -195,7 +195,7 @@ function FormHandler({
     case 'settings':
       title = 'Settings';
       component = <BrewSettingsForm brew={brew} dataUpdated={setData} delete={deleteBrew} />
-      submitText = 'Submit';
+      submitText = 'Done';
       break;
     case 'fermentables':
       if (editingData) {
@@ -250,7 +250,7 @@ function FormHandler({
     case 'boil':
       title = 'Boil';
       component = <BoilForm brew={brew} dataUpdated={setData} />;
-      submitText = 'Submit';
+      submitText = 'Done';
       break;
     case 'fermentation':
       if (editingData) {
@@ -265,12 +265,12 @@ function FormHandler({
     case 'packaging':
       title = 'Packaging';
       component = <PackagingForm brew={brew} dataUpdated={setData} />;
-      submitText = 'Submit';
+      submitText = 'Done';
       break;
     case 'notes':
       title = 'Notes';
       component = <NotesForm brew={brew} dataUpdated={setData} />;
-      submitText = 'Submit';
+      submitText = 'Done';
       break;
     case 'tags':
       title = 'Tags';
