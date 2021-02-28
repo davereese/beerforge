@@ -418,6 +418,11 @@ const Brew = (props: Props) => {
       !brewdayResults
         ? await brewService.updateBrew({...brew, isDraft: isDraft}, user)
           .then((res: any) => {
+            brewDispatch({
+              type: 'update',
+              payload: res.data.brew,
+              options: userSettings
+            });
             updateSuccess()
           })
           .catch((error) => {
