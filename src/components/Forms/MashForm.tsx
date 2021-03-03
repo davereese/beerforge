@@ -10,6 +10,7 @@ import {
   qt2l,
   l2qt
 } from "../../resources/javascript/calculator";
+import Select from "../Select/Select";
 
 interface Props {
   brew: BrewInterface;
@@ -18,8 +19,7 @@ interface Props {
 }
 
 function MashForm(props: Props) {
-  // eslint-disable-next-line
-  const [user, userDispatch] = useUser();
+  const [user] = useUser();
   const [formData, setFormData] = useState<MashInterface>({ type: "temperature" });
 
   useEffect(() => {
@@ -128,22 +128,24 @@ function MashForm(props: Props) {
       <label>
         Step Type
         <br />
-        <select
-          onChange={dataChanged("type")}
-          value={formData.type ? formData.type : ""}
-        >
-          {props.brew.mash.length > 0 
-            ? (
-              props.editingData && props.editingData.type === 'strike'
-                ? <option value="strike">Strike</option>
-                : <>
-                    <option value="temperature">Temperature</option>
-                    <option value="infusion">Infusion</option>
-                    <option value="decoction">Decoction</option>
-                    <option value="sparge">Sparge</option>
-                  </>
-            ) : <option value="strike">Start with the strike step</option>}
-        </select>
+        <Select
+          options={
+            props.brew.mash.length > 0 
+              ? (
+                props.editingData && props.editingData.type === 'strike'
+                  ? [{option: 'Strike', value: 'strike'}]
+                  : [
+                      {option: 'Temperature', value: 'temperature'},
+                      {option: 'Infusion', value: 'infusion'},
+                      {option: 'Decoction', value: 'decoction'},
+                      {option: 'Sparge', value: 'sparge'},
+                    ]
+              ) : [{option: 'Start with the strike step', value: 'strike'}]
+          }
+          value={formData.type ? formData.type : ''}
+          onChange={dataChanged('type')}
+          className="capitalize lightInput"
+        />
       </label>
       {formData.type !== "sparge" ? (
         <>

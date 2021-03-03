@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import Select from '../../../components/Select/Select';
 import { l2gal } from '../../../resources/javascript/calculator';
+import { PITCHING_RATES } from '../../../resources/javascript/constants';
 
 const YeastTargetPitchingRate = (props: any) => {
   // STATE
@@ -48,20 +50,12 @@ const YeastTargetPitchingRate = (props: any) => {
           onChange={(e) => setVolume(e.target.value)}
         ></input><br />
         <label htmlFor="target">Target Rate<br />(million cells / ml / °Plato)</label><br />
-        <select
-          name="target"
+        <Select
+          options={PITCHING_RATES}
           value={target}
-          onChange={(e) => setTarget(e.target.value)}
-        >
-          <option value="0.35">0.35 (Mfr. rate for Ale)</option>
-          <option value="0.5">0.5 (Mfr. rate for Ale)</option>
-          <option value="0.75">0.75 (Ale)</option>
-          <option value="1.0">1.0 (Ale)</option>
-          <option value="1.25">1.25 (High OG Ale)</option>
-          <option value="1.5">1.5 (Lager)</option>
-          <option value="1.75">1.75 (Lager)</option>
-          <option value="2.0">2.0 (High OG Lager)</option>
-        </select><br />
+          onChange={(e) => setTarget(e.currentTarget.value as string)}
+          className="capitalize darkInput"
+        />
       </div>
       <div>
         <h3>Result:</h3>

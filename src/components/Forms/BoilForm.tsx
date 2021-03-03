@@ -10,8 +10,7 @@ interface Props {
 }
 
 function BoilForm(props: Props) {
-  // eslint-disable-next-line
-  const [user, userDispatch] = useUser();
+  const [user] = useUser();
   const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {

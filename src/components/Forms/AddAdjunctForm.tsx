@@ -5,6 +5,7 @@ import styles from './Forms.module.scss';
 import { BrewInterface, AdjunctInterface } from '../../store/BrewContext';
 import { ADJUNCT_TYPES, UNITS, ADJUNCT_USE } from '../../resources/javascript/constants';
 import { getAdjunctById } from '../../resources/javascript/functions';
+import Select from '../Select/Select';
 
 interface Props {
   brew: BrewInterface;
@@ -109,16 +110,22 @@ function AddAdjunctsForm(props: Props) {
   return(
     <>
       <label>Select Adjunct<br />
-        <select
-          onChange={dataChanged('adjunct')}
+        <Select
+          options={[
+            {option: "Choose Adjunct", value: 0},
+            ...adjuncts.map(adjunct => ({
+              label: adjunct.name,
+              option: <div className={styles.gridOption2Col}>
+                  <span>{adjunct.name}</span>
+                  <span className={styles.yellow}>{getAdjunctById(adjunct.category)}</span>
+                </div>,
+              value: adjunct.id || ""
+            }))
+          ]}
           value={formData.id ? formData.id : 0}
-          className={formData.custom ? styles.unused : ''}
-        >
-          <option value="0">Choose One</option>
-          {adjuncts.map(adjunct => (
-            <option value={adjunct.id} key={adjunct.id}>{adjunct.name} - {getAdjunctById(adjunct.category)}</option>
-          ))}
-        </select>
+          onChange={dataChanged('adjunct')}
+          className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}
+        />
       </label>
       <label><strong>Or</strong> add your own<br />
         <input
@@ -131,15 +138,14 @@ function AddAdjunctsForm(props: Props) {
       </label>
       {formData.custom
         ? <label>Type<br />
-            <select
-              onChange={dataChanged('category')}
+            <Select
+              options={ADJUNCT_TYPES.map(type => (
+                {option: type.label, value: type.value}
+                ))}
               value={formData.category ? formData.category : 0}
-              className="capitalize"
-            >
-              {ADJUNCT_TYPES.map(type => {
-                return <option value={type.value} key={type.value}>{type.label}</option>;
-              })}
-            </select>
+              onChange={dataChanged('category')}
+              className="capitalize lightInput"
+            />
           </label>
         : null}
       <div className={styles.row}>
@@ -154,27 +160,26 @@ function AddAdjunctsForm(props: Props) {
           />
         </label>
         <label>Units<br />
-          <select
-              onChange={dataChanged('units')}
-              value={formData.units ? formData.units : 0}
-            >
-              {UNITS.map(unit => {
-                return <option value={unit} key={unit}>{unit}</option>;
-              })}
-            </select>
+          <Select
+            options={UNITS.map(unit => (
+              {option: unit, value: unit}
+            ))}
+            value={formData.units ? formData.units : 'g'}
+            onChange={dataChanged('units')}
+            className="lightInput"
+          />
         </label>
       </div>
       <div className={styles.row}>
         <label>Use<br />
-          <select
+        <Select
+            options={ADJUNCT_USE.map(use => (
+              {option: use, value: use}
+            ))}
+            value={formData.use ? formData.use : "mash"}
             onChange={dataChanged('use')}
-            value={formData.use ? formData.use : 0}
-            className="capitalize"
-          >
-            {ADJUNCT_USE.map(use => {
-              return <option value={use} key={use}>{use}</option>;
-            })}
-          </select>
+            className="capitalize lightInput"
+          />
         </label>
         <label>Time ({formData.use === 'mash' || formData.use === 'boil' ? 'min' : 'days'})<br />
           <input

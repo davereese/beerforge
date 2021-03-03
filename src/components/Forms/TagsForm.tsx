@@ -12,7 +12,6 @@ interface Props {
 
 function TagsForm(props: Props) {
   const [formData, setFormData] = useState(props.brew);
-  // eslint-disable-next-line
   const [tags, setTags] = useState(props.brew.tags);
 
   const inputRef = useRef<HTMLInputElement>(null);

@@ -5,6 +5,8 @@ import Info from "../Info/Info";
 import { useUser } from "../../store/UserContext";
 import { BrewInterface } from "../../store/BrewContext";
 import { l2gal, gal2l } from "../../resources/javascript/calculator";
+import Select from "../Select/Select";
+import { PITCHING_RATES } from "../../resources/javascript/constants";
 
 interface Props {
   brew: BrewInterface;
@@ -13,8 +15,7 @@ interface Props {
 }
 
 function BrewSettingsForm(props: Props) {
-  // eslint-disable-next-line
-  const [user, userDispatch] = useUser();
+  const [user] = useUser();
   const [formData, setFormData] = useState({
     ...props.brew,
     targetPitchingRate: props.brew.targetPitchingRate
@@ -89,16 +90,18 @@ function BrewSettingsForm(props: Props) {
         <label>
           Batch Type
           <br />
-          <select
-            onChange={dataChanged("batchType")}
-            defaultValue={props.brew.batchType}
-          >
-            <option value="">Choose One</option>
-            <option value="allGrain">All Grain</option>
-            <option value="BIAB">BIAB</option>
-            <option value="partialMash">Partial Mash</option>
-            <option value="extract">Extract</option>
-          </select>
+          <Select
+            options={[
+              {value:"", option:"Choose One"},
+              {value:"allGrain", option:"All Grain"},
+              {value:"BIAB", option:"BIAB"},
+              {value:"partialMash", option:"Partial Mash"},
+              {value:"extract", option:"Extract"},
+            ]}
+            value={formData.batchType || ""}
+            onChange={dataChanged('batchType')}
+            className="capitalize lightInput"
+          />
         </label>
         <label>
           Units (global change)&nbsp;
@@ -152,23 +155,12 @@ function BrewSettingsForm(props: Props) {
           info="It is reccommended to use a rate highter than&nbsp;the&nbsp;manufacturer's."
         />
         <br />
-        <select
-          onChange={dataChanged("targetPitchingRate")}
-          defaultValue={
-            props.brew.targetPitchingRate
-              ? props.brew.targetPitchingRate
-              : "0.75"
-          }
-        >
-          <option value="0.35">0.35 (Mfr. rate for Ale)</option>
-          <option value="0.5">0.5 (Mfr. rate for Ale)</option>
-          <option value="0.75">0.75 (Ale)</option>
-          <option value="1.0">1.0 (Ale)</option>
-          <option value="1.25">1.25 (High OG Ale)</option>
-          <option value="1.5">1.5 (Lager)</option>
-          <option value="1.75">1.75 (Lager)</option>
-          <option value="2.0">2.0 (High OG Lager)</option>
-        </select>
+        <Select
+          options={PITCHING_RATES}
+          value={`${formData.targetPitchingRate}`}
+          onChange={dataChanged('targetPitchingRate')}
+          className="capitalize lightInput"
+        />
       </label>
       {props.brew.id ? (
         <button

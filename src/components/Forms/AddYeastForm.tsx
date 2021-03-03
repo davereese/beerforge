@@ -4,6 +4,7 @@ import axios from 'axios';
 import styles from "./Forms.module.scss"
 import { pitchingRate } from '../../resources/javascript/calculator';
 import { BrewInterface, YeastInterface } from '../../store/BrewContext';
+import Select from '../Select/Select';
 
 interface Props {
   brew: BrewInterface;
@@ -138,16 +139,22 @@ function AddYeastForm(props: Props) {
   return(
     <>
       <label>Yeast<br />
-        <select
-          onChange={dataChanged('yeast')}
+        <Select
+          options={[
+            {option: "Choose Yeast", value: 0},
+            ...yeast.map(choice => ({
+              label: choice.name,
+              option: <div className={styles.gridOption2Col}>
+                  <span>{choice.name}</span>
+                  <span className={styles.yellow}>{choice.manufacturer}</span>
+                </div>,
+              value: choice.id || ""
+            }))
+          ]}
           value={formData.id ? formData.id : 0}
-          className={formData.custom ? styles.unused : ''}
-        >
-          <option value="0">Choose Yeast</option>
-          {yeast.map(item => (
-            <option value={item.id} key={item.id}>{item.manufacturer} - {item.name}</option>
-          ))}
-        </select>
+          onChange={dataChanged('yeast')}
+          className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}
+        />
       </label>
       <label><strong>Or</strong> add your own<br />
         <input
@@ -160,14 +167,16 @@ function AddYeastForm(props: Props) {
       </label>
       {formData.custom
         ? <>
-            <select
-              onChange={dataChanged('type')}
+            <Select
+              options={[
+                {option: 'Choose Type', value: 0},
+                {option: 'Liquid', value: 'liquid'},
+                {option: 'Dry', value: 'dry'},
+              ]}
               value={formData.type ? formData.type : 0}
-            >
-              <option value="0">Choose Type</option>
-              <option value="liquid">Liquid</option>
-              <option value="dry">Dry</option>
-            </select>
+              onChange={dataChanged('type')}
+              className="capitalize lightInput"
+            />
             <div className={styles.row}>
               <label>Cell Count<br />
                 <input
@@ -204,13 +213,15 @@ function AddYeastForm(props: Props) {
           />
         </label>
         <label>Units<br />
-          <select
-              onChange={dataChanged('units')}
-              value={formData.units ? formData.units : 0}
-            >
-              <option value='pkg'>pkg</option>
-              <option value='cells'>billion cells</option>
-            </select>
+          <Select
+            options={[
+              {option: 'pkg', value: 'pkg'},
+              {option: 'cells', value: 'billion cells'},
+            ]}
+            value={formData.units ? formData.units : 0}
+            onChange={dataChanged('units')}
+            className="lightInput"
+          />
         </label>
       </div>
       {formData.type === 'liquid'

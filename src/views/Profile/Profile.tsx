@@ -12,6 +12,7 @@ import { useModal } from '../../store/ModalContext';
 import { useSnackbar } from '../../store/SnackbarContext';
 import Info from '../../components/Info/Info';
 import { gal2l, l2gal } from '../../resources/javascript/calculator';
+import Select from '../../components/Select/Select';
 
 const Profile = () => {
   const fileInput = React.createRef<HTMLInputElement>();
@@ -299,26 +300,26 @@ const Profile = () => {
       <div className={styles.form}>
         <div className={formStyles.row}>
           <label htmlFor="units">Measurement Units<br />
-            <select
-              name="units"
-              className="dark"
+            <Select
+              options={[
+                {option: 'US', value: 'us'},
+                {value:"Metric", option:"metric"},
+              ]}
               value={settings.units}
-              onChange={(e) => setSettings({...settings, units: e.target.value, edited: true})}
-            >
-              <option value="us">US</option>
-              <option value="metric">Metric</option>
-            </select>
+              onChange={(e) => setSettings({...settings, units: e.currentTarget.value, edited: true})}
+              className="capitalize darkInput"
+            />
           </label>
           <label>IBU Calculation Formula<br />
-            <select
-              name="ibuFormula"
-              className="dark"
+            <Select
+              options={[
+                {option: 'Rager', value: 'rager'},
+                {value:"Tinseth", option:"tinseth"},
+              ]}
               value={settings.ibuFormula}
-              onChange={(e) => setSettings({...settings, ibuFormula: e.target.value, edited: true})}
-            >
-              <option value="rager">Rager</option>
-              <option value="tinseth">Tinseth</option>
-            </select>
+              onChange={(e) => setSettings({...settings, ibuFormula: e.currentTarget.value, edited: true})}
+              className="capitalize darkInput"
+            />
           </label>
         </div>
         <p className="light">Pre-populate this data when setting up a brew. Changes will only affect new brews.</p>

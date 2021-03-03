@@ -1,4 +1,5 @@
 import React from 'react';
+import Select from '../../components/Select/Select';
 
 import styles from './Brews.module.scss';
 
@@ -42,10 +43,21 @@ const SortMenu = (props: any) => {
         </ul>
       </div>
       <div className={styles.sortMenu__column}>
-        <label>FILTER &amp; SORT</label>
+        <label>FILTER &amp; SORT<br />
           <ul>
             <li>
-              <select
+              <Select
+                options={[
+                  {option: 'All', value: 'individual'},
+                  {option: 'Re-brew Series', value: 'series'},
+                  {option: 'Exclude Drafts', value: 'noDrafts'},
+                  {option: 'Only Drafts', value: 'onlyDrafts'},
+                ]}
+                value={displaySort}
+                onChange={(e) => setDisplaySort(e.currentTarget.value)}
+                className="capitalize darkInput select"
+              />
+              {/* <select
                 className={`dark ${styles.filterInput}`}
                 value={displaySort}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDisplaySort(e.target.value)}
@@ -54,41 +66,22 @@ const SortMenu = (props: any) => {
                 <option value="series">Re-brew Series</option>
                 <option value="noDrafts">Exclude Drafts</option>
                 <option value="onlyDrafts">Only Drafts</option>
-              </select>
-              {/* <input
-                type="radio"
-                value="individual"
-                id="individual"
-                name="display"
-                checked={displaySort === "individual"}
-                onChange={(e: any) => setDisplaySort(e.target.value)}
-              />
-              <label htmlFor="individual">Individual</label>
-            </li>
-            <li>
-              <input
-                type="radio"
-                value="series"
-                id="series"
-                name="display"
-                checked={displaySort === "series"}
-                onChange={(e: any) => setDisplaySort(e.target.value)}
-              />
-              <label htmlFor="series">Re-brew Series</label> */}
+              </select> */}
             </li>
           </ul>
-        </div>
-        <div className={styles.sortMenu__column}>
-          <label>COUNT<br />
-            <input
-              type="number"
-              step="10"
-              className={`dark ${styles.countInput}`}
-              value={numToShow.toString()}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumToShow(e.target.value)}
-            />
-          </label>
-        </div>
+        </label>
+      </div>
+      <div className={styles.sortMenu__column}>
+        <label>COUNT<br />
+          <input
+            type="number"
+            step="10"
+            className={`dark ${styles.countInput}`}
+            value={numToShow.toString()}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumToShow(e.target.value)}
+          />
+        </label>
+      </div>
     </div>
   );
 }

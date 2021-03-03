@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../../store/UserContext';
 import { l2gal, kg2lb, gal2l } from '../../../resources/javascript/calculator';
+import Select from '../../../components/Select/Select';
 
 const PreBoilVolume = (props: any) => {
   // CONTEXT
@@ -40,14 +41,15 @@ const PreBoilVolume = (props: any) => {
       <h2>Pre-Boil Volume</h2>
       <div>
         <label htmlFor="batchType">Batch Type</label><br />
-        <select
-          name="batchType"
+        <Select
+          options={[
+            {option: 'All Grain', value: 'allGrain'},
+            {option: 'BIAB', value: 'BIAB'},
+          ]}
           value={batchType}
-          onChange={(e) => setBatchType(e.target.value)}
-        >
-          <option value="allGrain">All Grain</option>
-          <option value="BIAB">BIAB</option>
-        </select><br />
+          onChange={(e) => setBatchType(e.currentTarget.value as string)}
+          className="capitalize darkInput"
+        />
         <label htmlFor="totalWaterVol">Total Water Volume ({props.labels.vol})</label><br />
         <input
           name="totalWaterVol"

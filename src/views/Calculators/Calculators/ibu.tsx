@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import styles from '../Calculators.module.scss';
 import { g2oz, l2gal } from '../../../resources/javascript/calculator';
+import Select from '../../../components/Select/Select';
 
 interface hop {
   aa: number | '';
@@ -28,7 +29,7 @@ const IBU = (props: any) => {
   const addHop = (index: number, option: 'aa' | 'weight' | 'length' | 'type') => (e: any) => {
     const hopsArray = [...hops];
     // @ts-ignore-line
-    hopsArray[index][option] = e.target.value;
+    hopsArray[index][option] = e.currentTarget.value;
     setHops(hopsArray);
   }
 
@@ -96,14 +97,16 @@ const IBU = (props: any) => {
                   onChange={addHop(index, 'length')}
                 ></input></label>
                 <label htmlFor="type">Type
-                <select
-                  name="type"
-                  value={hops[index].type}
-                  onChange={addHop(index, 'type')}
-                >
-                  <option value="leaf">Whole Leaf</option>
-                  <option value="pellet">Pellet</option>
-                </select></label>
+                  <Select
+                    options={[
+                      {option: 'Pellet', value: 'pellet'},
+                      {option: 'Whole Leaf', value: 'leaf'}
+                    ]}
+                    value={hops[index].type}
+                    onChange={addHop(index, 'type')}
+                    className="capitalize darkInput"
+                  />
+                </label>
               </div>
             </div>
             {index+1 === hops.length
