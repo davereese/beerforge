@@ -43,3 +43,14 @@ export const HOP_USE = [
   'whirlpool',
   'dry hop',
 ];
+
+export const PITCHING_RATES = [
+  {value:"0.35", option:"0.35 (Mfr. rate for Ale)"},
+  {value:"0.5", option:"0.5 (Mfr. rate for Ale)"},
+  {value:"0.75", option:"0.75 (Ale)"},
+  {value:"1.0", option:"1.0 (Ale)"},
+  {value:"1.25", option:"1.25 (High OG Ale)"},
+  {value:"1.5", option:"1.5 (Lager)"},
+  {value:"1.75", option:"1.75 (Lager)"},
+  {value:"2.0", option:"2.0 (High OG Lager)"},
+];

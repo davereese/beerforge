@@ -6,6 +6,7 @@ import { BrewInterface, FermentableInterface } from '../../store/BrewContext';
 import { useUser } from '../../store/UserContext';
 import { lb2kg, kg2lb, SRM, OG } from '../../resources/javascript/calculator';
 import { pen } from '../../resources/javascript/penSvg.js';
+import Select from '../Select/Select';
 
 interface Props {
   brew: BrewInterface;
@@ -25,8 +26,7 @@ async function listAllFermentables() {
 }
 
 function AddFermentableForm(props: Props) {
-  // eslint-disable-next-line
-  const [user, userDispatch] = useUser();
+  const [user] = useUser();
   const [formData, setFormData] = useState<FermentableInterface>({});
   const [fermentables, setFermentables] = useState<FermentableInterface[]>([]);
   const [projectedTotalSRM, setProjectedTotalSRM] = useState<number>(props.brew.srm ? props.brew.srm : 0);
@@ -196,21 +196,23 @@ function AddFermentableForm(props: Props) {
   return(
     <>
       <label>Select Fermentable<br />
-        <select
-          onChange={dataChanged('fermentable')}
+        <Select
+          options={[
+            {option: "Choose Fermentable", value: 0},
+            ...fermentables.map(fermentable => ({
+              label: fermentable.name,
+              option: <div className={styles.gridOption3Col}>
+                  <span>{fermentable.name}</span>
+                  <span className={styles.yellow}>{fermentable.origin}</span>
+                  <span className={styles.yellow}>{fermentable.lovibond}°L</span>
+                </div>,
+              value: fermentable.id || ""
+            }))
+          ]}
           value={formData.id ? formData.id : 0}
-          className={formData.custom ? styles.unused : ''}
-        >
-          <option value="0">Choose One</option>
-          {fermentables.map(fermentable => (
-            <option
-              value={fermentable.id}
-              key={fermentable.id}
-            >
-              {fermentable.name} - {fermentable.origin} - {fermentable.lovibond}°L
-            </option>
-          ))}
-        </select>
+          onChange={dataChanged('fermentable')}
+          className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}
+        />
       </label>
       <label><strong>Or</strong> add your own<br />
         <input
@@ -263,15 +265,17 @@ function AddFermentableForm(props: Props) {
           />
         </label>
         <label>Units<br />
-          <select
-            onChange={dataChanged('units')}
-            value={formData.units
-              ? formData.units
-              : user.units === 'metric' ? 'kg' : 'lb'}
-          >
-            <option value={user.units === 'metric' ? 'kg' : 'lb'}>{user.units === 'metric' ? 'kg' : 'lb'}</option>;
-            <option value="percent">percent</option>
-          </select>
+        <Select
+          options={[
+            {option: user.units === 'metric' ? 'kg' : 'lb', value: user.units === 'metric' ? 'kg' : 'lb'},
+            {option: 'percent', value: "percent"},
+          ]}
+          value={formData.units
+            ? formData.units
+            : user.units === 'metric' ? 'kg' : 'lb'}
+          onChange={dataChanged('units')}
+          className="lightInput"
+        />
         </label>
       </div>
       <p className={styles.extra}>

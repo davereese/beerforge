@@ -1,0 +1,83 @@
+@import '../../styles/variables';
+@import '../../styles/utilities';
+
+.selectContainer {
+  @extend %inputStyles;
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 50px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' class='svg-triangle' width='10' height='10'><path d='M 5,6 10,0 0,0 z' fill='rgb(46, 25, 34)' /></svg>");
+  background-position: calc(100% - 15px) 19px;
+  background-repeat: no-repeat;
+  font-size: px-to-rem(13px);
+  cursor: pointer;
+
+  &[class~="lightInput"] {
+    background-color: $brew-card-bg;
+    color: $text-dark;
+
+    &::placeholder {
+      color: $placeholder-dark;
+      font-weight: $weight-light;
+    }
+  }
+
+  &[class~="darkInput"] {
+    background-color: rgba($default-card-bg, 0.3);
+    color: $text-light;
+
+    &::placeholder {
+      color: $text-dark;
+      font-weight: $weight-light;
+    }
+  }
+}
+
+.selectOptions {
+  display: none;
+  left: 0;
+  top: 0;
+  padding: 5px 0;
+  flex-direction: column;
+  width: 100%;
+  max-height: 402px;
+  overflow-y: auto;
+  box-shadow: 0px 4px 8px rgba($button-shadow, 0.7);
+  color: $text-light;
+  z-index: 9;
+
+  &.open {
+    position: absolute;
+    display: flex;
+    background-color: $select-bg;
+  }
+}
+
+.option {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding: 0 8px;
+  height: 28px;
+  font-size: px-to-rem(12px);
+  line-height: 0.9;
+  outline: none;
+  border-left: transparent 2px solid;
+  transition: background-color 0.3s;
+
+  &.selected {
+    border-left: $selected-option-border 2px solid;
+  }
+
+  &.focused,
+  &:hover,
+  &:focus {
+    background-color: $select-option-bg-selected;
+  }
+
+  @include for-phone-only {
+    height: 40px;
+    font-size: px-to-rem(13px);
+  }
+}

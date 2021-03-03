@@ -4,6 +4,7 @@ import styles from "./Forms.module.scss"
 import { BrewInterface } from '../../store/BrewContext';
 import { useUser } from '../../store/UserContext';
 import { f2c, c2f } from '../../resources/javascript/calculator';
+import Select from '../Select/Select';
 
 interface Props {
   brew: BrewInterface;
@@ -11,8 +12,7 @@ interface Props {
 }
 
 function PackagingForm(props: Props) {
-  // eslint-disable-next-line
-  const [user, userDispatch] = useUser();
+  const [user] = useUser();
   const [formData, setFormData] = useState(props.brew);
 
   const dataChanged = (type: string) => (event: any) => {
@@ -32,26 +32,30 @@ function PackagingForm(props: Props) {
   return(
     <>
       <label>Packaging Type<br />
-        <select
-          defaultValue={`${props.brew.packagingType}`}
+        <Select
+          options={[
+            {value:"", option:"Choose One"},
+            {value:"bottled", option:"Bottled"},
+            {value:"kegged", option:"Kegged"},
+          ]}
+          value={formData.packagingType || ""}
           onChange={dataChanged('packagingType')}
-        >
-          <option value="">Choose One</option>
-          <option value="bottled">Bottled</option>
-          <option value="kegged">Kegged</option>
-        </select>
+          className="capitalize lightInput"
+        />
       </label>
       <label>Carbonation Method<br />
-        <select
-          defaultValue={`${props.brew.carbonationMethod}`}
+        <Select
+          options={[
+            {value:"", option:"Choose One"},
+            {option: 'Forced CO2', value: 'forced'},
+            {value:"caneSugar", option:"Cane Sugar"},
+            {value:"cornSugar", option:"Corn Sugar"},
+            {value:"dme", option:"DME"},
+          ]}
+          value={formData.carbonationMethod || ""}
           onChange={dataChanged('carbonationMethod')}
-        >
-          <option value="">Choose One</option>
-          {formData.packagingType !== 'bottled' ? <option value="forced">Forced CO2</option> : null}
-          <option value="caneSugar">Cane Sugar</option>
-          <option value="cornSugar">Corn Sugar</option>
-          <option value="dme">DME</option>
-        </select>
+          className="capitalize lightInput"
+        />
       </label>
       <div className={styles.row}>
         <label>CO<sub>2</sub> Volume Target<br />

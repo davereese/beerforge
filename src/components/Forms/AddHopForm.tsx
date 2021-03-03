@@ -7,6 +7,7 @@ import { BrewInterface, HopInterface } from '../../store/BrewContext';
 import { useUser } from '../../store/UserContext';
 import { oz2g, g2oz, IBU, f2c, c2f } from '../../resources/javascript/calculator';
 import { HOP_USE } from '../../resources/javascript/constants';
+import Select from '../Select/Select';
 
 interface Props {
   brew: BrewInterface;
@@ -30,8 +31,7 @@ async function listAllHops() {
 }
 
 function AddHopForm(props: Props) {
-  // eslint-disable-next-line
-  const [user, userDispatch] = useUser();
+  const [user] = useUser();
   const [formData, setFormData] = useState<HopInterface>({});
   const [hops, setHops] = useState<HopResults[]>([]);
   const [projectedTotalIBU, setProjectedTotalIBU] = useState<number>(props.brew.ibu ? props.brew.ibu : 0);
@@ -173,16 +173,23 @@ function AddHopForm(props: Props) {
   return(
     <>
       <label>Hop<br />
-        <select
-          onChange={dataChanged('hop')}
+        <Select
+          options={[
+            {option: "Choose Hop", value: 0},
+            ...hops.map(hop => ({
+              label: hop.name,
+              option: <div className={styles.gridOption3Col}>
+                  <span>{hop.name}</span>
+                  <span className={styles.yellow}></span>
+                  <span className={styles.yellow}>{hop.average_alpha}% AA</span>
+                </div>,
+              value: hop.id || ""
+            }))
+          ]}
           value={formData.id ? formData.id : 0}
-          className={formData.custom ? styles.unused : ''}
-        >
-          <option value="0">Choose Hop</option>
-          {hops.map(hop => (
-            <option value={hop.id} key={hop.id}>{hop.name}</option>
-          ))}
-        </select>
+          onChange={dataChanged('hop')}
+          className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}
+        />
       </label>
       <label><strong>Or</strong> add your own<br />
         <input
@@ -195,24 +202,26 @@ function AddHopForm(props: Props) {
       </label>
       <div className={styles.row}>
         <label>Use<br />
-          <select
-            onChange={dataChanged('use')}
-            value={formData.use ? formData.use : 0}
-            className="capitalize"
-          >
-            {HOP_USE.map(use => {
-              return <option value={use} key={use}>{use}</option>;
-            })}
-          </select>
+        <Select
+          options={HOP_USE.map(use => ({
+            option: use,
+            value: use
+          }))}
+          value={formData.use ? formData.use : 'boil'}
+          onChange={dataChanged('use')}
+          className="capitalize lightInput"
+        />
         </label>
         <label>Form<br />
-          <select
-            onChange={dataChanged('form')}
+          <Select
+            options={[
+              {option: 'Pellet', value: 'pellet'},
+              {option: 'Whole Leaf', value: 'leaf'}
+            ]}
             value={formData.form ? formData.form : ''}
-          >
-            <option value="pellet">Pellet</option>
-            <option value="leaf">Whole Leaf</option>
-          </select>
+            onChange={dataChanged('form')}
+            className="capitalize lightInput"
+          />
         </label>
       </div>
       <div className={

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from '../../../components/Select/Select';
 import { oz2g, l2gal, c2f } from '../../../resources/javascript/calculator';
 
 const CO2 = (props: any) => {
@@ -36,16 +37,17 @@ const CO2 = (props: any) => {
       <h2>Carbonation</h2>
       <div>
         <label htmlFor="method">Carbonation Method</label><br />
-        <select
-          name="method"
+        <Select
+          options={[
+            {option: 'Corn Sugar', value: 'cornSugar'},
+            {option: 'Cane Sugar', value: 'caneSugar'},
+            {option: 'DME', value: 'dme'},
+            {option: 'Forced', value: 'forced'},
+          ]}
           value={method}
-          onChange={(e) => setMethod(e.target.value)}
-        >
-          <option value="cornSugar">Corn Sugar</option>
-          <option value="caneSugar">Cane Sugar</option>
-          <option value="dme">DME</option>
-          <option value="forced">Forced/Kegged</option>
-        </select><br />
+          onChange={(e) => setMethod(e.currentTarget.value as string)}
+          className="capitalize darkInput"
+        />
         <label htmlFor="beerVol">Beer Volume</label><br />
         <input
           name="beerVol"

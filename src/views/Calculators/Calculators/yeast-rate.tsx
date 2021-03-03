@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Select from '../../../components/Select/Select';
 
 const YeastPitchingRate = (props: any) => {
   // STATE
@@ -25,14 +26,15 @@ const YeastPitchingRate = (props: any) => {
       <h2>Total Yeast Cells</h2>
       <div>
         <label htmlFor="type">Yeast Type</label><br />
-        <select
-          name="type"
+        <Select
+          options={[
+            {option: 'Liquid (pack/vial)', value: 'liquid'},
+            {option: 'dry', value: 'dry'},
+          ]}
           value={type}
-          onChange={(e) => setType(e.target.value)}
-        >
-          <option value="liquid">Liquid (pack/vial)</option>
-          <option value="dry">Dry</option>
-        </select><br />
+          onChange={(e) => setType(e.currentTarget.value as string)}
+          className="capitalize darkInput"
+        />
         {type === 'liquid' &&
           <div>
             <label htmlFor="number">Number of Liquid Packs</label><br />

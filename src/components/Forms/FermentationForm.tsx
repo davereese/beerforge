@@ -12,8 +12,7 @@ interface Props {
 }
 
 function FermentationForm(props: Props) {
-  // eslint-disable-next-line
-  const [user, userDispatch] = useUser();
+  const [user] = useUser();
   const [formData, setFormData] = useState<FermentationInterface>({});
 
   const dataChanged = (type: string) => (event: any) => {

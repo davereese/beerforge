@@ -112,3 +112,31 @@ sub {
   font-size: px-to-rem(13px);
   line-height: 3.6;
 }
+
+.gridOption2Col,
+.gridOption3Col {
+  display: grid;
+  width: 100%;
+
+  div,
+  span {
+    display: flex;
+    align-items: center;
+
+    &:not(:first-child) {
+      justify-content: flex-end;
+    }
+  }
+
+  .yellow {
+    color: $label-color;
+  }
+}
+
+.gridOption2Col {
+  grid-template-columns: auto 130px;
+}
+
+.gridOption3Col {
+  grid-template-columns: auto 30px 80px;
+}

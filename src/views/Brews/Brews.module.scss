@@ -130,6 +130,7 @@
 
     &.open {
       max-height: 150px;
+      overflow: visible;
     }
   }
 
@@ -184,6 +185,10 @@
             font-weight: $weight-regular;
           }
         }
+      }
+
+      [class~="select"] {
+        width: 200px;
       }
     }
 

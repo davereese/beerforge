@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,500i,600');
+
 // COLORS
 // grayscale
 $black: #191919;
@@ -5,6 +7,7 @@ $dark-gray: #2b2b2b;
 $white: #ffffff;
 
 // color
+$coal: #251f1d;
 $tar: #2e2318;
 $brown: #58382a;
 $caramel: #ab5c00;
@@ -79,7 +82,13 @@ $tooltip-border: $amber;
 
 $not-current-brew: $amber;
 
+$select-bg: $coal;
+$selected-option-border: $coral;
+$select-option-bg-selected: rgba($coral, 0.25);
+
 // FONTS
+$montserrat: 'Montserrat', sans-serif;
+
 $base-font-size: 14px;
 $weight-light: 300;
 $weight-regular: 400;
@@ -97,3 +106,19 @@ $tablet-portrait: 600px;
 $tablet-landscape: 900px;
 $desktop: 1200px;
 $big-desktop: 1800px;
+
+
+%inputStyles {
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 5px 0 10px;
+  padding: 0 15px;
+  width: 100%;
+  min-width: 230px;
+  height: 42px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  font-size: (14px / $base-font-size) * 1rem;
+  font-family: $montserrat;
+}
