@@ -21,7 +21,7 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className }) 
   }, [focusedIndex]);
 
   const moveFocusDown = useCallback(() => {
-    focusedIndex < options.length && setFocusedIndex(focusedIndex + 1);
+    focusedIndex < options.length - 1 && setFocusedIndex(focusedIndex + 1);
   }, [focusedIndex, options]);
 
   useEffect(() => {
@@ -34,14 +34,34 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className }) 
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (open) {
+        const topOfScrollableElement = selectOptionsRef.current.scrollTop;
+        const bottomOfScrollableElement = selectOptionsRef.current.scrollTop + selectOptionsRef.current.offsetHeight;
+        let focusedOption = selectOptionsRef.current.children[focusedIndex];
         switch (event.code) {
           case 'ArrowUp':
             event.preventDefault();
             moveFocusUp();
+            focusedOption = focusedIndex > 0
+              ? selectOptionsRef.current.children[focusedIndex-1]
+              : focusedOption;
+            if (focusedOption.offsetTop - 5 < topOfScrollableElement) {
+              selectOptionsRef.current.scrollTop = focusedOption.offsetTop;
+            } else if (focusedOption.offsetTop > bottomOfScrollableElement) {
+              selectOptionsRef.current.scrollTop = focusedOption.offsetTop + focusedOption.offsetHeight - selectOptionsRef.current.offsetHeight;
+            }
             break;
           case 'ArrowDown':
             event.preventDefault();
             moveFocusDown();
+            focusedOption = focusedIndex < options.length - 1
+              ? selectOptionsRef.current.children[focusedIndex+1]
+              : focusedOption;
+            if (
+              focusedOption.offsetTop + 5 >= bottomOfScrollableElement ||
+              focusedOption.offsetTop < topOfScrollableElement
+            ) {
+              selectOptionsRef.current.scrollTop = focusedOption.offsetTop - 5;
+            }
             break;
           default:
             return;
@@ -59,7 +79,7 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className }) 
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [open, hasFocus, moveFocusUp, moveFocusDown]);
+  }, [open, hasFocus, moveFocusUp, moveFocusDown, focusedIndex, options.length]);
 
   const handleSelect = (value: number | string) => {
     onChange({currentTarget: {value: value}});
@@ -95,7 +115,7 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className }) 
         {open && options.map((option: SelectOptionItem, index: number) => (
           <SelectOption
             key={option.value}
-            focused={focusedIndex === index+1}
+            focused={focusedIndex === index}
             selected={option.value === value}
             onSelect={handleSelect}
             {...option}
