@@ -187,7 +187,7 @@ function AddFermentableForm(props: Props) {
       onChange={(event) => setTargetOG(Number(event.currentTarget.value))}
       onBlur={() => setEditOG(false)}
       onKeyDown={(event) => {
-        if (event.keyCode === 13) {
+        if (event.key === "Enter") {
           setEditOG(false)
         }
       }}
@@ -212,6 +212,7 @@ function AddFermentableForm(props: Props) {
           value={formData.id ? formData.id : 0}
           onChange={dataChanged('fermentable')}
           className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}
+          useSearch
         />
       </label>
       <label><strong>Or</strong> add your own<br />

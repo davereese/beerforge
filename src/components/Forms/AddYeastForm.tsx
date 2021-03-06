@@ -154,6 +154,7 @@ function AddYeastForm(props: Props) {
           value={formData.id ? formData.id : 0}
           onChange={dataChanged('yeast')}
           className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}
+          useSearch
         />
       </label>
       <label><strong>Or</strong> add your own<br />

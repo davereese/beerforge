@@ -79,7 +79,13 @@ function FormHandler({
 
   const handleKeyDown = (e: any) => {
     // submit and go to the next form on 'enter' press
-    if (open && e.target.id !== 'editOG' && !e.target.className.includes('Select_selectContainer') && e.code === 'Enter') {
+    if (
+      open &&
+      e.target.id !== 'editOG' &&
+      !e.target.className.includes('Select_selectContainer') &&
+      !e.target.className.includes('Select_selectSearch') &&
+      e.code === 'Enter'
+    ) {
       handleNext();
     }
   };
