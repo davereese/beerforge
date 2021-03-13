@@ -1,7 +1,7 @@
 @import './variables';
 
 // CONVERT PX TO REM
-@function px-to-rem($px, $base:$base-font-size){
+@function px-to-rem($px, $base:$base-font-size) {
   @return ($px / $base) * 1rem;
 }
 

@@ -1,9 +1,9 @@
 import React, { useReducer, useContext } from 'react';
 
 export interface ModalProviderInterface {
-  hideModal: Function;
   show: boolean;
   showModal: Function;
+  hideModal: Function;
 };
 
 export interface ModalInterface {
@@ -12,16 +12,18 @@ export interface ModalInterface {
   node?: any;
   buttons?: any;
   classOverride?: any;
-  closing: Boolean;
-  show: Boolean;
+  closing: boolean;
+  show: boolean;
   image: any;
 }
+
+export type Visibility = 'show' | 'hide' | 'close' | 'cancelHide';
 
 const initialState: any = '';
 
 export const ModalContext = React.createContext(initialState);
 
-const reducer = (state: any, action: any) => {
+const reducer = (state: ModalInterface, action: {type: Visibility, payload: ModalInterface}) => {
   switch (action.type) {
     case 'show':
       state = {

@@ -7,11 +7,27 @@ interface SelectProps {
   options: SelectOptionItem[];
   value: string | number;
   onChange: (event: {currentTarget: {value: number | string}}) => void;
-  className: string;
+  className?: string;
+  placeholder?: string;
   useSearch?: boolean;
+  optionHoverEffect?: (event: React.MouseEvent<HTMLInputElement>, delay?: number) => void;
+  optionBlurEffect?: () => void;
+  onMouseOut?: (delay?: number) => void;
+  dropdownClosed?: () => void;
 }
 
-const Select: React.FC<SelectProps> = ({ options, value, onChange, className, useSearch = false }) => {
+const Select: React.FC<SelectProps> = ({
+    options,
+    value,
+    onChange,
+    className,
+    placeholder,
+    optionHoverEffect,
+    optionBlurEffect,
+    onMouseOut,
+    dropdownClosed,
+    useSearch = false
+}) => {
   const [open, setOpen] = useState<boolean>(false);
   const [hasFocus, setHasFocus] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -29,26 +45,42 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
     focusedIndex < optionsLength - 1 && setFocusedIndex(focusedIndex + 1);
   }, [focusedIndex, optionsLength]);
 
+  const handleHover = useCallback((option: SelectOptionItem, event: React.MouseEvent<HTMLDivElement> | KeyboardEvent) => {
+    const focusedNode = event.target as HTMLElement;
+    const target = focusedNode.className.includes('option') ? event.currentTarget : selectOptionsRef.current.children[focusedIndex];
+    const delay = focusedNode.className.includes('option') ? 500 : 0;
+    const newEvent = {currentTarget: target} as React.MouseEvent<HTMLInputElement>;
+    newEvent.currentTarget.value = option.value.toString();
+    optionHoverEffect && optionHoverEffect(newEvent, delay);
+  }, [optionHoverEffect, focusedIndex]);
+
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
-      const element = event.target as HTMLElement;
-      const isTogglingSearch = element.className.includes('searchAndFilters') ||
-        element.className.includes('placeholder') ||
-        element.className.includes('closeButton');
+      if (open) {
+        const element = event.target as HTMLElement;
+        const targetIsSvg = element.nodeName === 'path' || element.nodeName === 'rect';
 
-      if (
-        selectOptionsRef.current &&
-        !selectOptionsRef.current.contains(element) &&
-        !isTogglingSearch
-      ) {
-        setOpen(false);
-        setFocusedIndex(0);
-        setSearchTerm("");
-        setIsSearching(false);
-      }
+        if (
+          !targetIsSvg &&
+          ['searchAndFilters', 'placeholder', 'closeButton']
+            .some(string => element.className.includes(string))
+        ) {
+          setIsSearching(!isSearching);
+          return null;
+        }
 
-      if (isTogglingSearch) {
-        setIsSearching(!isSearching);
+        if (
+          targetIsSvg ||
+          (selectOptionsRef.current &&
+          !selectOptionsRef.current.contains(element) &&
+          !element.className.includes('Popup'))
+        ) {
+          setOpen(false);
+          setFocusedIndex(0);
+          setSearchTerm("");
+          setIsSearching(false);
+          dropdownClosed && dropdownClosed();
+        }
       }
     };
 
@@ -80,6 +112,7 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
             } else if (focusedOption.offsetTop > bottomOfScrollableElement) {
               selectOptionsRef.current.scrollTop = focusedOption.offsetTop + focusedOption.offsetHeight - selectOptionsRef.current.offsetHeight - searchAndFiltersHeight;
             }
+            onMouseOut && onMouseOut(0);
             break;
           case 'ArrowDown':
             event.preventDefault();
@@ -97,6 +130,13 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
             ) {
               selectOptionsRef.current.scrollTop = focusedOption.offsetTop - searchAndFiltersHeight - 5;
             }
+            onMouseOut && onMouseOut(0);
+            break;
+          case 'ArrowLeft':
+            handleHover(options[focusedIndex], event);
+            break;
+          case 'ArrowRight':
+            onMouseOut && onMouseOut(0);
             break;
           case 'Enter':
             isSearching && event.preventDefault();
@@ -118,6 +158,7 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
       document.removeEventListener('keydown', handleKeyDown);
     }
   }, [
+    options,
     open,
     hasFocus,
     moveFocusUp,
@@ -126,12 +167,19 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
     optionsLength,
     setIsSearching,
     isSearching,
-    useSearch
+    useSearch,
+    dropdownClosed,
+    handleHover,
+    onMouseOut
   ]);
 
   useEffect(() => {
     const filteredOptions = options.filter((option: SelectOptionItem) => {
-      const optionText = option.label ? option.label : typeof option.option === "string" ? option.option as string : null;
+      const optionText = option.label ?
+        option.label :
+        typeof option.option === "string" ?
+          option.option as string :
+          null;
       if (!searchTerm) {
         return option;
       }
@@ -156,6 +204,10 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
     setHasFocus(false);
   };
 
+  const handleBlur = () => {
+    optionBlurEffect && optionBlurEffect();
+  }
+
   const currentlySelectedOption = options.find(option => option.value === value);
 
   return (
@@ -167,8 +219,9 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
       ref={selectRef}
       onFocus={onFocus}
       onBlur={onBlur}
+      onMouseOut={() => onMouseOut && onMouseOut()}
     >
-      <span>{currentlySelectedOption?.label || currentlySelectedOption?.option}</span>
+      <span>{!!currentlySelectedOption ? currentlySelectedOption?.label || currentlySelectedOption?.option : placeholder}</span>
       <div
         className={`${styles.selectDropdown} ${open && styles.open}`}
         aria-expanded={open}
@@ -205,7 +258,11 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
           ref={selectOptionsRef}
         >
           {open && options.filter((option: SelectOptionItem) => {
-            const optionText = option.label ? option.label : typeof option.option === "string" ? option.option as string : null;
+            const optionText = option.label ?
+              option.label :
+                typeof option.option === "string" ?
+                  option.option as string :
+                  null;
             if (!searchTerm) {
               return option;
             }
@@ -216,6 +273,8 @@ const Select: React.FC<SelectProps> = ({ options, value, onChange, className, us
               focused={focusedIndex === index}
               selected={option.value === value}
               onSelect={handleSelect}
+              onHover={(event: React.MouseEvent<HTMLDivElement>) => handleHover(option, event)}
+              onBlur={() => handleBlur()}
               {...option}
             />
           ))}

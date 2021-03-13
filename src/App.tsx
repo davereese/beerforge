@@ -17,6 +17,9 @@ import PrivateRoute from './views/PrivateRoute';
 import Home from './views/Home/Home';
 import Snackbar from './components/Snackbar/Snackbar';
 import Feedback from './components/Feedback/Feedback';
+import IngredientPopup from './components/IngredientPopup/IngredientPopup';
+import { usePopup } from './store/PopupContext';
+import { useModal } from './store/ModalContext';
 
 interface Props extends RouteComponentProps {
   history: any;
@@ -25,8 +28,14 @@ interface Props extends RouteComponentProps {
 const App = (props: Props) => {
   const trackingId = "UA-88010262-3";
   ReactGA.initialize(trackingId);
+  // eslint-disable-next-line
+  const [modal, modalDispatch] = useModal();
+  const {dispatch: popupDispatch} = usePopup();
 
   props.history.listen((location: any) => {
+    popupDispatch({type: 'close'}); // close any popups that are visible
+    modalDispatch({type: 'close'}); // close any modals that are visible
+
     ReactGA.set({ page: location.pathname }); // Update the user's current page
     ReactGA.pageview(location.pathname); // Record a pageview for the given page
   });
@@ -78,6 +87,7 @@ const App = (props: Props) => {
         </Switch>
       </main>
       <Modal />
+      <IngredientPopup />
       <Snackbar />
       <Footer />
     </Fade>

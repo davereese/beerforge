@@ -86,6 +86,15 @@ $select-bg: $coal;
 $selected-option-border: $coral;
 $select-option-bg-selected: rgba($coral, 0.25);
 
+$popup-bg: $coal;
+
+$categories: 'bittering', 'finishing', 'dual-purpose';
+$category-colors: (
+  "bittering": #3ae492,
+  "finishing": #c6ed52,
+  "dual-purpose": #16a05e,
+);
+
 // FONTS
 $montserrat: 'Montserrat', sans-serif;
 

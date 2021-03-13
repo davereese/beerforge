@@ -12,10 +12,20 @@ interface OptionProps extends SelectOptionItem {
   selected: boolean;
   focused: boolean;
   onSelect: (value: number | string) => void;
+  onHover?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  onBlur?: () => void;
 }
 
 const SelectOption: React.FC<OptionProps> = (
-  { option, value, selected, focused, onSelect }
+  {
+    option,
+    value,
+    selected,
+    focused,
+    onSelect,
+    onHover,
+    onBlur
+  }
 ) => {
 
   useEffect(() => {
@@ -34,8 +44,12 @@ const SelectOption: React.FC<OptionProps> = (
   return <div
     role="option"
     aria-selected={selected}
-    className={`${styles.option} ${focused ? styles.focused : ""} ${selected ? styles.selected : ""}`}
+    className={
+      `${styles.option} ${focused ? styles.focused : ""} ${selected ? styles.selected : ""}`
+    }
     onClick={() => onSelect(value)}
+    onMouseOver={(event: React.MouseEvent<HTMLDivElement>) => onHover && onHover(event)}
+    onMouseOut={() => onBlur && onBlur()}
   >
     {option}
   </div>;

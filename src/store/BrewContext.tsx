@@ -40,6 +40,7 @@ export interface HopInterface {
   days?: number;
   multiplier?: number;
   index?: number;
+  origin?: string;
   [key: string]: string | number | undefined;
 };
 
