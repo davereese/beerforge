@@ -9,16 +9,19 @@ import UserProvider from './store/UserContext';
 import BrewProvider from './store/BrewContext';
 import ModalProvider from './store/ModalContext';
 import SnackbarProvider from './store/SnackbarContext';
+import PopupProvider from './store/PopupContext';
 
 ReactDOM.render(
   <BrowserRouter>
     <UserProvider>
       <ModalProvider>
-        <SnackbarProvider>
-          <BrewProvider>
-            <App />
-          </BrewProvider>
-        </SnackbarProvider>
+        <PopupProvider>
+          <SnackbarProvider>
+            <BrewProvider>
+              <App />
+            </BrewProvider>
+          </SnackbarProvider>
+        </PopupProvider>
       </ModalProvider>
     </UserProvider>
   </BrowserRouter>,

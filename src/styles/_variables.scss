@@ -86,6 +86,31 @@ $select-bg: $coal;
 $selected-option-border: $coral;
 $select-option-bg-selected: rgba($coral, 0.25);
 
+$popup-bg: $coal;
+$graph-crosshair: rgba($coral, 0.25);
+
+$categories:
+  'bittering',
+  'finishing',
+  'dualPurpose',
+  'base',
+  'caramelCrystal',
+  'adjunctGrains',
+  'kilnedToasted',
+  'roasted',
+  'sugars';
+$category-colors: (
+  'bittering': #3ae492,
+  'finishing': #92f132,
+  'dualPurpose': #16a05e,
+  'base': #ffdb4a,
+  'caramelCrystal': #d48d1c,
+  'adjunctGrains': #ffefb3,
+  'kilnedToasted': #cf6f00,
+  'roasted': #894200,
+  'sugars': #c4c4c4,
+);
+
 // FONTS
 $montserrat: 'Montserrat', sans-serif;
 

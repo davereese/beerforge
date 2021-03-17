@@ -112,7 +112,6 @@ function AddAdjunctsForm(props: Props) {
       <label>Select Adjunct<br />
         <Select
           options={[
-            {option: "Choose Adjunct", value: 0},
             ...adjuncts.map(adjunct => ({
               label: adjunct.name,
               option: <div className={styles.gridOption2Col}>
@@ -122,6 +121,7 @@ function AddAdjunctsForm(props: Props) {
               value: adjunct.id || ""
             }))
           ]}
+          placeholder="Choose Adjunct"
           value={formData.id ? formData.id : 0}
           onChange={dataChanged('adjunct')}
           className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}

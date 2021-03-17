@@ -141,7 +141,6 @@ function AddYeastForm(props: Props) {
       <label>Yeast<br />
         <Select
           options={[
-            {option: "Choose Yeast", value: 0},
             ...yeast.map(choice => ({
               label: choice.name,
               option: <div className={styles.gridOption2Col}>
@@ -151,6 +150,7 @@ function AddYeastForm(props: Props) {
               value: choice.id || ""
             }))
           ]}
+          placeholder="Choose Yeast"
           value={formData.id ? formData.id : 0}
           onChange={dataChanged('yeast')}
           className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}

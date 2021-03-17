@@ -54,3 +54,15 @@ export const PITCHING_RATES = [
   {value:"1.75", option:"1.75 (Lager)"},
   {value:"2.0", option:"2.0 (High OG Lager)"},
 ];
+
+export const INGREDIENTS_GRAPH_COLORS = {
+  finishing: '#92f132',
+  bittering: '#3ae492',
+  dualPurpose: '#16a05e',
+  base: '#ffdb4a',
+  caramelCrystal: '#d48d1c',
+  adjunctGrains: '#ffefb3',
+  kilnedToasted: '#cf6f00',
+  roasted: '#894200',
+  sugars: '#c4c4c4',
+};

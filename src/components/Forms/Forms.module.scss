@@ -1,5 +1,4 @@
 @import '../../styles/variables';
-@import '../../styles/utilities';
 
 .row,
 .rowThirds {
@@ -118,13 +117,32 @@ sub {
   display: grid;
   width: 100%;
 
-  div,
   span {
     display: flex;
     align-items: center;
 
     &:not(:first-child) {
       justify-content: flex-end;
+    }
+
+    &.category {
+      &::before {
+        content: '';
+        flex-shrink: 0;
+        display: block;
+        width: 10px;
+        height: 10px;
+        margin-right: 9px;
+        border-radius: 5px;
+      }
+
+      @each $category in $categories {
+        &[class~="#{$category}"] {
+          &::before {
+            background-color: map-get($category-colors, $category);
+          }
+        }
+      }
     }
   }
 

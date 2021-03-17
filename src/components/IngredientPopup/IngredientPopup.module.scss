@@ -1,0 +1,107 @@
+@import '../../styles/variables';
+@import '../../styles/utilities';
+
+.ingredientPopup {
+  position: fixed;
+  display: grid;
+  grid-template-columns: 50% 1fr;
+  grid-template-areas: "details graph";
+  width: 580px;
+  min-height: 245px;
+  background-color: $popup-bg;
+  transform: translateY(calc(-50% + 14px));
+  color: $text-light;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -11px;
+    top: calc(50% - 10px);
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 11px solid $popup-bg;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+  }
+
+  .details {
+    grid-area: details;
+    padding: 15px;
+
+    .ingredientName {
+      padding-bottom: 6px;
+      border-bottom: 1px solid;
+      font-size: px-to-rem(16px);
+      font-weight: $weight-regular;
+
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin: 0 5px 3px 0;
+        border-radius: 5px;
+      }
+
+      @each $category in $categories {
+        $color: map-get($category-colors, $category);
+
+        &[class~="#{$category}"] {
+          border-color: $color;
+
+          &::before {
+            background-color: $color;
+          }
+        }
+      }
+    }
+
+    .ingredientDetails {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: px-to-rem(10px);
+      text-transform: none;
+      color: $label-color;
+      letter-spacing: normal;
+    }
+
+    .description {
+      font-size: px-to-rem(11px);
+      line-height: 1.2;
+    }
+  }
+
+  .graph {
+    position: relative;
+    grid-area: graph;
+    padding: 15px;
+    max-height: 245px;
+
+    span {
+      position: absolute;
+      left: calc(50% - 3px);
+      width: 6px;
+      text-align: center;
+      font-size: px-to-rem(9px);
+      color: $label-color;
+      $children: 1, 2, 3, 4, 5, 6;
+
+      @each $child in $children {
+        &:nth-child(#{$child}) {
+          top: calc(50% - 7px - (6% * #{$child}));
+        }
+      }
+    }
+
+    svg {
+      max-height: 215px;
+      margin-top: -2px;
+    }
+
+    line {
+      stroke: $graph-crosshair;
+    }
+  }
+}

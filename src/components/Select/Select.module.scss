@@ -139,4 +139,8 @@ $searchAndFiltersHeight: 41px;
     height: 40px;
     font-size: px-to-rem(13px);
   }
+
+  > div {
+    pointer-events: none;
+  }
 }

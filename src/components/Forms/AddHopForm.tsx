@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import styles from './Forms.module.scss';
@@ -8,6 +8,7 @@ import { useUser } from '../../store/UserContext';
 import { oz2g, g2oz, IBU, f2c, c2f } from '../../resources/javascript/calculator';
 import { HOP_USE } from '../../resources/javascript/constants';
 import Select from '../Select/Select';
+import { usePopup } from '../../store/PopupContext';
 
 interface Props {
   brew: BrewInterface;
@@ -15,8 +16,27 @@ interface Props {
   dataUpdated: Function;
 }
 
-interface HopResults extends HopInterface {
+export interface HopFlavors {
+  tropical_fruit: number;
+  herbal: number;
+  floral: number;
+  vegital: number;
+  piney_resinous: number;
+  grassy: number;
+  spicy: number;
+  citrus: number;
+}
+
+export interface HopResults {
+  id: number;
+  name: string;
+  origin: string;
   average_alpha: number;
+  alpha_min: number;
+  alpha_max: number;
+  category: "finishing" | "bittering" | "dualPurpose";
+  description: string;
+  flavor_profile: HopFlavors;
 }
 
 async function listAllHops() {
@@ -31,10 +51,12 @@ async function listAllHops() {
 }
 
 function AddHopForm(props: Props) {
+  const {dispatch: popupDispatch} = usePopup();
   const [user] = useUser();
   const [formData, setFormData] = useState<HopInterface>({});
   const [hops, setHops] = useState<HopResults[]>([]);
-  const [projectedTotalIBU, setProjectedTotalIBU] = useState<number>(props.brew.ibu ? props.brew.ibu : 0);
+  const [projectedTotalIBU, setProjectedTotalIBU] = useState<number>(props.brew.ibu ?? 0);
+  const timeout: any = useRef();
 
   useEffect(() => {
     // load hops when component renders
@@ -47,7 +69,7 @@ function AddHopForm(props: Props) {
     // when formData changes, update the data in formHandler component
     let dataToSet: HopInterface[] = [];
     const hopsArray = props.brew.hops ? [...props.brew.hops] : [];
-    const index = props.editingData && props.editingData.index ? props.editingData.index : -1;
+    const index = props.editingData?.index ?? -1;
 
     if (index > -1) {
       dataToSet = [...hopsArray];
@@ -109,6 +131,8 @@ function AddHopForm(props: Props) {
   }, [props.editingData]);
 
   const dataChanged = (type: string) => (event: any) => {
+    clearTimeout(timeout.current);
+    popupDispatch({type: 'close'});
     let data: HopInterface = {};
     if (type === 'hop') {
       const choice = hops.find(hop => hop.id === parseInt(event.currentTarget.value));
@@ -170,26 +194,86 @@ function AddHopForm(props: Props) {
     }
   };
 
+  const openPopup = (event: React.MouseEvent<HTMLInputElement>, delay: number = 500) => {
+    if (+event.currentTarget.value === 0) {
+      return;
+    }
+    const hoveredHopId = +event.currentTarget.value;
+    const optionCoords = event.currentTarget.getBoundingClientRect();
+    clearTimeout(timeout.current);
+    timeout.current = window.setTimeout(() => {
+      const hoveredHop = hops.find((hop: HopResults) => hop.id === hoveredHopId);
+      if (!hoveredHop || !hoveredHop.description) {
+        popupDispatch({type: 'close'}); // don't show if not all the data is there
+        return;
+      }
+      popupDispatch({
+        type: 'show',
+        payload: {
+          ingredient: {
+            name: hoveredHop.name || "",
+            category: hoveredHop.category,
+            details: [
+              `${hoveredHop.alpha_min}-${hoveredHop?.alpha_max}% Alpha Acid`,
+              hoveredHop.origin || ""
+            ],
+            description: hoveredHop.description,
+            graph: {
+              type: 'hop',
+              values: [
+                {
+                  id: hoveredHopId,
+                  category: hoveredHop.category,
+                  attributes: {
+                    tropical_fruit: hoveredHop.flavor_profile.tropical_fruit,
+                    citrus: hoveredHop.flavor_profile.citrus,
+                    floral: hoveredHop.flavor_profile.floral,
+                    herbal: hoveredHop.flavor_profile.herbal,
+                    piney_resinous: hoveredHop.flavor_profile.piney_resinous,
+                    grassy: hoveredHop.flavor_profile.grassy,
+                    spicy: hoveredHop.flavor_profile.spicy,
+                    vegital: hoveredHop.flavor_profile.vegital,
+                  }
+                }
+              ]
+            }
+          },
+          coords: optionCoords
+        }
+      });
+    }, delay);
+  };
+
+  const closePopup = (delay: number = 250) => {
+    clearTimeout(timeout.current);
+    timeout.current = window.setTimeout(() => {
+      popupDispatch({type: 'hide'});
+    }, delay);
+  };
+
   return(
     <>
       <label>Hop<br />
         <Select
           options={[
-            {option: "Choose Hop", value: 0},
             ...hops.map(hop => ({
               label: hop.name,
               option: <div className={styles.gridOption3Col}>
-                  <span>{hop.name}</span>
-                  <span className={styles.yellow}></span>
+                  <span className={`${styles.category} ${hop.category}`}>{hop.name}</span>
+                  <span className={styles.yellow}>{hop.origin}</span>
                   <span className={styles.yellow}>{hop.average_alpha}% AA</span>
                 </div>,
               value: hop.id || ""
             }))
           ]}
+          placeholder="Choose Hop"
           value={formData.id ? formData.id : 0}
           onChange={dataChanged('hop')}
           className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}
           useSearch
+          optionHoverEffect={openPopup}
+          onMouseOut={closePopup}
+          dropdownClosed={() => popupDispatch({type: 'close'})}
         />
       </label>
       <label><strong>Or</strong> add your own<br />

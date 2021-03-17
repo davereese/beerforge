@@ -1,4 +1,5 @@
 import React, { useReducer, useContext } from 'react';
+import { Visibility } from './ModalContext';
 
 export interface SnackbarProviderInterface {
   hideSnackbar: Function;
@@ -7,6 +8,8 @@ export interface SnackbarProviderInterface {
 };
 
 export interface SnackbarInterface {
+  show: boolean;
+  closing: boolean;
   message: string;
   status: 'error' | 'success' | 'warning';
 }
@@ -15,7 +18,7 @@ const initialState: any = '';
 
 export const SnackbarContext = React.createContext(initialState);
 
-const reducer = (state: any, action: any) => {
+const reducer = (state: SnackbarInterface, action: {type: Visibility, payload: SnackbarInterface}) => {
   switch (action.type) {
     case 'show':
       state = {

@@ -34,7 +34,7 @@ function FeedbackModal() {
       });
 
       if (result.status === 200) {
-        modalDispatch({type: 'hide'})
+        modalDispatch({type: 'hide'});
         snackbarDispatch({type: 'show', payload: {
           status: 'success',
           message: 'Feedback Sent',
