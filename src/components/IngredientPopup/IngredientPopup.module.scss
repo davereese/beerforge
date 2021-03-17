@@ -4,7 +4,7 @@
 .ingredientPopup {
   position: fixed;
   display: grid;
-  grid-template-columns: 55% 1fr;
+  grid-template-columns: 50% 1fr;
   grid-template-areas: "details graph";
   width: 580px;
   min-height: 245px;
@@ -74,7 +74,34 @@
   }
 
   .graph {
+    position: relative;
     grid-area: graph;
     padding: 15px;
+    max-height: 245px;
+
+    span {
+      position: absolute;
+      left: calc(50% - 3px);
+      width: 6px;
+      text-align: center;
+      font-size: px-to-rem(9px);
+      color: $label-color;
+      $children: 1, 2, 3, 4, 5, 6;
+
+      @each $child in $children {
+        &:nth-child(#{$child}) {
+          top: calc(50% - 7px - (6% * #{$child}));
+        }
+      }
+    }
+
+    svg {
+      max-height: 215px;
+      margin-top: -2px;
+    }
+
+    line {
+      stroke: $graph-crosshair;
+    }
   }
 }

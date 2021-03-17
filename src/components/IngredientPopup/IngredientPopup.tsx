@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { usePopup } from '../../store/PopupContext';
+import FlavorGraph from './IngredientGraph';
 
 import styles from "./IngredientPopup.module.scss"
-
-// TODO: deal with navigation while open
 
 function IngredientPopup() {
   const {state: popup, dispatch: popupDispatch} = usePopup();
@@ -34,7 +33,7 @@ function IngredientPopup() {
         <p className={styles.description}>{popup.ingredient?.description}</p>
       </div>
       <div className={styles.graph}>
-        graph
+        {popup.ingredient && <FlavorGraph graphData={popup.ingredient?.graph} />}
       </div>
     </div>
   ) : null;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactText } from 'react';
 import axios from 'axios';
 import debounce from 'lodash.debounce'
 
@@ -14,6 +14,23 @@ import Info from '../../components/Info/Info';
 import { gal2l, l2gal } from '../../resources/javascript/calculator';
 import Select from '../../components/Select/Select';
 
+type Unit = 'us' | 'metric';
+type IbuFormula = 'rager' | 'tinseth';
+interface Settings {
+  edited?: boolean;
+  units: Unit;
+  ibuFormula: IbuFormula;
+  kettle: ReactText;
+  evapRate: ReactText;
+  strikeFactor: ReactText;
+  trubLoss: ReactText;
+  equipmentLoss: ReactText;
+  absorptionRate: ReactText;
+  hopAbsorptionRate: ReactText;
+  boilTemp: ReactText;
+  mashEfficiency: ReactText;
+}
+
 const Profile = () => {
   const fileInput = React.createRef<HTMLInputElement>();
   const [user, userDispatch] = useUser();
@@ -27,7 +44,7 @@ const Profile = () => {
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<Settings>({
     edited: false,
     units: user.units ? user.units : 'us',
     ibuFormula: user.ibu_formula ? user.ibu_formula : 'rager',
@@ -306,7 +323,9 @@ const Profile = () => {
                 {value:"Metric", option:"metric"},
               ]}
               value={settings.units}
-              onChange={(e) => setSettings({...settings, units: e.currentTarget.value, edited: true})}
+              onChange={(e) => setSettings(
+                {...settings, units: e.currentTarget.value as Unit, edited: true}
+              )}
               className="capitalize darkInput"
             />
           </label>
@@ -317,7 +336,9 @@ const Profile = () => {
                 {value:"Tinseth", option:"tinseth"},
               ]}
               value={settings.ibuFormula}
-              onChange={(e) => setSettings({...settings, ibuFormula: e.currentTarget.value, edited: true})}
+              onChange={(e) => setSettings(
+                {...settings, ibuFormula: e.currentTarget.value as IbuFormula, edited: true}
+              )}
               className="capitalize darkInput"
             />
           </label>

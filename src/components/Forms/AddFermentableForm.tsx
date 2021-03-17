@@ -198,17 +198,17 @@ function AddFermentableForm(props: Props) {
       <label>Select Fermentable<br />
         <Select
           options={[
-            {option: "Choose Fermentable", value: 0},
             ...fermentables.map(fermentable => ({
               label: fermentable.name,
               option: <div className={styles.gridOption3Col}>
-                  <span>{fermentable.name}</span>
+                  <span className={`${styles.category} ${fermentable.category}`}>{fermentable.name}</span>
                   <span className={styles.yellow}>{fermentable.origin}</span>
                   <span className={styles.yellow}>{fermentable.lovibond}°L</span>
                 </div>,
               value: fermentable.id || ""
             }))
           ]}
+          placeholder="Choose Fermentable"
           value={formData.id ? formData.id : 0}
           onChange={dataChanged('fermentable')}
           className={`capitalize lightInput ${formData.custom ? styles.unused : ''}`}

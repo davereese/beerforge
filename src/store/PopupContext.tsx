@@ -1,4 +1,5 @@
 import React, { useReducer, useContext, Dispatch } from 'react';
+import { DataForGraph } from '../components/IngredientPopup/IngredientGraph';
 import { Visibility } from './ModalContext';
 
 interface PopupActions {
@@ -11,6 +12,7 @@ export interface PopupIngredient {
   category: string;
   details?: string[];
   description?: string;
+  graph: DataForGraph;
 }
 
 export interface Popup {

@@ -36,6 +36,7 @@ const Select: React.FC<SelectProps> = ({
   const [optionsLength, setOptionsLength] = useState<number>(options.length);
   const selectRef: any = useRef<HTMLDivElement>(null);
   const selectOptionsRef: any = useRef<HTMLDivElement>(null);
+  const searchInputRef: any = useRef<HTMLInputElement>(null);
 
   const moveFocusUp = useCallback(() => {
     focusedIndex > 0 && setFocusedIndex(focusedIndex - 1);
@@ -58,7 +59,15 @@ const Select: React.FC<SelectProps> = ({
     const handleClick = (event: MouseEvent) => {
       if (open) {
         const element = event.target as HTMLElement;
-        const targetIsSvg = element.nodeName === 'path' || element.nodeName === 'rect';
+        const targetIsSvg = element.nodeName === 'path' || element.nodeName === 'rect' || element.nodeName === 'text';
+
+        if (!targetIsSvg && element.className?.includes('selectSearch')) {
+          return null;
+        }
+
+        if (targetIsSvg) {
+          return null;
+        }
 
         if (
           !targetIsSvg &&
@@ -70,7 +79,6 @@ const Select: React.FC<SelectProps> = ({
         }
 
         if (
-          targetIsSvg ||
           (selectOptionsRef.current &&
           !selectOptionsRef.current.contains(element) &&
           !element.className.includes('Popup'))
@@ -188,6 +196,12 @@ const Select: React.FC<SelectProps> = ({
     setOptionsLength(filteredOptions.length);
   }, [searchTerm, options]);
 
+  useEffect(() => {
+    if (isSearching) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearching]);
+
   const handleSelect = (value: number | string) => {
     onChange({currentTarget: {value: value}});
     setIsSearching(false);
@@ -240,6 +254,7 @@ const Select: React.FC<SelectProps> = ({
                 <input
                   type="text"
                   placeholder="Search"
+                  ref={searchInputRef}
                   className={styles.selectSearch}
                   value={searchTerm}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
