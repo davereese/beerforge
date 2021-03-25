@@ -9,6 +9,7 @@ import { oz2g, g2oz, IBU, f2c, c2f } from '../../resources/javascript/calculator
 import { HOP_USE } from '../../resources/javascript/constants';
 import Select from '../Select/Select';
 import { usePopup } from '../../store/PopupContext';
+import { getAverageAA } from '../../resources/javascript/functions';
 
 interface Props {
   brew: BrewInterface;
@@ -31,7 +32,6 @@ export interface HopResults {
   id: number;
   name: string;
   origin: string;
-  average_alpha: number;
   alpha_min: number;
   alpha_max: number;
   category: "finishing" | "bittering" | "dualPurpose";
@@ -140,7 +140,7 @@ function AddHopForm(props: Props) {
         ? {
             id: choice.id,
             name: choice.name,
-            alphaAcid: Number(choice.average_alpha)
+            alphaAcid: getAverageAA(choice.alpha_min, choice.alpha_max)
           }
         : {};
     } else if (type === 'form' || type === 'custom') {
@@ -261,7 +261,7 @@ function AddHopForm(props: Props) {
               option: <div className={styles.gridOption3Col}>
                   <span className={`${styles.category} ${hop.category}`}>{hop.name}</span>
                   <span className={styles.yellow}>{hop.origin}</span>
-                  <span className={styles.yellow}>{hop.average_alpha}% AA</span>
+                  <span className={styles.yellow}>{getAverageAA(hop.alpha_min, hop.alpha_max)}% AA</span>
                 </div>,
               value: hop.id || ""
             }))
