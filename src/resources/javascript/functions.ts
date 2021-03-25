@@ -8,3 +8,7 @@ export const getAdjunctById = (id?: number): string | undefined => {
   const adjunct = ADJUNCT_TYPES.find(type => id === type.value);
   return adjunct?.label;
 };
+
+export const getAverageAA = (minAA: number, maxAA: number): number => {
+  return +((minAA + maxAA) / 2).toFixed(1);
+};
