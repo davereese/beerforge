@@ -150,7 +150,7 @@
       width: auto;
     }
 
-    div {
+    > div {
       @include for-phone-only () {
         width: 50%;
         margin-bottom: 10px;
