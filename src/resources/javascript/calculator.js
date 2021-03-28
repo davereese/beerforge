@@ -329,7 +329,7 @@ export function IBU(hops, OG, vol, type = 'rager') {
         const utilization = (1.65 * Math.pow(0.000125, OG - 1.0) * ((1 - Math.pow(Math.E, -0.04 * hops[i].lengthInBoil)) / 4.15));
         const whirlpoolUtilization = getWhirlpoolUtilization(hops[i]);
         IBU += (utilization * whirlpoolUtilization) * ((hops[i].alphaAcid / 100.0 * oz2kg(hops[i].weight) * 1000000) / gal2l(vol) * utilizationFactor);
-      } else if (type.toLowercase() === 'rager') {
+      } else if (type.toLowerCase() === 'rager') {
         const utilization = 18.11 + 13.86 * tanh((hops[i].lengthInBoil - 31.32) / 18.27);
         const whirlpoolUtilization = getWhirlpoolUtilization(hops[i]);
         const adjustment = Math.max(0, (OG - 1.050) / 0.2);
