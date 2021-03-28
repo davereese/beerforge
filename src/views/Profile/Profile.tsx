@@ -333,7 +333,7 @@ const Profile = () => {
             <Select
               options={[
                 {option: 'Rager', value: 'rager'},
-                {value:"Tinseth", option:"tinseth"},
+                {option:"Tinseth", value:"tinseth", },
               ]}
               value={settings.ibuFormula}
               onChange={(e) => setSettings(
