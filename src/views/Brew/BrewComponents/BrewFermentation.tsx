@@ -72,6 +72,9 @@ const BrewFermentation = (props: Props) => {
                   editValue([{value: value, choice: 'og', index: null}]);
                 }}
                 {...utilityProps}
+                editValue={(value: any, fieldName: any) => {
+                  editValue([{value: value, choice: fieldName, index: null}])
+                }}
               />
               {originalBrew !== null && Number(originalBrew.og).toFixed(3) !== Number(brew.og).toFixed(3) &&
                 <span className={componentStyles.originalValue}>
@@ -94,6 +97,9 @@ const BrewFermentation = (props: Props) => {
                   editValue([{value: value, choice: 'fg', index: null}]);
                 }}
                 {...utilityProps}
+                editValue={(value: any, fieldName: any) => {
+                  editValue([{value: value, choice: fieldName, index: null}])
+                }}
               />
               {originalBrew !== null && Number(originalBrew.fg).toFixed(3) !== Number(brew.fg).toFixed(3) &&
                 <span className={componentStyles.originalValue}>
