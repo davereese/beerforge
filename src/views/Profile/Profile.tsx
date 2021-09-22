@@ -320,7 +320,7 @@ const Profile = () => {
             <Select
               options={[
                 {option: 'US', value: 'us'},
-                {value:"Metric", option:"metric"},
+                {option:"Metric", value:"metric"}
               ]}
               value={settings.units}
               onChange={(e) => setSettings(

@@ -46,7 +46,7 @@ const reducer = (state: any, action: any) => {
       return state;
     case 'update':
       const storage = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      const record = {value: JSON.stringify(action.payload), timestamp: storage.timestamp}
+      const record = {value: JSON.stringify(action.payload), timestamp: storage.timestamp};
       localStorage.setItem('currentUser', JSON.stringify(record));
       state = action.payload;
       return state;
